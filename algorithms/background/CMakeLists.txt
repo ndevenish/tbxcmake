@@ -1,5 +1,5 @@
 
-add_library(dials_algorithms_background SHARED 
+add_library(dials_algorithms_background  
 			helpers.cc modeller.cc radial_average.cc helpers.h modeller.h radial_average.h
       # //boost_python/background_ext.cc boost_python/helpers.cc boost_python/modeller_ext.cc
 

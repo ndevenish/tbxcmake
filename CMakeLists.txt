@@ -14,6 +14,7 @@ add_subdirectory(algorithms)
 add_subdirectory(model)
 
 
+option(BUILD_SHARED_LIBS "Build all libraries as a shared library" ON)
 
 # to run with existing paths e.g.
 # cmake -D BOOST_LIBRARYDIR=/dls/science/users/mep23677/dials-dist/build/lib -D BOOST_INCLUDEDIR=/dls/science/users/mep23677/dials-dist/modules/boost -D PYTHON_LIBRARY=/dls/science/users/mep23677/dials-dist/base/lib/ -D PYTHON_INCLUDE_DIR=/dls/science/users/mep23677/dials-dist/base/include ..
