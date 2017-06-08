@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.2)
+cmake_minimum_required (VERSION 3.5)
 project (Dials)
 
 find_package(Boost REQUIRED COMPONENTS python)
@@ -7,8 +7,9 @@ find_package(PythonLibs REQUIRED)
 include_directories(${PROJECT_SOURCE_DIR}/..)
 include_directories(${PROJECT_SOURCE_DIR}/../cctbx_project/)
 include_directories(${PROJECT_SOURCE_DIR}/../../build/include)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
-include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+
 
 add_subdirectory(algorithms)
 add_subdirectory(model)

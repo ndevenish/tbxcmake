@@ -10,10 +10,10 @@ add_library(dials_algorithms_background
 
 
 add_library(dials_algorithms_background_ext SHARED boost_python/helpers.cc boost_python/background_ext.cc)
-target_link_libraries(dials_algorithms_background_ext dials_algorithms_background ${Boost_LIBRARIES})
+target_link_libraries(dials_algorithms_background_ext dials_algorithms_background Boost::python)
 
 add_library(dials_algorithms_background_modeller_ext SHARED boost_python/modeller_ext.cc)
-target_link_libraries(dials_algorithms_background_modeller_ext dials_algorithms_background ${Boost_LIBRARIES})
+target_link_libraries(dials_algorithms_background_modeller_ext dials_algorithms_background Boost::python)
 
 add_library(dials_algorithms_background_glm_ext SHARED glm/boost_python/ext.cc)
-target_link_libraries(dials_algorithms_background_glm_ext dials_algorithms_background ${Boost_LIBRARIES})
+target_link_libraries(dials_algorithms_background_glm_ext dials_algorithms_background Boost::python)
