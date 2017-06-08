@@ -6,6 +6,8 @@ add_library(dials_algorithms_background
       glm/creator.cc glm/robust_poisson_mean.cc glm/creator.h glm/robust_poisson_mean.h
       # glm/boost_python/ext.cc
 			)
+target_link_libraries(dials_algorithms_background Boost::boost)
+
 # target_link_libraries(background ${Boost_LIBRARIES})
 
 
