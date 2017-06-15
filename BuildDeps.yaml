@@ -1,4 +1,5 @@
 generate: false
+project: dials
 subdirectories:
   - algorithms
   - array_family
