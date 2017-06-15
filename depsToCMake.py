@@ -48,13 +48,13 @@ def _nice_file_sorting(files):
   return sorted(files, key=lambda x: (os.path.dirname(x), os.path.basename(x)))
 
 class FileProcessor(object):
-  def __init__(self, filename, project=None):
+  def __init__(self, filename, parent=None):
     self.filename = filename
     self.directory = os.path.abspath(os.path.dirname(filename))
-    self.output = sys.stdout #StringIO()
-    self.project = project
+    self.output = StringIO()
     self.macros = {
       "library": "add_dials_python_library ( {name}\n  {sources} )"}
+    self.project = parent.project if parent else None
 
   def _find_project_headers(self, data):
     """Accumulate all header files in this tree, excluding:
@@ -92,7 +92,16 @@ class FileProcessor(object):
 
     # Emit subdirectory traversal
     for dir in data["subdirectories"]:
-      print("add_subdirectory({})".format(dir))
+      print("add_subdirectory({})".format(dir), file=self.output)
+
+    # Write the target CMakeLists
+    if data["generate"]:
+      open(os.path.join(self.directory, "CMakeLists.txt"), 'w').write(self.output.getvalue())
+
+    # Now descend into each of the child processes
+    for dir in data["subdirectories"]:
+      FileProcessor(os.path.join(self.directory, dir, "BuildDeps.yaml"), parent=self).process()
+
 
 if __name__ == "__main__":
   options = docopt(__doc__)
