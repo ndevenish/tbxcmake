@@ -8,4 +8,4 @@ shared_libraries:
       - boost_python/mask_overlapping.cc
       - boost_python/mask_builder.cc
       - boost_python/shoebox_ext.cc
-    dependencies: [ann, ann_adaptbx]
+    dependencies: [annlib, annlib_adaptbx]
