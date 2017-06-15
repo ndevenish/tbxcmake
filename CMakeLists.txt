@@ -53,7 +53,7 @@ target_sources( dials
 add_subdirectory(algorithms)
 add_subdirectory(array_family)
 add_subdirectory(model)
-add_subdirectory(nexus)
+#add_subdirectory(nexus)
 add_subdirectory(test)
 add_subdirectory(util)
 add_subdirectory(viewer)
