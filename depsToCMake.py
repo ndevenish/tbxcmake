@@ -20,6 +20,8 @@ def _normalise_yaml_target(data):
   data["location"] = data.get("location", None)
   data["todo"] = data.get("todo", None)
   data["dependencies"] = data.get("dependencies", [])
+  if isinstance(data["dependencies"], str):
+    data["dependencies"] = data["dependencies"].split()
   return data
   
 def _normalise_yaml(data):
@@ -28,6 +30,7 @@ def _normalise_yaml(data):
   data["subdirectories"] = data.get("subdirectories", [])
   data["tests"] = data.get("tests", [])
   data["shared_libraries"] = [_normalise_yaml_target(x) for x in data.get("shared_libraries", [])]
+  data["todo"] = data.get("todo", None)
   return data
 
 def find_headers(path, exclusions=[]):
@@ -83,11 +86,21 @@ class FileProcessor(object):
         project=self.project, headers="\n".join("    ${{CMAKE_CURRENT_SOURCE_DIR}}/{}".format(x) for x in _nice_file_sorting(headers))),
         file=self.output)
 
+    # Add any todo warning
+    if data["todo"]:
+        print("message(WARNING \"{}\")\n".format(data["todo"]), file=self.output)
+
     # Emit library targets if we have any
     for library in data["shared_libraries"]:
       sources = " ".join(library["sources"])
       print(self.macros["library"].format(name=library["name"], sources=sources),
         file=self.output)
+      if library["dependencies"]:
+        print("target_link_libraries({name} {deps})".format(
+          name=library["name"], deps=" ".join(library["dependencies"])),
+        file=self.output)
+      if library["todo"]:
+        print("message(WARNING \"{}\")".format(library["todo"]), file=self.output)
       print(file=self.output)
 
     # Emit subdirectory traversal
