@@ -1,21 +1,27 @@
-cmake_minimum_required (VERSION 3.5)
-project (Dials)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-find_package(Boost REQUIRED COMPONENTS python)
-find_package(PythonLibs REQUIRED)
+project(dials)
 
-include_directories(${PROJECT_SOURCE_DIR}/..)
-include_directories(${PROJECT_SOURCE_DIR}/../cctbx_project/)
-include_directories(${PROJECT_SOURCE_DIR}/../../build/include)
-include_directories(${PYTHON_INCLUDE_DIRS})
+option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 
+if (${BUILD_PYTHON_LIBS})
+  find_package(PythonInterp REQUIRED)
+  find_package(PythonLibs REQUIRED)
+  find_package(Boost REQUIRED COMPONENTS python)
+  include_directories(${PYTHON_INCLUDE_DIRS})
+else()
+  find_package(Boost REQUIRED)
+endif()
 
+# Link to cctbx
+include_directories(
+  "/dls/science/users/mep23677/dials-dist/modules/cctbx_project"
+  "/dls/science/users/mep23677/dials-dist/build/include"
+)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
+add_library(dials INTERFACE)
+target_include_directories( dials INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/.." )
 
 add_subdirectory(algorithms)
-add_subdirectory(model)
-
-
-option(BUILD_SHARED_LIBS "Build all libraries as a shared library" ON)
-
-# to run with existing paths e.g.
-# cmake -D BOOST_LIBRARYDIR=/dls/science/users/mep23677/dials-dist/build/lib -D BOOST_INCLUDEDIR=/dls/science/users/mep23677/dials-dist/modules/boost -D PYTHON_LIBRARY=/dls/science/users/mep23677/dials-dist/base/lib/ -D PYTHON_INCLUDE_DIR=/dls/science/users/mep23677/dials-dist/base/include ..
