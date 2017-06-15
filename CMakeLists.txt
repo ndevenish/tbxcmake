@@ -19,6 +19,17 @@ include_directories(
   "/dls/science/users/mep23677/dials-dist/build/include"
 )
 
+# Hardcode link to annlib
+add_library(annlib SHARED IMPORTED)
+set_target_properties(annlib PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "/dls/science/users/mep23677/dials-dist/modules/annlib/include"
+  )# IMPORTED_LOCATION )
+
+# Hardcode link to annlib_adaptbx
+add_library(annlib_adaptbx SHARED IMPORTED)
+set_target_properties(annlib_adaptbx PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "/dls/science/users/mep23677/dials-dist/modules/annlib_adaptbx/include")
+
 # Convenience macro for setting up python shared libraries
 macro(add_dials_python_library name)
   if (BUILD_PYTHON_LIBS)
