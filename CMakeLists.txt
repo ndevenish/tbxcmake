@@ -13,12 +13,22 @@ else()
   find_package(Boost REQUIRED)
 endif()
 
-# Link to cctbx
+# For now, hardcode links to cctbx
 include_directories(
   "/dls/science/users/mep23677/dials-dist/modules/cctbx_project"
   "/dls/science/users/mep23677/dials-dist/build/include"
 )
 
+# Convenience macro for setting up python shared libraries
+macro(add_dials_python_library name)
+  if (BUILD_PYTHON_LIBS)
+    add_library(${name} SHARED ${ARGN})
+    target_link_libraries(${name} dials Boost::python)
+    set_target_properties(${name} PROPERTIES PREFIX "")
+  endif()
+endmacro()
+
+# Install shared libraries to lib/
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 add_library(dials INTERFACE)

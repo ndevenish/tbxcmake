@@ -22,14 +22,6 @@ target_sources( dials
         "${CMAKE_CURRENT_SOURCE_DIR}/simple/tukey_outlier_rejector.h"
 )
 
-macro(add_dials_python_library name)
-  if (BUILD_PYTHON_LIBS)
-    add_library(${name} SHARED ${ARGN})
-    target_link_libraries(${name} dials Boost::python)
-    set_target_properties(${name} PROPERTIES PREFIX "")
-  endif()
-endmacro()
-
 add_dials_python_library(dials_algorithms_background_ext 
   boost_python/helpers.cc boost_python/background_ext.cc )
 
