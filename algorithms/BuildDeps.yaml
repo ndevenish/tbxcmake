@@ -1,0 +1,18 @@
+subdirectories:
+  - background
+  - centroid
+  - filtering
+  - image
+  - indexing
+  - integration
+  - polygon
+  - profile_model
+  - refinement
+  - rs_mapper
+  - scaling
+  - shoebox
+  - simulation
+  - spatial_indexing
+  - spot_finding
+  - spot_prediction
+  - statistics

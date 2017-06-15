@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: recviewer_ext
+    sources:
+      - ext.cpp

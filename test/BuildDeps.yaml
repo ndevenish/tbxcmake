@@ -1,0 +1,13 @@
+tests:
+  - name: tst_reeke_model
+    location: algorithms/spot_prediction
+    sources: [algorithms/spot_prediction/tst_reeke_model.cc]
+  - name: tst_quadtree
+    location: algorithms/spatial_indexing/
+    sources: [algorithms/spatial_indexing/tst_quadtree.cc]
+  - name: tst_octree
+    location: algorithms/spatial_indexing/
+    sources: [algorithms/spatial_indexing/tst_octree.cc]
+  - name: tst_collision_detection
+    location: algorithms/spatial_indexing/
+    sources: [algorithms/spatial_indexing/tst_collision_detection.cc]

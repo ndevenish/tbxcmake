@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_model_serialize_ext
+    sources:
+      - 'boost_python/serialize_ext.cc'

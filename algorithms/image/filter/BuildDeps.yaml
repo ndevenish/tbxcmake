@@ -1,0 +1,11 @@
+shared_libraries:
+  - name: dials_algorithms_image_filter_ext
+    sources:
+      - boost_python/summed_area.cc
+      - boost_python/mean_and_variance.cc
+      - boost_python/fano_filter.cc
+      - boost_python/convolve.cc
+      - boost_python/median.cc
+      - boost_python/distance.cc
+      - boost_python/anisotropic_diffusion.cc
+      - boost_python/filter_ext.cc

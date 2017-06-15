@@ -1,0 +1,7 @@
+shared_libraries:
+  - name: dials_algorithms_polygon_ext
+    sources:
+      - boost_python/polygon_ext.cc
+  - name: dials_algorithms_polygon_spatial_interpolation_ext
+    sources:
+      - boost_python/spatial_interpolation_ext.cc

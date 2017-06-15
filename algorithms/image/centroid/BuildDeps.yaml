@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_algorithms_image_centroid_ext
+    sources:
+      - boost_python/centroid_ext.cc

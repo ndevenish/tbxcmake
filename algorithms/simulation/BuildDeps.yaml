@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_algorithms_simulation_ext
+    sources:
+      - boost_python/simulation_ext.cc

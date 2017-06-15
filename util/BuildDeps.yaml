@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_util_ext
+    sources:
+      - boost_python/ext.cc

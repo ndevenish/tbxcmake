@@ -1,0 +1,6 @@
+subdirectories:
+  - centroid
+  - connected_components
+  - fill_holes
+  - filter
+  - threshold

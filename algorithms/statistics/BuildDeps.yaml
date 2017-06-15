@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_algorithms_statistics_ext
+    sources:
+     - boost_python/statistics_ext.cc

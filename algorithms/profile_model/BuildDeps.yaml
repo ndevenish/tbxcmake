@@ -1,0 +1,12 @@
+shared_libraries:
+  - name: dials_algorithms_profile_model_modeller_ext
+    sources:
+      - modeller/boost_python/sampler.cc
+      - modeller/boost_python/modeller.cc
+      - modeller/boost_python/ext.cc
+  - name: dials_algorithms_profile_model_gaussian_rs_ext
+    sources:
+      - gaussian_rs/boost_python/gaussian_rs_ext.cc
+  - name: dials_algorithms_profile_model_gaussian_rs_transform_ext
+    sources:
+      - gaussian_rs/transform/boost_python/transform_ext.cc

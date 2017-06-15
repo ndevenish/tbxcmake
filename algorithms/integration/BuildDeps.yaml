@@ -1,0 +1,15 @@
+shared_libraries:
+  - name: dials_algorithms_integration_ext
+    sources:
+      - boost_python/corrections.cc
+      - boost_python/integration_ext.cc
+  - name: dials_algorithms_integration_integrator_ext
+    sources:
+      - boost_python/integration_integrator_ext.cc
+  - name: dials_algorithms_integration_sum_ext
+    sources:
+      - sum/boost_python/summation.cc
+      - sum/boost_python/integration_sum_ext.cc
+  - name: dials_algorithms_integration_fit_ext
+    sources:
+      - fit/boost_python/ext.cc

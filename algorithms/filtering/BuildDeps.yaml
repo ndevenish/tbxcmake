@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_algorithms_filter_ext
+    sources:
+      - boost_python/filter_ext.cc

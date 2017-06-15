@@ -1,0 +1,7 @@
+shared_libraries:
+  - name: dials_algorithms_spot_finding_ext
+    sources:
+      - 'boost_python/spot_finding_ext.cc'
+  - name: dials_algorithms_spot_finding_helen_ext
+    sources:
+      - helen/boost_python/ext.cc

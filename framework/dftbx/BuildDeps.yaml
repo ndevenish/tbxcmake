@@ -1,0 +1,6 @@
+shared_libraries:
+  - name: dftbx_ext
+    sources:
+      - dftbx.cpp
+      - dftbx.h
+todo: "Might not include this in the build at the moment?"

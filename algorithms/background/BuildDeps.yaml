@@ -1,0 +1,23 @@
+shared_libraries:
+  - name: dials_algorithms_background_ext
+    sources: 
+      - 'boost_python/helpers.cc'
+      - 'boost_python/background_ext.cc'
+  - name: dials_algorithms_background_modeller_ext
+    sources:
+      - 'boost_python/modeller_ext.cc'
+  - name: dials_algorithms_background_simple_ext
+    sources:
+      - 'simple/boost_python/outlier_rejector.cc'
+      - 'simple/boost_python/modeller.cc'
+      - 'simple/boost_python/creator.cc'
+      - 'simple/boost_python/background_simple_ext.cc'
+  - name: dials_algorithms_background_glm_ext
+    sources:
+      - 'glm/boost_python/ext.cc'
+  - name: dials_algorithms_background_median_ext
+    sources:
+      - 'median/boost_python/ext.cc'
+  - name: dials_algorithms_background_gmodel_ext
+    sources:
+      - 'gmodel/boost_python/ext.cc'

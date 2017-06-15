@@ -1,0 +1,4 @@
+shared_libraries:
+  - name: dials_algorithms_image_connected_components_ext
+    sources:
+      - boost_python/connected_components_ext.cc

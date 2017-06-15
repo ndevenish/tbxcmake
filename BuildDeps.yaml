@@ -1,0 +1,10 @@
+generate: false
+subdirectories:
+  - algorithms
+  - array_family
+  - framework/dftbx
+  - model
+  - nexus
+  - test
+  - util
+  - viewer

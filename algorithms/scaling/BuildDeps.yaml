@@ -1,0 +1,6 @@
+shared_libraries:
+  - name: dials_scaling_helpers_ext
+    sources:
+      - boost_python/obs_manager_helpers.cc
+      - boost_python/scale_parameterisation_helpers.cc
+      - boost_python/scaling_ext.cc

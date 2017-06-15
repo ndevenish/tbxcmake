@@ -1,0 +1,6 @@
+shared_libraries:
+  - name: dials_nexus_ext
+    sources:
+      - boost_python/nexus_ext.cc
+    dependencies: [hdf5, hdf5_cpp]
+    todo: "Might need more extravagant library inclusions"
