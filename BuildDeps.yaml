@@ -3,7 +3,6 @@ project: dials
 subdirectories:
   - algorithms
   - array_family
-  - framework/dftbx
   - model
   - nexus
   - test
