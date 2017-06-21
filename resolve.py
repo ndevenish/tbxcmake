@@ -135,7 +135,7 @@ class Target(object):
     # Make relative source paths
     # import pdb
     # pdb.set_trace()
-    # return {"name": self.name, "sources": }
+    return {"name": self.name}
 
 
 def _build_target_list(logdata):
@@ -173,9 +173,10 @@ def _build_target_list(logdata):
   return targets
 
 class BuildInfo(object):
-  def __init__(self, module, path):
+  def __init__(self, module, path, parent=None):
     self.module = module
     self.path = path
+    self.parent = parent
 
     self.subdirectories = {}
     self.targets = []
@@ -194,7 +195,7 @@ class BuildInfo(object):
       module = self.module
       if not self.module and not subdir == "cctbx_project":
         module = subdir
-      self.subdirectories[subdir] = BuildInfo(module, os.path.join(self.path, subdir))
+      self.subdirectories[subdir] = BuildInfo(module, os.path.join(self.path, subdir), self)
     return self.subdirectories[subdir].get_path(path[1:])
 
   def collect(self):
