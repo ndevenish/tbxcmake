@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
-"""resolve.py
-
+"""
 Automatically analyse a build log to determine the input and output targets
 of a build process.
 
 Usage: 
-  resolve.py [<buildlog>] [--root=<rootpath>]"""
+  resolve.py [<buildlog>] [--root=<rootpath>] [--target=<target>] [--name=]
+
+Options:
+  -h --help          Show this screen.
+  --name=<name>      Filename for writing to target [default: AutoBuildDeps.yaml]
+  --target=<target>  Write build dependency files to a target directory
+  --root=<rootpath>  Explicitly constrain the dependency tree to a particular root
+"""
+
 from __future__ import print_function
 import itertools
 from docopt import docopt, DocoptExit
@@ -15,8 +22,13 @@ import os
 import pickle
 from functools import reduce
 import operator
+import yaml
 import logging
 logger = logging.getLogger(__name__)
+
+def makedirs(path):
+  if not os.path.isdir(path):
+    os.makedirs(path)
 
 # all_modules = {
 #   "iota"            : "/home/xgkkp/dials_dist/modules/cctbx_project/iota"
@@ -59,24 +71,24 @@ gcc_usage = """Usage:
 
 Options:
   -I INCLUDEDIR   Add an include search path
-  -o OUT
-  -D DEFINITION
-  -L LIBDIR
-  -l LIB
-  -W WARNING
-  -f OPTION
+  -o OUT          The output file
+  -D DEFINITION   Compile definitions to use for this
+  -L LIBDIR       Paths to search for linked libraries
+  -l LIB          Extra library targets to link
+  -W WARNING      Warning settings
+  -f OPTION       Compiler option switches
   -O OPTIMISE     Choose the optimisation level (0,1,2,3,s)
   -c              Compile and Assemble only, do not link
-  -w 
+  -w              Inhibit all warning messages
   -s              Remove all symbol table and relocation information from the executable
-  --shared
+  --shared        Produce a shared object which can then be linked
 """
 
 class LogParser(object):
   def __init__(self, filename):
     # Read every gcc
     logger.info("Parsing build log...")
-    if os.path.isfile("logparse.pickle"):
+    if os.path.isfile("logparse.pickle") and os.path.getmtime("logparse.pickle") > os.path.getmtime(filename):
       gcc = pickle.load(open("logparse.pickle", "rb"))
     else:
       gcc_lines = [x.strip() for x in open(filename) if x.startswith("g++") or x.startswith("gcc")]
@@ -231,18 +243,16 @@ class BuildInfo(object):
         
       targetlist.append(target.describe())
     return data
-    
-        
-
-def ensure_tree_path(path, tree):
-  if not path[0] in tree.children:
-    tree[path[0]] = TreeNode()
-
 
 if __name__ == "__main__":
   options = docopt(__doc__)
   logging.basicConfig(level=logging.INFO)
   logdata = LogParser(options["<buildlog>"] or "buildbuild.log")
+
+  if options["--target"]:
+    if not os.path.isdir(options["--target"]):
+      logger.error("Error: Target must be a valid directory")
+    options["--target"] = os.path.abspath(options["--target"])
 
   # Extract target metadata
   targets = _build_target_list(logdata)
@@ -256,7 +266,15 @@ if __name__ == "__main__":
     info = root.get_path(target.path)
     info.targets.append(target)
 
-  print (list(root.collect()))
-  import pdb
-  pdb.set_trace()
+  max_len_path = reduce(lambda acc, val: max(acc, len(val.path)), root.collect(), 0)
+  print(options)
 
+  for (path, info) in [(x.path, x) for x in root.collect()]:
+    print(path.ljust(max_len_path), info)
+
+    if options["--target"]:
+      targetPath = os.path.join(options["--target"], path, options["--name"])
+      print("  ->", targetPath)
+      makedirs(os.path.dirname(targetPath))
+      with open(targetPath, 'w') as depfile:
+        depfile.write(yaml.dump(info.generate()))
