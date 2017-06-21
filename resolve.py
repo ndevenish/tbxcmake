@@ -210,6 +210,27 @@ class BuildInfo(object):
 
   def generate(self):
     """Generate the BuildDeps file, as a dictionary to yaml-write"""
+    data = {}
+    if self.parent and self.module != self.parent.module:
+      data["project"] = self.module
+    if self.subdirectories:
+      data["subdirectories"] = self.subdirectories.keys()
+
+    for target in self.targets:
+      if target.is_library:
+        targetlist = data.get("shared_libraries", [])
+        data["shared_libraries"] = targetlist
+      elif target.is_executable and target.is_test:
+        targetlist = data.get("tests", [])
+        data["tests"] = targetlist
+      elif target.is_executable:
+        targetlist = data.get("programs", [])
+        data["programs"] = targetlist
+      else:
+        raise RuntimeError("Cannot classify target")
+        
+      targetlist.append(target.describe())
+    return data
     
         
 
