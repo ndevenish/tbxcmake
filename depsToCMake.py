@@ -56,7 +56,9 @@ class FileProcessor(object):
     self.directory = os.path.abspath(os.path.dirname(filename))
     self.output = StringIO()
     self.macros = {
-      "library": "add_dials_python_library ( {name}\n  {sources} )"}
+      "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
+      "library": "add_library ( {name}\n    SOURCES {sources} )",
+      "source_join": "\n            "}
     self.project = parent.project if parent else None
 
   def _find_project_headers(self, data):
@@ -92,8 +94,14 @@ class FileProcessor(object):
 
     # Emit library targets if we have any
     for library in data["shared_libraries"]:
-      sources = " ".join(library["sources"])
-      print(self.macros["library"].format(name=library["name"], sources=sources),
+      library_type = "python_library" if "boost_python" in library["dependencies"] else "library"
+
+      if library_type == "python_library":
+        library["dependencies"] = list(set(library["dependencies"])-{"boost_python"})
+      else:
+        print(library)
+      sources = self.macros["source_join"].join(library["sources"])
+      print(self.macros[library_type].format(name=library["name"], sources=sources),
         file=self.output)
       if library["dependencies"]:
         print("target_link_libraries({name} {deps})".format(
@@ -104,7 +112,7 @@ class FileProcessor(object):
       print(file=self.output)
 
     # Emit subdirectory traversal
-    for dir in data["subdirectories"]:
+    for dir in sorted(data["subdirectories"]):
       print("add_subdirectory({})".format(dir), file=self.output)
 
     # Write the target CMakeLists
@@ -113,7 +121,7 @@ class FileProcessor(object):
 
     # Now descend into each of the child processes
     for dir in data["subdirectories"]:
-      FileProcessor(os.path.join(self.directory, dir, "BuildDeps.yaml"), parent=self).process()
+      FileProcessor(os.path.join(self.directory, dir, "AutoBuildDeps.yaml"), parent=self).process()
 
 
 if __name__ == "__main__":
