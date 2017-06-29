@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """
 Automatically analyse a build log to determine the input and output targets
@@ -127,12 +128,13 @@ class LogParser(object):
         assert any(x["-o"] == tsource for x in self.objects), "No source for target"
 
 class Target(object):
-  def __init__(self, name, module, relative_path, module_root, sources):
+  def __init__(self, name, module, relative_path, module_root, sources, libraries):
     self.name = name
     self.module = module
     self.path = relative_path
     self.module_root = module_root
     self.sources = sources
+    self.libraries = libraries
   @property
   def is_executable(self):
     return not self.name.endswith(".so")
@@ -144,10 +146,27 @@ class Target(object):
     return self.name.endswith(".so")
   def describe(self):
     """Return a BuildDeps description dictionary"""
-    # Make relative source paths
-    # import pdb
-    # pdb.set_trace()
-    return {"name": self.name}
+    name = os.path.splitext(os.path.basename(self.name))[0]
+    destination_path = os.path.dirname(self.name)
+    # Work out our full path
+    fullPath = os.path.join(self.module_root, self.path)
+    # Find hard-coded sources
+    localSources = [x[len(fullPath)+1:] for x in self.sources if x.startswith(fullPath)]
+    # Basic, common info
+    info = {"name": name, "sources": localSources, "location": destination_path}
+    # Generated sources are in the build directory
+    specialSources = [x for x in self.sources if not x.startswith(fullPath)]
+    if specialSources:
+      warning = "Module {} has special sources: {}".format(self.name, specialSources)
+      print(warning)
+      info["todo"] = warning
+    # Handle what's linked to
+    # print(self.name, ", ".join(self.libraries))
+    if self.libraries:
+      info["dependencies"] = list(self.libraries)
+    return info
+
+
 
 
 def _build_target_list(logdata):
@@ -160,9 +179,12 @@ def _build_target_list(logdata):
     source_dirs = set(os.path.dirname(x) for x in sources)
     abs_source_dirs = [x for x in source_dirs if os.path.isabs(x)]
     if len(abs_source_dirs) > 1:
-      logger.info("Multiple source dirs for {}: {}".format(target_name, abs_source_dirs))
+      # In this case, there is sources from more than one directory contributing. This
+      # is okay unless the common path is at the module level
       common = os.path.dirname(os.path.commonprefix(abs_source_dirs))
-      logger.info("  Found common path: {}".format(common))
+      logger.info("Multiple source dirs for {}:\n{}".format(target_name, "\n".join("  - " + x for x in abs_source_dirs)))
+      logger.info(" Found common path => {}".format(common))
+      abs_source_dirs = [common]
 
       if os.path.normpath(common) == os.path.normpath(logdata.module_root):
         logger.warning("Target {} has no common source path except ROOT, skipping".format(target_name))
@@ -173,6 +195,7 @@ def _build_target_list(logdata):
       # for a matching module, but only a single example exists
       logger.warning("Target {} has only generated sources and needs to be included manually. Skipping.".format(target_name))
       continue
+
     # Work out the base-relative path and thus modulename
     relative_path = abs_source_dirs[0][len(logdata.module_root):]
     if relative_path.startswith("cctbx_project/"):
@@ -181,17 +204,19 @@ def _build_target_list(logdata):
       module = relative_path.split("/")[0]
     print(module.ljust(20), relative_path)
 
-    targets.append(Target(target_name, module, relative_path, logdata.module_root, sources))
+    libs = set(target["-l"]) - {"m"}
+    targets.append(Target(target_name, module, relative_path, logdata.module_root, sources, libraries=libs))
   return targets
 
 class BuildInfo(object):
-  def __init__(self, module, path, parent=None):
+  def __init__(self, module, path, parent=None, generate=True):
     self.module = module
     self.path = path
     self.parent = parent
 
     self.subdirectories = {}
     self.targets = []
+    self._generate = generate
 
   def get_path(self, path):
     """Get, or create, a build object for the requested path"""
@@ -223,6 +248,9 @@ class BuildInfo(object):
   def generate(self):
     """Generate the BuildDeps file, as a dictionary to yaml-write"""
     data = {}
+    if not self._generate:
+      data["generate"] = self._generate
+
     if self.parent and self.module != self.parent.module:
       data["project"] = self.module
     if self.subdirectories:
@@ -259,7 +287,7 @@ if __name__ == "__main__":
   
   # Now we have a list of targets, along with their basic directory
   # Make a directory tree for every target
-  root = BuildInfo(None, "")
+  root = BuildInfo(None, "", generate=False)
 
   for target in targets:
     # Get hold of the dependency information object to build
