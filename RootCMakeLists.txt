@@ -5,6 +5,7 @@ option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
+
 # Convenience macro for setting up python shared libraries
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
 macro(add_python_library name)
@@ -18,9 +19,9 @@ macro(add_python_library name)
 endmacro()
 
 
-# add_subdirectory(annlib_adaptbx)
-# add_subdirectory(cbflib)
-# add_subdirectory(ccp4io_adaptbx)
-# add_subdirectory(cctbx_project)
-# add_subdirectory(dials)
-# add_subdirectory(xia2)
+add_subdirectory(annlib_adaptbx)
+add_subdirectory(cbflib)
+add_subdirectory(ccp4io_adaptbx)
+add_subdirectory(cctbx_project)
+add_subdirectory(dials)
+add_subdirectory(xia2)
