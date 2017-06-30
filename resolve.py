@@ -129,7 +129,13 @@ class LogParser(object):
 
 class Target(object):
   def __init__(self, name, module, relative_path, module_root, sources, libraries):
+
+    self.output_path = os.path.dirname(name)
+    name, extension = os.path.splitext(os.path.basename(name))
+    if name.startswith("lib"):
+      name = name[3:]
     self.name = name
+    self.extension = extension
     self.module = module
     self.path = relative_path
     self.module_root = module_root
@@ -137,35 +143,40 @@ class Target(object):
     self.libraries = libraries
   @property
   def is_executable(self):
-    return not self.name.endswith(".so")
+    return not self.extension.endswith(".so")
   @property
   def is_test(self):
     return self.is_executable and ("tst" in self.name or "test" in self.name)
   @property
   def is_library(self):
-    return self.name.endswith(".so")
+    return self.extension.endswith(".so")
   def describe(self):
     """Return a BuildDeps description dictionary"""
-    name = os.path.splitext(os.path.basename(self.name))[0]
-    # Remove 'lib' prefix
-    if name.startswith("lib"):
-      name = name[3:]
-    
-    destination_path = os.path.dirname(self.name)
+    # name = os.path.splitext(os.path.basename(self.name))[0]
+    # # Remove 'lib' prefix
+    # if name.startswith("lib"):
+    #   name = name[3:]
+
     # Work out our full path
     fullPath = os.path.join(self.module_root, self.path)
     # Find hard-coded sources
     localSources = [x[len(fullPath)+1:] for x in self.sources if x.startswith(fullPath)]
+    
     # Basic, common info
-    info = {"name": name, "sources": localSources, "location": destination_path}
+    info = {"name": self.name}
+    if localSources:
+      info["sources"] = localSources
+    if self.output_path:
+      info["location"] = self.output_path
+    
     # Generated sources are in the build directory
     specialSources = [x for x in self.sources if not x.startswith(fullPath)]
     if specialSources:
       warning = "Module {} has special sources: {}".format(self.name, specialSources)
       print(warning)
       info["todo"] = warning
+    
     # Handle what's linked to
-    # print(self.name, ", ".join(self.libraries))
     if self.libraries:
       info["dependencies"] = list(self.libraries)
     return info
@@ -289,6 +300,11 @@ if __name__ == "__main__":
   # Extract target metadata
   targets = _build_target_list(logdata)
   
+  # Make a list of all dependencies that AREN'T targets
+  all_dependencies = set(itertools.chain(*[x.libraries for x in targets]))
+  external_dependencies = all_dependencies - {x.name for x in targets}
+  print("External dependencies: ", external_dependencies)
+
   # Now we have a list of targets, along with their basic directory
   # Make a directory tree for every target
   root = BuildInfo(None, "", generate=False)
@@ -310,3 +326,4 @@ if __name__ == "__main__":
       makedirs(os.path.dirname(targetPath))
       with open(targetPath, 'w') as depfile:
         depfile.write(yaml.dump(info.generate()))
+
