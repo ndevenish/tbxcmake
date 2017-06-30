@@ -123,7 +123,7 @@ class FileProcessor(object):
       # Emit an interface library IFF we don't have a library named the same thing
       if not any(x for x in data["shared_libraries"] if x["name"] == self.project):
         print("add_library( {name} INTERFACE )".format(name=data_project), file=self.output)
-        print("target_include_directories({name} ..)\n".format(name=data_project), file=self.output)
+        print("target_include_directories({name} INTERFACE ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=data_project), file=self.output)
 
     # Add to project, header files that aren't owned by targets or children
     # BUT don't bother searching if we haven't got a project
@@ -171,7 +171,7 @@ class FileProcessor(object):
 
       # If this is our project library, set the include folder
       if library["name"] == self.project:
-        print("target_include_directories({name} ..)\n".format(name=data_project), file=libtext)
+        print("target_include_directories({name} INTERFACE ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=data_project), file=libtext)
 
       # IF we have optional dependencies, add the if() wrappers
       if library["dependencies"] and optional_deps:
