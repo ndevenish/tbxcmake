@@ -184,6 +184,9 @@ class Target(object):
 
 
 def _build_target_list(logdata):
+  # List of all modules and their path
+  modules = {}
+  # List of targets
   targets = []
   for target in logdata.link_targets:
     target_name = target["-o"]
@@ -214,13 +217,15 @@ def _build_target_list(logdata):
     relative_path = abs_source_dirs[0][len(logdata.module_root):]
     if relative_path.startswith("cctbx_project/"):
       module = relative_path[len("cctbx_project/"):].split("/")[0]
+      modules[module] = os.path.join("cctbx_project", module)
     else:
       module = relative_path.split("/")[0]
+      modules[module] = module
     print(module.ljust(20), relative_path)
 
     libs = set(target["-l"]) - {"m"}
     targets.append(Target(target_name, module, relative_path, logdata.module_root, sources, libraries=libs))
-  return targets
+  return targets, modules
 
 class BuildInfo(object):
   def __init__(self, module, path, parent=None, generate=True):
@@ -297,12 +302,23 @@ if __name__ == "__main__":
     options["--target"] = os.path.abspath(options["--target"])
 
   # Extract target metadata
-  targets = _build_target_list(logdata)
+  targets, module_paths = _build_target_list(logdata)
   
   # Make a list of all dependencies that AREN'T targets
   all_dependencies = set(itertools.chain(*[x.libraries for x in targets]))
   external_dependencies = all_dependencies - {x.name for x in targets}
   print("External dependencies: ", external_dependencies)
+
+  # Find any targets that match the name of a module
+  misdir_modlibs = [x for x in targets if x.name == x.module and not x.path == module_paths[x.module]]
+  # If any of these don't match their directory name, then promote them up until they do
+  if misdir_modlibs:
+    print("Found module-named libraries outside of expected path:", ", ".join(x.name for x in misdir_modlibs))
+    for target in misdir_modlibs:
+      target.path = module_paths[target.module]
+
+  # import pdb
+  # pdb.set_trace()
 
   # Now we have a list of targets, along with their basic directory
   # Make a directory tree for every target
