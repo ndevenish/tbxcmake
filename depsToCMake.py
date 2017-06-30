@@ -78,8 +78,11 @@ class FileProcessor(object):
     # Update the project name and emit a change if we need to
     data_project = data.get("project", self.project)
     if not data_project == self.project:
-      print("add_library( {name} INTERFACE )\n".format(name=data_project), file=self.output)
       self.project = data_project
+      print("project({})\n".format(self.project), file=self.output)
+      # Emit an interface library IFF we don't have a library named the same thing
+      if not any(x for x in data["shared_libraries"] if x["name"] == self.project):
+        print("add_library( {name} INTERFACE )\n".format(name=data_project), file=self.output)
 
     # Add to project, header files that aren't owned by targets or children
     headers = self._find_project_headers(data)

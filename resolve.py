@@ -147,6 +147,10 @@ class Target(object):
   def describe(self):
     """Return a BuildDeps description dictionary"""
     name = os.path.splitext(os.path.basename(self.name))[0]
+    # Remove 'lib' prefix
+    if name.startswith("lib"):
+      name = name[3:]
+    
     destination_path = os.path.dirname(self.name)
     # Work out our full path
     fullPath = os.path.join(self.module_root, self.path)
