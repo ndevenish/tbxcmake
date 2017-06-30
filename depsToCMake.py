@@ -4,10 +4,12 @@
 """Processes a dependency yaml tree into CMakeLists files.
 
 Usage:
-  depsToCMake.py <depfile> [--target=<target>]
+  depsToCMake.py <depfile> [--target=<target>] [--headers=<root>] [--scan]
 
 Options:
-  --target=<target>     Set a root folder for writing CMakeLists
+  --target=<target>     Set a root folder for writing CMakeLists (else: source)
+  --headers=<root>      Set a search folder for headers (else: target)
+  --scan                Scan for headers and add to project library
 """
 from __future__ import print_function
 from docopt import docopt
@@ -61,6 +63,7 @@ def _normalise_yaml(data):
   return data
 
 def find_headers(path, exclusions=[]):
+  print("Looking in {} for headers".format(path))
   matches = []
   for root, dirnames, filenames in os.walk(path):
     # Filter this so we don't go into exclusions
@@ -78,9 +81,19 @@ def _nice_file_sorting(files):
   return sorted(files, key=lambda x: (os.path.dirname(x), os.path.basename(x)))
 
 class FileProcessor(object):
-  def __init__(self, filename, parent=None):
+  def __init__(self, filename, target_dir=None, headers_dir=None, parent=None, scan=True):
+    self.scan = scan
     self.filename = filename
-    self.directory = os.path.abspath(os.path.dirname(filename))
+    self.source_directory = os.path.abspath(os.path.dirname(filename))
+    if target_dir is None:
+      self.target_directory = self.source_directory
+    else:
+      self.target_directory = os.path.abspath(target_dir)
+    if headers_dir is None:
+      self.headers_directory = self.target_directory
+    else:
+      self.headers_directory = os.path.abspath(headers_dir)
+
     self.output = StringIO()
     self.macros = {
       "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
@@ -92,10 +105,10 @@ class FileProcessor(object):
     """Accumulate all header files in this tree, excluding:
       - specified subdirectories
       - sources specified by shared libraries or tests"""
-    exclusions = {os.path.normpath(os.path.join(self.directory, dir)) for dir in data["subdirectories"]} \
+    exclusions = {os.path.normpath(os.path.join(self.headers_directory, dir)) for dir in data["subdirectories"]} \
                | set(itertools.chain(*[target["sources"] for target in itertools.chain(data["shared_libraries"], data["tests"]) ]))
-    all_headers = find_headers(self.directory, exclusions)
-    return {x[len(self.directory)+1:] for x in all_headers}
+    all_headers = find_headers(self.headers_directory, exclusions)
+    return {x[len(self.headers_directory)+1:] for x in all_headers}
 
   def process(self):
     """Read and process the dependency file"""
@@ -109,14 +122,17 @@ class FileProcessor(object):
       print("project({})\n".format(self.project), file=self.output)
       # Emit an interface library IFF we don't have a library named the same thing
       if not any(x for x in data["shared_libraries"] if x["name"] == self.project):
-        print("add_library( {name} INTERFACE )\n".format(name=data_project), file=self.output)
+        print("add_library( {name} INTERFACE )".format(name=data_project), file=self.output)
+        print("target_include_directories({name} ..)\n".format(name=data_project), file=self.output)
 
     # Add to project, header files that aren't owned by targets or children
-    headers = self._find_project_headers(data)
-    if headers:
-      print("target_sources( {project}\n  INTERFACE\n{headers}\n)\n".format(
-        project=self.project, headers="\n".join("    ${{CMAKE_CURRENT_SOURCE_DIR}}/{}".format(x) for x in _nice_file_sorting(headers))),
-        file=self.output)
+    # BUT don't bother searching if we haven't got a project
+    if data["generate"] and self.project and self.scan:
+      headers = self._find_project_headers(data)
+      if headers:
+        print("target_sources( {project}\n  INTERFACE\n{headers}\n)\n".format(
+          project=self.project, headers="\n".join("    ${{CMAKE_CURRENT_SOURCE_DIR}}/{}".format(x) for x in _nice_file_sorting(headers))),
+          file=self.output)
 
     # Add any todo warning
     if data["todo"]:
@@ -153,6 +169,10 @@ class FileProcessor(object):
           name=library["name"], deps=" ".join(deps)),
         file=libtext)
 
+      # If this is our project library, set the include folder
+      if library["name"] == self.project:
+        print("target_include_directories({name} ..)\n".format(name=data_project), file=libtext)
+
       # IF we have optional dependencies, add the if() wrappers
       if library["dependencies"] and optional_deps:
         for index, dep in enumerate(optional_deps):
@@ -177,15 +197,28 @@ class FileProcessor(object):
 
     # Write the target CMakeLists
     if data["generate"]:
-      
-      open(os.path.join(self.directory, "CMakeLists.txt"), 'w').write(self.output.getvalue())
+      # If the folder doesn't exist, make it
+      if not os.path.isdir(self.target_directory):
+        os.makedirs(self.target_directory)
+      open(os.path.join(self.target_directory, "CMakeLists.txt"), 'w').write(self.output.getvalue())
 
     # Now descend into each of the child processes
     for dir in data["subdirectories"]:
-      FileProcessor(os.path.join(self.directory, dir, "AutoBuildDeps.yaml"), parent=self).process()
+      FileProcessor(
+        filename=os.path.join(self.source_directory, dir, "AutoBuildDeps.yaml"), 
+        target_dir=os.path.join(self.target_directory, dir),
+        headers_dir=os.path.join(self.headers_directory, dir),
+        parent=self,
+        scan=self.scan).process()
 
 
 if __name__ == "__main__":
   options = docopt(__doc__)
   rootFile = options["<depfile>"]
-  FileProcessor(rootFile).process()
+  if options["--target"]:
+    # If it exists, it must be a directory
+    assert os.path.isdir(options["--target"]) or not os.path.exists(options["--target"]), "Target exists but is not a directory"
+  if options["--headers"]:
+    assert os.path.isdir(options["--headers"]), "Headers path must exist"
+  FileProcessor(rootFile, target_dir=options["--target"], headers_dir=options["--headers"], scan=options["--scan"]).process()
+
