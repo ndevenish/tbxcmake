@@ -152,10 +152,6 @@ class Target(object):
     return self.extension.endswith(".so")
   def describe(self):
     """Return a BuildDeps description dictionary"""
-    # name = os.path.splitext(os.path.basename(self.name))[0]
-    # # Remove 'lib' prefix
-    # if name.startswith("lib"):
-    #   name = name[3:]
 
     # Work out our full path
     fullPath = os.path.join(self.module_root, self.path)
@@ -315,7 +311,6 @@ if __name__ == "__main__":
     info.targets.append(target)
 
   max_len_path = reduce(lambda acc, val: max(acc, len(val.path)), root.collect(), 0)
-  print(options)
 
   for (path, info) in [(x.path, x) for x in root.collect()]:
     print(path.ljust(max_len_path), info)

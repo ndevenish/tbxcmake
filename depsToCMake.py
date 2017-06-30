@@ -1,9 +1,13 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 """Processes a dependency yaml tree into CMakeLists files.
 
 Usage:
-  deptsToCMake.py <depfile>
+  depsToCMake.py <depfile> [--target=<target>]
+
+Options:
+  --target=<target>     Set a root folder for writing CMakeLists
 """
 from __future__ import print_function
 from docopt import docopt
@@ -18,8 +22,24 @@ EXTERNAL_DEPENDENCY_MAP = {
   # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
   "boost_python": "Boost::python",
   "hdf5": "HDF5::HDF5",
-  "tiff": "TIFF::TIFF"
+  "tiff": "TIFF::TIFF",
+  "GL": "OpenGL::GL",
+  "GLU": "OpenGL::GLU"
 }
+
+# Dependencies that are optional
+OPTIONAL_DEPENDENCIES = {"OpenGL::GLU"}
+
+# Having one of these means the others are not necessary
+IMPLICIT_DEPENDENCIES = {
+  "GLU": {"GL"},
+}
+
+def target_name(name):
+  """Given a dependency name, gets the 'real' target name"""
+  if name in EXTERNAL_DEPENDENCY_MAP:
+    return EXTERNAL_DEPENDENCY_MAP[name]
+  return name
 
 def _normalise_yaml_target(data):
   data["sources"] = data.get("sources", [])
@@ -108,17 +128,45 @@ class FileProcessor(object):
 
       if library_type == "python_library":
         library["dependencies"] = list(set(library["dependencies"])-{"boost_python"})
-      else:
-        print(library)
+      
       sources = self.macros["source_join"].join(library["sources"])
+
+
+      indent = ""
+      libtext = StringIO()
+
       print(self.macros[library_type].format(name=library["name"], sources=sources),
-        file=self.output)
+        file=libtext)
+      
+      # Calculate any dependencies
       if library["dependencies"]:
-        # If we have an alternate name for this dependency, use that
-        deps = [EXTERNAL_DEPENDENCY_MAP[x] if x in EXTERNAL_DEPENDENCY_MAP else x for x in library["dependencies"]]
+        indent = ""
+        deps = set(library["dependencies"])
+        # Remove any implicit dependencies
+        deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in library["dependencies"] if x in IMPLICIT_DEPENDENCIES]))
+        # If we have an alternate name for any dependencies, use that
+        deps = [target_name(x) for x in library["dependencies"]]
+        # Work out any optional dependencies so we can test them
+        optional_deps = [target_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
+
         print("target_link_libraries({name} {deps})".format(
           name=library["name"], deps=" ".join(deps)),
-        file=self.output)
+        file=libtext)
+
+      # IF we have optional dependencies, add the if() wrappers
+      if library["dependencies"] and optional_deps:
+        for index, dep in enumerate(optional_deps):
+          print("{}if(TARGET {})".format("  "*index, dep), file=self.output)
+        indent = "  "*len(optional_deps)
+      
+      # Reformat the main library adding with an indent for the option depth
+      print("\n".join([indent + x for x in libtext.getvalue().splitlines()]), file=self.output)
+
+      # Unwrap the optional dependencies with endif()
+      if library["dependencies"] and optional_deps:
+        for index, dep in reversed(list(enumerate(optional_deps))):
+          print("{}endif()".format("  "*index, dep), file=self.output)
+
       if library["todo"]:
         print("message(WARNING \"{}\")".format(library["todo"]), file=self.output)
       print(file=self.output)
@@ -129,6 +177,7 @@ class FileProcessor(object):
 
     # Write the target CMakeLists
     if data["generate"]:
+      
       open(os.path.join(self.directory, "CMakeLists.txt"), 'w').write(self.output.getvalue())
 
     # Now descend into each of the child processes

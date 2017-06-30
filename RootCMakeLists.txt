@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 
+find_package(TIFF REQUIRED)
+find_package(OpenGL)
 # Convenience macro for setting up python shared libraries
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
 macro(add_python_library name)
