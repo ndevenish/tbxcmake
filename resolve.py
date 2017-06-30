@@ -131,7 +131,10 @@ class Target(object):
   def __init__(self, name, module, relative_path, module_root, sources, libraries):
 
     self.output_path = os.path.dirname(name)
-    name, extension = os.path.splitext(os.path.basename(name))
+    if name.endswith(".so"):
+      name, extension = os.path.splitext(os.path.basename(name))
+    else:
+      extension = ""
     if name.startswith("lib"):
       name = name[3:]
     self.name = name
