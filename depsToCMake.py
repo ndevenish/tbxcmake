@@ -14,6 +14,13 @@ from StringIO import StringIO
 import fnmatch
 import itertools
 
+EXTERNAL_DEPENDENCY_MAP = {
+  # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
+  "boost_python": "Boost::python",
+  "hdf5": "HDF5::HDF5",
+  "tiff": "TIFF::TIFF"
+}
+
 def _normalise_yaml_target(data):
   data["sources"] = data.get("sources", [])
   assert "name" in data
@@ -107,8 +114,10 @@ class FileProcessor(object):
       print(self.macros[library_type].format(name=library["name"], sources=sources),
         file=self.output)
       if library["dependencies"]:
+        # If we have an alternate name for this dependency, use that
+        deps = [EXTERNAL_DEPENDENCY_MAP[x] if x in EXTERNAL_DEPENDENCY_MAP else x for x in library["dependencies"]]
         print("target_link_libraries({name} {deps})".format(
-          name=library["name"], deps=" ".join(library["dependencies"])),
+          name=library["name"], deps=" ".join(deps)),
         file=self.output)
       if library["todo"]:
         print("message(WARNING \"{}\")".format(library["todo"]), file=self.output)
