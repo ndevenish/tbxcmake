@@ -23,7 +23,7 @@ import itertools
 EXTERNAL_DEPENDENCY_MAP = {
   # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
   "boost_python": "Boost::python",
-  "hdf5": "HDF5::HDF5",
+  "hdf5": "HDF5::CXX",
   "tiff": "TIFF::TIFF",
   "GL": "OpenGL::GL",
   "GLU": "OpenGL::GLU"

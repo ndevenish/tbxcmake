@@ -3,8 +3,27 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 
+if (${BUILD_PYTHON_LIBS})
+  find_package(PythonInterp REQUIRED)
+  find_package(PythonLibs REQUIRED)
+  find_package(Boost REQUIRED COMPONENTS python)
+  include_directories(${PYTHON_INCLUDE_DIRS})
+else()
+  find_package(Boost REQUIRED)
+endif()
+
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
+
+# Add HDF5
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+# Hardcode link to annlib
+add_library(HDF5::CXX SHARED IMPORTED)
+set_target_properties(HDF5::CXX PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES ${HDF5_CXX_INCLUDE_DIRS}
+  INTERFACE_COMPILE_DEFINITIONS ${HDF5_CXX_DEFINITIONS}
+  IMPORTED_LOCATION             ${HDF5_CXX_LIBRARIES} )
+
 
 # Convenience macro for setting up python shared libraries
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
