@@ -97,7 +97,7 @@ class FileProcessor(object):
     self.output = StringIO()
     self.macros = {
       "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
-      "library": "add_library ( {name}\n    SOURCES {sources} )",
+      "library": "add_library ( {name}\n            {sources} )",
       "source_join": "\n            "}
     self.project = parent.project if parent else None
 
