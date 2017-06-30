@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+# 3.5 definite minimum
+
+option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
+
+# Convenience macro for setting up python shared libraries
+# Usage: add_python_library( <name> SOURCES <file> [<file>]... )
+macro(add_python_library name)
+  cmake_parse_arguments(ADDPYLIB "" "" SOURCES ${ARGN})
+  if (BUILD_PYTHON_LIBS)
+    add_library(${name} SHARED ${ADDPYLIB_SOURCES})
+    # MESSAGE(STATUS "Name: ${name} Sources: ${ADDPYLIB_SOURCES}")
+    target_link_libraries(${name} ${PROJECT_NAME} Boost::python)
+    set_target_properties(${name} PROPERTIES PREFIX "")
+  endif()
+endmacro()
+
+
+# add_subdirectory(annlib_adaptbx)
+# add_subdirectory(cbflib)
+# add_subdirectory(ccp4io_adaptbx)
+# add_subdirectory(cctbx_project)
+# add_subdirectory(dials)
+# add_subdirectory(xia2)
