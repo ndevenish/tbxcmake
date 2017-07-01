@@ -171,7 +171,7 @@ class FileProcessor(object):
 
       # If this is our project library, set the include folder
       if library["name"] == self.project:
-        print("target_include_directories({name} INTERFACE ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=data_project), file=libtext)
+        print("target_include_directories({name} PUBLIC ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=data_project), file=libtext)
 
       # IF we have optional dependencies, add the if() wrappers
       if library["dependencies"] and optional_deps:
@@ -196,11 +196,14 @@ class FileProcessor(object):
       print("add_subdirectory({})".format(dir), file=self.output)
 
     # Write the target CMakeLists
-    if data["generate"]:
-      # If the folder doesn't exist, make it
-      if not os.path.isdir(self.target_directory):
-        os.makedirs(self.target_directory)
-      open(os.path.join(self.target_directory, "CMakeLists.txt"), 'w').write(self.output.getvalue())
+    output_filename = "CMakeLists.txt"
+    if not data["generate"]:
+      output_filename = "autogen_CMakeLists.txt"
+
+    # If the folder doesn't exist, make it
+    if not os.path.isdir(self.target_directory):
+      os.makedirs(self.target_directory)
+    open(os.path.join(self.target_directory, output_filename), 'w').write(self.output.getvalue())
 
     # Now descend into each of the child processes
     for dir in data["subdirectories"]:
