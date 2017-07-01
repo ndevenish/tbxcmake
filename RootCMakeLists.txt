@@ -2,10 +2,17 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 # 3.5 definite minimum
 
 option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 
 if (${BUILD_PYTHON_LIBS})
   find_package(PythonInterp REQUIRED)
   find_package(PythonLibs REQUIRED)
+  
+  add_library(Python::Libs SHARED IMPORTED)
+  set_target_properties(Python::Libs PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS}
+    IMPORTED_LOCATION             ${PYTHON_LIBRARIES} )
+
   find_package(Boost REQUIRED COMPONENTS python)
   include_directories(${PYTHON_INCLUDE_DIRS})
 else()
@@ -31,16 +38,15 @@ macro(add_python_library name)
   cmake_parse_arguments(ADDPYLIB "" "" SOURCES ${ARGN})
   if (BUILD_PYTHON_LIBS)
     add_library(${name} SHARED ${ADDPYLIB_SOURCES})
-    # MESSAGE(STATUS "Name: ${name} Sources: ${ADDPYLIB_SOURCES}")
-    target_link_libraries(${name} ${PROJECT_NAME} Boost::python)
+    # If the project name is also a target, then add it
+    if (TARGET ${PROJECT_NAME})
+      target_link_libraries(${name} ${PROJECT_NAME} Boost::python Python::Libs )
+    else()
+      target_link_libraries(${name} Boost::python Python::Libs )
+    endif()
     set_target_properties(${name} PROPERTIES PREFIX "")
   endif()
 endmacro()
 
 
-add_subdirectory(annlib_adaptbx)
-add_subdirectory(cbflib)
-add_subdirectory(ccp4io_adaptbx)
-add_subdirectory(cctbx_project)
-add_subdirectory(dials)
-add_subdirectory(xia2)
+include(autogen_CMakeLists.txt)
