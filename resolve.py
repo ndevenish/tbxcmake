@@ -6,13 +6,14 @@ Automatically analyse a build log to determine the input and output targets
 of a build process.
 
 Usage: 
-  resolve.py [<buildlog>] [--root=<rootpath>] [--target=<target>] [--name=]
+  resolve.py [<buildlog>] [options] [--root=<rootpath>] [--target=<target>] [--name=]
 
 Options:
   -h --help          Show this screen.
   --name=<name>      Filename for writing to target [default: AutoBuildDeps.yaml]
   --target=<target>  Write build dependency files to a target directory
   --root=<rootpath>  Explicitly constrain the dependency tree to a particular root
+  --autogen=<file>   File to use for autogen information
 """
 
 from __future__ import print_function
@@ -157,7 +158,11 @@ class Target(object):
     """Return a BuildDeps description dictionary"""
 
     # Work out our full path
-    fullPath = os.path.join(self.module_root, self.path)
+    fullPath = os.path.normpath(os.path.join(self.module_root, self.path))
+
+    # if self.name == "ann":
+    #   import pdb; pdb.set_trace()
+
     # Find hard-coded sources
     localSources = [x[len(fullPath)+1:] for x in self.sources if x.startswith(fullPath)]
     
@@ -203,9 +208,9 @@ def _build_target_list(logdata):
       logger.info(" Found common path => {}".format(common))
       abs_source_dirs = [common]
 
-      if os.path.normpath(common) == os.path.normpath(logdata.module_root):
-        logger.warning("Target {} has no common source path except ROOT, skipping".format(target_name))
-        continue
+      # if os.path.normpath(common) == os.path.normpath(logdata.module_root):
+      #   logger.warning("Target {} has no common source path except ROOT, skipping".format(target_name))
+      #   continue
     elif len(abs_source_dirs) == 0:
       # Need to manually resolve these targets with all sources generated in the
       # build directory - technically we could read from the relative and look 
@@ -241,7 +246,7 @@ class BuildInfo(object):
     """Get, or create, a build object for the requested path"""
     if isinstance(path, str):
       path = os.path.normpath(path).split("/")
-    if not path:
+    if not path or path ==["."]:
       return self
     # Otherwise, we want a subdirectory of this one
     subdir = path[0]
