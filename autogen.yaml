@@ -1,4 +1,12 @@
-  
+# Relative folder to module to use for specific targets
+# include_dir:
+#   ann:             annlib/include
+#   annlib_adaptbx:  annlib_adaptbx/include
+
+# Automatic extra dependencies
+dependencies:
+  ann: [annlib_adaptbx]
+
 libtbx_refresh:
   scitbx: 
     - include/scitbx/array_family/detail/operator_functors.h
@@ -113,4 +121,3 @@ libtbx_refresh:
     - iotbx/pdb/hybrid_36_fem.cpp
   smtbx:
     - include/smtbx/boost_python/flex_fwd.h
-  

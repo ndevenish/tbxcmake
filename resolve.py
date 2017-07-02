@@ -6,7 +6,7 @@ Automatically analyse a build log to determine the input and output targets
 of a build process.
 
 Usage: 
-  resolve.py [<buildlog>] [options] [--root=<rootpath>] [--target=<target>] [--name=]
+  resolve.py [<buildlog>] [<overrides>] [options] [--root=<rootpath>] [--target=<target>] [--name=]
 
 Options:
   -h --help          Show this screen.
@@ -135,6 +135,7 @@ class Target(object):
     if name.endswith(".so"):
       name, extension = os.path.splitext(os.path.basename(name))
     else:
+      name = os.path.basename(name)
       extension = ""
     if name.startswith("lib"):
       name = name[3:]
@@ -160,12 +161,9 @@ class Target(object):
     # Work out our full path
     fullPath = os.path.normpath(os.path.join(self.module_root, self.path))
 
-    # if self.name == "ann":
-    #   import pdb; pdb.set_trace()
+    # Find hard-coded sources. We want all absolute sources, as a relative path
+    localSources = [os.path.relpath(x, fullPath) for x in self.sources if os.path.isabs(x)]
 
-    # Find hard-coded sources
-    localSources = [x[len(fullPath)+1:] for x in self.sources if x.startswith(fullPath)]
-    
     # Basic, common info
     info = {"name": self.name}
     if localSources:
@@ -177,7 +175,7 @@ class Target(object):
     specialSources = [x for x in self.sources if not x.startswith(fullPath)]
     if specialSources:
       warning = "Module {} has special sources: {}".format(self.name, specialSources)
-      print(warning)
+      # print(warning)
       info["todo"] = warning
     
     # Handle what's linked to
@@ -204,8 +202,8 @@ def _build_target_list(logdata):
       # In this case, there is sources from more than one directory contributing. This
       # is okay unless the common path is at the module level
       common = os.path.dirname(os.path.commonprefix(abs_source_dirs))
-      logger.info("Multiple source dirs for {}:\n{}".format(target_name, "\n".join("  - " + x for x in abs_source_dirs)))
-      logger.info(" Found common path => {}".format(common))
+      # logger.info("Multiple source dirs for {}:\n{}".format(target_name, "\n".join("  - " + x for x in abs_source_dirs)))
+      # logger.info(" Found common path => {}".format(common))
       abs_source_dirs = [common]
 
       # if os.path.normpath(common) == os.path.normpath(logdata.module_root):
@@ -215,18 +213,20 @@ def _build_target_list(logdata):
       # Need to manually resolve these targets with all sources generated in the
       # build directory - technically we could read from the relative and look 
       # for a matching module, but only a single example exists
-      logger.warning("Target {} has only generated sources and needs to be included manually. Skipping.".format(target_name))
-      continue
+      logger.warning("Target {} has only generated sources".format(target_name))
+      # continue
 
     # Work out the base-relative path and thus modulename
-    relative_path = abs_source_dirs[0][len(logdata.module_root):]
-    if relative_path.startswith("cctbx_project/"):
-      module = relative_path[len("cctbx_project/"):].split("/")[0]
-      modules[module] = os.path.join("cctbx_project", module)
+    if not abs_source_dirs:
+      relative_path = "."
     else:
-      module = relative_path.split("/")[0]
-      modules[module] = module
-    print(module.ljust(20), relative_path)
+      relative_path = os.path.relpath(abs_source_dirs[0], logdata.module_root)
+      if relative_path.startswith("cctbx_project/"):
+        module = relative_path[len("cctbx_project/"):].split("/")[0]
+        modules[module] = os.path.join("cctbx_project", module)
+      else:
+        module = relative_path.split("/")[0]
+        modules[module] = module
 
     libs = set(target["-l"]) - {"m"}
     targets.append(Target(target_name, module, relative_path, logdata.module_root, sources, libraries=libs))
@@ -301,6 +301,8 @@ if __name__ == "__main__":
   logging.basicConfig(level=logging.INFO)
   logdata = LogParser(options["<buildlog>"] or "buildbuild.log")
 
+  overrides = options["<overrides>"] or "autogen.yaml"
+
   if options["--target"]:
     if not os.path.isdir(options["--target"]):
       logger.error("Error: Target must be a valid directory")
@@ -314,16 +316,18 @@ if __name__ == "__main__":
   external_dependencies = all_dependencies - {x.name for x in targets}
   print("External dependencies: ", external_dependencies)
 
-  # Find any targets that match the name of a module
+  # Find any targets that match the name of a module but aren't at module level
+  # This corrects 'spotfinder'
   misdir_modlibs = [x for x in targets if x.name == x.module and not x.path == module_paths[x.module]]
   # If any of these don't match their directory name, then promote them up until they do
   if misdir_modlibs:
-    print("Found module-named libraries outside of expected path:", ", ".join(x.name for x in misdir_modlibs))
+    # print("Found module-named libraries outside of expected path:", ", ".join(x.name for x in misdir_modlibs))
     for target in misdir_modlibs:
+      prepath = target.path
       target.path = module_paths[target.module]
+      print("Moving module-named {} from {} to {}".format(target.name, prepath, target.path))
 
-  # import pdb
-  # pdb.set_trace()
+  # Now, let's integrate the data from our overrides file
 
   # Now we have a list of targets, along with their basic directory
   # Make a directory tree for every target
@@ -337,11 +341,11 @@ if __name__ == "__main__":
   max_len_path = reduce(lambda acc, val: max(acc, len(val.path)), root.collect(), 0)
 
   for (path, info) in [(x.path, x) for x in root.collect()]:
-    print(path.ljust(max_len_path), info)
+    # print(path.ljust(max_len_path), info)
 
     if options["--target"]:
       targetPath = os.path.join(options["--target"], path, options["--name"])
-      print("  ->", targetPath)
+      # print("  ->", targetPath)
       makedirs(os.path.dirname(targetPath))
       with open(targetPath, 'w') as depfile:
         depfile.write(yaml.dump(info.generate()))
