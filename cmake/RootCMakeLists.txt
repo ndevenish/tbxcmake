@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 # 3.5 definite minimum
 
+
+# Add the included modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+include(LibTBXRefresher)
+
 option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 
