@@ -79,8 +79,9 @@ class FakeEnv(object):
   def is_ready_for_build(self):
     return True
 
-  def under_dist(self, module_name, path="."):
+  def under_dist(self, module_name, path=".", test=os.path.isdir):
     """libtbx method to find a path in an existing module"""
+    assert test is os.path.isdir
     module_path = os.path.join(self.module_root, module_name)
     module_path_cctbx = os.path.join(self.module_root, "cctbx_project", module_name)
     if not os.path.isdir(module_path):
