@@ -296,12 +296,33 @@ class BuildInfo(object):
       targetlist.append(target.describe())
     return data
 
+  @classmethod
+  def build_target_tree(cls, targets):
+    # Now we have a list of targets, along with their basic directory
+    # Make a directory tree for every target
+    root = BuildInfo(None, "", generate=False)
+
+    # Add each target to the dependency tree
+    for target in targets:
+      info = root.get_path(target.path)
+      info.targets.append(target)
+
+    return root
+
+  def write_depfiles(self, root, filename):
+    # Write out all the autodependency files
+    for (path, info) in [(x.path, x) for x in self.collect()]:
+      targetPath = os.path.join(root, path, filename)
+      makedirs(os.path.dirname(targetPath))
+      with open(targetPath, 'w') as depfile:
+        depfile.write(yaml.dump(info.generate()))
+
 if __name__ == "__main__":
   options = docopt(__doc__)
   logging.basicConfig(level=logging.INFO)
   logdata = LogParser(options["<buildlog>"] or "buildbuild.log")
 
-  overrides = options["<overrides>"] or "autogen.yaml"
+  overrides_filename = options["<overrides>"] or "autogen.yaml"
 
   if options["--target"]:
     if not os.path.isdir(options["--target"]):
@@ -327,26 +348,25 @@ if __name__ == "__main__":
       target.path = module_paths[target.module]
       print("Moving module-named {} from {} to {}".format(target.name, prepath, target.path))
 
+  # Generate the target tree information
+  tree = BuildInfo.build_target_tree(targets)
+  
   # Now, let's integrate the data from our overrides file
+  if os.path.isfile(overrides_filename):
+    override = yaml.load(open(overrides_filename))
 
-  # Now we have a list of targets, along with their basic directory
-  # Make a directory tree for every target
-  root = BuildInfo(None, "", generate=False)
+    if "dependencies" in override:
+      for name, deps in override["dependencies"].items():
+        # Find target name
+        filtered_targets = [x for x in targets if x.name == name]
+        if not filtered_targets:
+          print("WARNING: Could not resolve target {} to add manual dependencies.".format(name))
+          continue
+        filtered_targets[0].libraries.update(deps)
 
-  for target in targets:
-    # Get hold of the dependency information object to build
-    info = root.get_path(target.path)
-    info.targets.append(target)
 
-  max_len_path = reduce(lambda acc, val: max(acc, len(val.path)), root.collect(), 0)
 
-  for (path, info) in [(x.path, x) for x in root.collect()]:
-    # print(path.ljust(max_len_path), info)
 
-    if options["--target"]:
-      targetPath = os.path.join(options["--target"], path, options["--name"])
-      # print("  ->", targetPath)
-      makedirs(os.path.dirname(targetPath))
-      with open(targetPath, 'w') as depfile:
-        depfile.write(yaml.dump(info.generate()))
+  if options["--target"]:
+    tree.write_depfiles(root=options["--target"], filename=options["--name"])
 
