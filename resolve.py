@@ -174,10 +174,8 @@ class Target(object):
     # Generated sources are in the build directory
     specialSources = [x for x in self.sources if not x.startswith(fullPath)]
     if specialSources:
-      warning = "Module {} has special sources: {}".format(self.name, specialSources)
-      # print(warning)
-      info["todo"] = warning
-    
+      info["generated_sources"] = specialSources
+
     # Handle what's linked to
     if self.libraries:
       info["dependencies"] = list(self.libraries)
@@ -241,6 +239,7 @@ class BuildInfo(object):
     self.subdirectories = {}
     self.targets = []
     self._generate = generate
+    self.libtbx_refresh_files = []
 
   def get_path(self, path):
     """Get, or create, a build object for the requested path"""
@@ -279,6 +278,9 @@ class BuildInfo(object):
       data["project"] = self.module
     if self.subdirectories:
       data["subdirectories"] = self.subdirectories.keys()
+
+    if self.libtbx_refresh_files:
+      data["libtbx_refresh"] = list(self.libtbx_refresh_files)
 
     for target in self.targets:
       if target.is_library:
@@ -364,7 +366,12 @@ if __name__ == "__main__":
           continue
         filtered_targets[0].libraries.update(deps)
 
-
+    # Add information about automatically generated files
+    if "libtbx_refresh" in override:
+      for module in override["libtbx_refresh"]:
+        # Get the tree folder for this module
+        mod_dir = tree.get_path(module_paths[module])
+        mod_dir.libtbx_refresh_files = override["libtbx_refresh"][module]
 
 
   if options["--target"]:
