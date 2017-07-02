@@ -204,7 +204,7 @@ class FakeEnv(object):
       assert os.path.isdir(module_path_cctbx)
       module_path = module_path_cctbx
     path = os.path.normpath(os.path.join(module_path, path))
-    print "Returning module path", path
+    # print "Returning module path", path
     if test is not None:
       if not test(path):
         print("Failed test on searched path {}".format(path))
@@ -212,12 +212,12 @@ class FakeEnv(object):
 
   def under_build(self, path):
     path = os.path.join(self.output_root, path)
-    print "Returning build path", path
+    # print "Returning build path", path
     return path
 
   def find_in_repositories(self, relative_path, return_relocatable_path=False, test=os.path.isdir, optional=None):
     assert test is os.path.isdir
-    print "find_in_repositories for ", relative_path
+    # print "find_in_repositories for ", relative_path
     # return LibTBXPath(self.under_dist(relative_path))
     return self.under_dist(relative_path)
 
