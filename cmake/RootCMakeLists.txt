@@ -13,6 +13,10 @@ if (${BUILD_PYTHON_LIBS})
   find_package(PythonInterp REQUIRED)
   find_package(PythonLibs REQUIRED)
   
+  add_executable(Python::Python IMPORTED)
+  set_target_properties(Python::Python PROPERTIES
+    IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
+  
   add_library(Python::Libs SHARED IMPORTED)
   set_target_properties(Python::Libs PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS}
