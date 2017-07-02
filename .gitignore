@@ -1,3 +1,5 @@
 *.pyc
 logparse.pickle
+CMakeLists.txt
+AutoBuildDeps.yaml
 
