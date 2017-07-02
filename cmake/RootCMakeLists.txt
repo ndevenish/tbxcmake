@@ -10,18 +10,20 @@ option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 
 if (${BUILD_PYTHON_LIBS})
-  find_package(PythonInterp REQUIRED)
-  find_package(PythonLibs REQUIRED)
-  
+  # Add python interpreter as an imported executable
+  find_package(PythonInterp REQUIRED)  
   add_executable(Python::Python IMPORTED)
   set_target_properties(Python::Python PROPERTIES
     IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
-  
+
+  # Add python libraries as an imported library
+  find_package(PythonLibs REQUIRED)
   add_library(Python::Libs SHARED IMPORTED)
   set_target_properties(Python::Libs PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS}
     IMPORTED_LOCATION             ${PYTHON_LIBRARIES} )
 
+  # Find boost python libraries
   find_package(Boost REQUIRED COMPONENTS python)
   include_directories(${PYTHON_INCLUDE_DIRS})
 else()
@@ -33,7 +35,6 @@ find_package(OpenGL)
 
 # Add HDF5
 find_package(HDF5 REQUIRED COMPONENTS CXX)
-# Hardcode link to annlib
 add_library(HDF5::CXX SHARED IMPORTED)
 set_target_properties(HDF5::CXX PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${HDF5_CXX_INCLUDE_DIRS}
@@ -57,5 +58,5 @@ macro(add_python_library name)
   endif()
 endmacro()
 
-
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cctbx_project ${CMAKE_BINARY_DIR}/include)
 include(autogen_CMakeLists.txt)
