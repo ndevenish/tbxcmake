@@ -15,6 +15,7 @@ import os
 from docopt import docopt
 from types import ModuleType
 from pathlib2 import Path, PosixPath
+import textwrap
 
 def new_module(name, doc=None):
   m = ModuleType(name, doc)
@@ -39,7 +40,12 @@ libtbx.forward_compatibility = new_module("libtbx.forward_compatibility")
 libtbx.load_env = new_module("libtbx.load_env")
 libtbx.str_utils = new_module("libtbx.str_utils")
 libtbx.str_utils.show_string = str
+libtbx.str_utils.line_breaker = textwrap.fill
 libtbx.path = new_module("libtbx.path")
+
+def norm_join(*args):
+  return os.path.normpath(os.path.join(*args))
+libtbx.path.norm_join = norm_join
 
 def tail_levels(path, number_of_levels):
   return os.path.join(*path.split(os.path.sep)[-number_of_levels:])
@@ -89,9 +95,11 @@ class FakeEnv(object):
     print "Returning build path", path
     return path
 
-  def find_in_repositories(self, relative_path, return_relocatable_path=False):
+  def find_in_repositories(self, relative_path, return_relocatable_path=False, test=os.path.isdir, optional=None):
+    assert test is os.path.isdir
     print "find_in_repositories for ", relative_path
-    return LibTBXPath(self.under_dist(relative_path))
+    # return LibTBXPath(self.under_dist(relative_path))
+    return self.under_dist(relative_path)
 
   def dist_path(self, module_path):
     return self.under_dist(module_path)
@@ -100,11 +108,11 @@ class FakeEnv(object):
 class RefreshSelf(object):
   remove_obsolete_pyc_if_possible = Mock()
 
-
 if __name__ == "__main__":
   options = docopt(__doc__)
   source = options["<file>"]
   assert os.path.isdir(options["--root"])
+  sys.path.insert(0, os.path.join(options["--root"], "cctbx_project"))
   sys.path.insert(0, options["--root"])
   # assert os.path.isdir(options["--output"])
   if not os.path.isdir(options["--output"]):
