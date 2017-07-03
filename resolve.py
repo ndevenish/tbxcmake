@@ -85,18 +85,26 @@ Options:
   -s              Remove all symbol table and relocation information from the executable
   --shared        Produce a shared object which can then be linked
 """
+ar_usage = """Usage:
+  ar <mode> <archive> <source>...
+"""
 
 class LogParser(object):
   def __init__(self, filename):
     # Read every gcc
     logger.info("Parsing build log...")
     if os.path.isfile("logparse.pickle") and os.path.getmtime("logparse.pickle") > os.path.getmtime(filename):
-      gcc = pickle.load(open("logparse.pickle", "rb"))
+      gcc, ar = pickle.load(open("logparse.pickle", "rb"))
     else:
       gcc_lines = []
+      ar_lines = []
       for line in open(filename):
-        if x.startswith("g++") or x.startswith("gcc"):
-          gcc_lines.append(x.strip())
+        if line.startswith("g++") or line.startswith("gcc"):
+          gcc_lines.append(line.strip())
+        if line.startswith("ar"):
+          ar_lines.append(line.strip())
+
+      ar = []
       gcc = []
       for line in gcc_lines:
         try:
@@ -105,10 +113,21 @@ class LogParser(object):
         except SystemExit:
           logger.error("Error reading ", line)
           raise
-      pickle.dump(gcc, open("logparse.pickle", "wb"))
+      for line in ar_lines:
+        entry = docopt(ar_usage, argv=shlex.split(line)[1:])
+        assert entry["<mode>"] == "rc", "Unknown ar command"
+        del entry["<mode>"]
+        entry["-o"] = entry["<archive>"]
+        del entry["<archive>"]
+        ar.append(entry)
+      pickle.dump((gcc, ar), open("logparse.pickle", "wb"))
+
+    import pdb
+    pdb.set_trace()
     # Break these down into categories
     self.objects = [x for x in gcc if x["-c"]]
     self.link_targets = [x for x in gcc if not x["-c"]]
+    # self.static_targets = 
 
     # Used to look at non-abs paths... but these are probably code-generated into build directory
     # # Handle any entries without absolute source paths
