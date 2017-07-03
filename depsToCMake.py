@@ -24,6 +24,7 @@ EXTERNAL_DEPENDENCY_MAP = {
   # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
   "boost_python": "Boost::python",
   "hdf5": "HDF5::CXX",
+  "hdf5_c": "HDF5::C",
   "tiff": "TIFF::TIFF",
   "GL": "OpenGL::GL",
   "GLU": "OpenGL::GLU"
@@ -99,7 +100,7 @@ class FileProcessor(object):
       "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
       "library":        "add_library ( {name}\n            {sources} )",
       "source_join": "\n            ",
-      "libtbx_refresh": "add_libtbx_refresh_command( {filename}\n     OUTPUT {sources} )"}
+      "libtbx_refresh": "add_libtbx_refresh_command( ${{CMAKE_CURRENT_SOURCE_DIR}}/{filename}\n     OUTPUT {sources} )"}
     self.project = parent.project if parent else None
 
   def _find_project_headers(self, data):
