@@ -154,7 +154,7 @@ class FileProcessor(object):
       if library["name"] == self.project and not include_paths:
         include_paths.append("${CMAKE_CURRENT_SOURCE_DIR}/..")
       include_paths = [self._resolve_include_path(x) for x in include_paths]
-      
+
       if include_paths:
         print("target_include_directories({name} PUBLIC {incs})\n".format(name=library["name"], incs=" ".join(include_paths)), file=libtext)
 
@@ -185,8 +185,12 @@ class FileProcessor(object):
 
   def _resolve_include_path(self, path):
     """Takes an include path specification and turns into an absolute expression"""
+    if path.startswith("!"):
+      path = path[1:]
     if path.startswith("#build"):
       return "${CMAKE_BINARY_DIR}" + path[len("#build"):]
+    elif path.startswith("#base"):
+      return "${CMAKE_SOURCE_DIR}" + path[len("#base"):]
     elif os.path.isabs(path):
       return path
     return os.path.join("${CMAKE_CURRENT_SOURCE_DIR}", path)
