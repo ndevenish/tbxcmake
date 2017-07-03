@@ -236,6 +236,7 @@ class BuildInfo(object):
     self.path = path
     self.parent = parent
 
+    self.include_paths = None
     self.subdirectories = {}
     self.targets = []
     self._generate = generate
@@ -276,6 +277,8 @@ class BuildInfo(object):
 
     if self.parent and self.module != self.parent.module:
       data["project"] = self.module
+      if self.include_paths:
+        data["project_include_path"] = self.include_paths
     if self.subdirectories:
       data["subdirectories"] = self.subdirectories.keys()
 
@@ -333,6 +336,8 @@ if __name__ == "__main__":
 
   # Extract target metadata
   targets, module_paths = _build_target_list(logdata)
+  # Quick fix: Add annlib path to module list (will only be used if needed)
+  module_paths["annlib"] = "annlib"
   
   # Make a list of all dependencies that AREN'T targets
   all_dependencies = set(itertools.chain(*[x.libraries for x in targets]))
@@ -372,6 +377,19 @@ if __name__ == "__main__":
         # Get the tree folder for this module
         mod_dir = tree.get_path(module_paths[module])
         mod_dir.libtbx_refresh_files = override["libtbx_refresh"][module]
+
+    if "forced_locations" in override:
+      for targetname, new_path in override["forced_locations"].items():
+        print("Override: Moving {} to {}".format(targetname, new_path))
+        target = [x for x in targets if x.name == targetname][0]
+        tree.get_path(target.path).targets.remove(target)
+        tree.get_path(new_path).targets.append(target)
+        target.path = new_path
+
+    if "module_includes" in override:
+      for module, path in override["module_includes"].items():
+        tree.get_path(module_paths[module]).include_paths = path
+
 
 
   if options["--target"]:

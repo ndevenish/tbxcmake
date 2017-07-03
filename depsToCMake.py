@@ -97,8 +97,9 @@ class FileProcessor(object):
     self.output = StringIO()
     self.macros = {
       "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
-      "library": "add_library ( {name}\n            {sources} )",
-      "source_join": "\n            "}
+      "library":        "add_library ( {name}\n            {sources} )",
+      "source_join": "\n            ",
+      "libtbx_refresh": "add_libtbx_refresh_command( {filename}\n     OUTPUT {sources} )"}
     self.project = parent.project if parent else None
 
   def _find_project_headers(self, data):
@@ -122,8 +123,11 @@ class FileProcessor(object):
       print("project({})\n".format(self.project), file=self.output)
       # Emit an interface library IFF we don't have a library named the same thing
       if not any(x for x in data["shared_libraries"] if x["name"] == self.project):
+        include = "${CMAKE_CURRENT_SOURCE_DIR}/.."
+        if "project_include_path" in data:
+          include = os.path.join("${CMAKE_CURRENT_SOURCE_DIR}", data["project_include_path"])
         print("add_library( {name} INTERFACE )".format(name=data_project), file=self.output)
-        print("target_include_directories({name} INTERFACE ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=data_project), file=self.output)
+        print("target_include_directories({name} INTERFACE {include})\n".format(name=data_project, include=include), file=self.output)
 
     # Add to project, header files that aren't owned by targets or children
     # BUT don't bother searching if we haven't got a project
@@ -137,6 +141,12 @@ class FileProcessor(object):
     # Add any todo warning
     if data["todo"]:
         print("message(WARNING \"{}\")\n".format(data["todo"]), file=self.output)
+
+    # Run the libtbx-refreshing generation if we have any
+    if "libtbx_refresh" in data:
+      sources = self.macros["source_join"].join(data["libtbx_refresh"])
+      print(self.macros["libtbx_refresh"].format(filename="libtbx_refresh.py", sources=sources), file=self.output)
+      print(file=self.output)
 
     # Emit library targets if we have any
     for library in data["shared_libraries"]:
