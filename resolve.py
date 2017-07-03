@@ -411,12 +411,14 @@ if __name__ == "__main__":
 
     if "dependencies" in override:
       for name, deps in override["dependencies"].items():
+        if isinstance(deps, str):
+          deps = [deps]
         # Find target name
-        filtered_targets = [x for x in targets if x.name == name]
+        filtered_targets = _get_target(name, targets)
         if not filtered_targets:
           print("WARNING: Could not resolve target {} to add manual dependencies.".format(name))
           continue
-        filtered_targets[0].libraries.update(deps)
+        filtered_targets.libraries.update(deps)
 
     # Add information about automatically generated files
     if "libtbx_refresh" in override:
