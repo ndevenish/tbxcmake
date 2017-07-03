@@ -146,6 +146,7 @@ class Target(object):
     self.module_root = module_root
     self.sources = sources
     self.libraries = libraries
+    self.include_paths = None
   @property
   def is_executable(self):
     return not self.extension.endswith(".so")
@@ -175,6 +176,9 @@ class Target(object):
     specialSources = [x for x in self.sources if not x.startswith(fullPath)]
     if specialSources:
       info["generated_sources"] = specialSources
+
+    if self.include_paths:
+      info["include_paths"] = self.include_paths
 
     # Handle what's linked to
     if self.libraries:
@@ -386,11 +390,19 @@ if __name__ == "__main__":
         tree.get_path(new_path).targets.append(target)
         target.path = new_path
 
-    if "module_includes" in override:
-      for module, path in override["module_includes"].items():
-        tree.get_path(module_paths[module]).include_paths = path
+    if "target_includes" in override:
+      for name, paths in override["target_includes"].items():
+        if isinstance(paths, str):
+          paths = [paths]
 
-
+        # If this is a target name, add to target
+        # Otherwise, look in module names
+        target = next(iter(x for x in targets if x.name == name), None)
+        if target:
+          target.include_paths = paths
+        else:
+          assert name in module_paths, "Name for extra includes {} not a target or module".format(name)
+          tree.get_path(module_paths[name]).include_paths = paths
 
   if options["--target"]:
     tree.write_depfiles(root=options["--target"], filename=options["--name"])

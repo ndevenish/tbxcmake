@@ -143,9 +143,12 @@ class FileProcessor(object):
         file=libtext)
 
       # If this is our project library, set the include folder
-      if library["name"] == self.project:
-        # FIXME: Library include does not account for overridden module include path
-        print("target_include_directories({name} PUBLIC ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=self.project), file=libtext)
+      include_paths = library.get("include_paths", [])
+      if library["name"] == self.project and not include_paths:
+        include_paths.append("${CMAKE_CURRENT_SOURCE_DIR}/..")
+      
+      if include_paths:
+        print("target_include_directories({name} PUBLIC {incs})\n".format(name=self.project, incs=" ".join(include_paths)), file=libtext)
 
       # IF we have optional dependencies, add the if() wrappers
       if library["dependencies"] and optional_deps:
@@ -172,10 +175,18 @@ class FileProcessor(object):
     print(self.macros["libtbx_refresh"].format(filename="libtbx_refresh.py", sources=sources), file=self.output)
     print(file=self.output)
 
+  def _resolve_include_path(self, path):
+    """Takes an include path specification and turns into an absolute expression"""
+    if path.startswith("#build"):
+      return "${CMAKE_BINARY_DIR}" + path[len("#build"):]
+    elif os.path.isabs(path):
+      return path
+    return os.path.join("${CMAKE_CURRENT_SOURCE_DIR}", path)
+
   def _emit_interface_library(self, name, data):
     include = "${CMAKE_CURRENT_SOURCE_DIR}/.."
     if "project_include_path" in data:
-      include = os.path.join("${CMAKE_CURRENT_SOURCE_DIR}", data["project_include_path"])
+      include = " ".join([self._resolve_include_path(x) for x in data["project_include_path"]])
     print("add_library( {name} INTERFACE )".format(name=self.project), file=self.output)
     print("target_include_directories({name} INTERFACE {include})\n".format(name=self.project, include=include), file=self.output)
 
