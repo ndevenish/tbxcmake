@@ -93,7 +93,10 @@ class LogParser(object):
     if os.path.isfile("logparse.pickle") and os.path.getmtime("logparse.pickle") > os.path.getmtime(filename):
       gcc = pickle.load(open("logparse.pickle", "rb"))
     else:
-      gcc_lines = [x.strip() for x in open(filename) if x.startswith("g++") or x.startswith("gcc")]
+      gcc_lines = []
+      for line in open(filename):
+        if x.startswith("g++") or x.startswith("gcc"):
+          gcc_lines.append(x.strip())
       gcc = []
       for line in gcc_lines:
         try:
@@ -127,6 +130,7 @@ class LogParser(object):
     for target in self.link_targets:
       for tsource in target["<source>"]:
         assert any(x["-o"] == tsource for x in self.objects), "No source for target"
+
 
 class Target(object):
   def __init__(self, name, module, relative_path, module_root, sources, libraries):
@@ -193,10 +197,14 @@ def _build_target_list(logdata):
   modules = {}
   # List of targets
   targets = []
+  # Keep track of all and tick them off
+  objects_unused = set(id(x) for x in logdata.objects)
+
   for target in logdata.link_targets:
     target_name = target["-o"]
     # Work out the common source directories
     objects = [x for x in logdata.objects if x["-o"] in target["<source>"]]
+    objects_unused -= set(id(x) for x in objects)
     sources = list(itertools.chain(*[x["<source>"] for x in objects]))
     source_dirs = set(os.path.dirname(x) for x in sources)
     abs_source_dirs = [x for x in source_dirs if os.path.isabs(x)]
@@ -232,6 +240,12 @@ def _build_target_list(logdata):
 
     libs = set(target["-l"]) - {"m"}
     targets.append(Target(target_name, module, relative_path, logdata.module_root, sources, libraries=libs))
+
+  if objects_unused:
+    print("{} objects unused.".format(len(objects_unused)))
+    objects_unused = [x for x in logdata.objects if id(x) in objects_unused]
+    import pdb
+    pdb.set_trace()
   return targets, modules
 
 class BuildInfo(object):
