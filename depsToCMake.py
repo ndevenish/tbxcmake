@@ -111,45 +111,7 @@ class FileProcessor(object):
     all_headers = find_headers(self.headers_directory, exclusions)
     return {x[len(self.headers_directory)+1:] for x in all_headers}
 
-  def process(self):
-    """Read and process the dependency file"""
-    print("Loading {}".format(self.filename))
-    data = _normalise_yaml(yaml.load(open(self.filename)))
-    
-    # Update the project name and emit a change if we need to
-    data_project = data.get("project", self.project)
-    if not data_project == self.project:
-      self.project = data_project
-      print("project({})\n".format(self.project), file=self.output)
-      # Emit an interface library IFF we don't have a library named the same thing
-      if not any(x for x in data["shared_libraries"] if x["name"] == self.project):
-        include = "${CMAKE_CURRENT_SOURCE_DIR}/.."
-        if "project_include_path" in data:
-          include = os.path.join("${CMAKE_CURRENT_SOURCE_DIR}", data["project_include_path"])
-        print("add_library( {name} INTERFACE )".format(name=data_project), file=self.output)
-        print("target_include_directories({name} INTERFACE {include})\n".format(name=data_project, include=include), file=self.output)
-
-    # Add to project, header files that aren't owned by targets or children
-    # BUT don't bother searching if we haven't got a project
-    if data["generate"] and self.project and self.scan:
-      headers = self._find_project_headers(data)
-      if headers:
-        print("target_sources( {project}\n  INTERFACE\n{headers}\n)\n".format(
-          project=self.project, headers="\n".join("    ${{CMAKE_CURRENT_SOURCE_DIR}}/{}".format(x) for x in _nice_file_sorting(headers))),
-          file=self.output)
-
-    # Add any todo warning
-    if data["todo"]:
-        print("message(WARNING \"{}\")\n".format(data["todo"]), file=self.output)
-
-    # Run the libtbx-refreshing generation if we have any
-    if "libtbx_refresh" in data:
-      sources = self.macros["source_join"].join(data["libtbx_refresh"])
-      print(self.macros["libtbx_refresh"].format(filename="libtbx_refresh.py", sources=sources), file=self.output)
-      print(file=self.output)
-
-    # Emit library targets if we have any
-    for library in data["shared_libraries"]:
+  def _emit_library(self, library):
       library_type = "python_library" if "boost_python" in library["dependencies"] else "library"
 
       if library_type == "python_library":
@@ -181,7 +143,8 @@ class FileProcessor(object):
 
       # If this is our project library, set the include folder
       if library["name"] == self.project:
-        print("target_include_directories({name} PUBLIC ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=data_project), file=libtext)
+        # FIXME: Library include does not account for overridden module include path
+        print("target_include_directories({name} PUBLIC ${{CMAKE_CURRENT_SOURCE_DIR}}/..)\n".format(name=self.project), file=libtext)
 
       # IF we have optional dependencies, add the if() wrappers
       if library["dependencies"] and optional_deps:
@@ -200,6 +163,68 @@ class FileProcessor(object):
       if library["todo"]:
         print("message(WARNING \"{}\")".format(library["todo"]), file=self.output)
       print(file=self.output)
+
+  def _emit_libtbx_refresh(self, refresh_list):
+    # Run the libtbx-refreshing generation if we have any
+    # if "libtbx_refresh" in data:
+    sources = self.macros["source_join"].join(refresh_list)
+    print(self.macros["libtbx_refresh"].format(filename="libtbx_refresh.py", sources=sources), file=self.output)
+    print(file=self.output)
+
+  def _emit_interface_library(self, name, data):
+    include = "${CMAKE_CURRENT_SOURCE_DIR}/.."
+    if "project_include_path" in data:
+      include = os.path.join("${CMAKE_CURRENT_SOURCE_DIR}", data["project_include_path"])
+    print("add_library( {name} INTERFACE )".format(name=self.project), file=self.output)
+    print("target_include_directories({name} INTERFACE {include})\n".format(name=self.project, include=include), file=self.output)
+
+  def process(self):
+    """Read and process the dependency file"""
+    print("Loading {}".format(self.filename))
+    data = _normalise_yaml(yaml.load(open(self.filename)))
+    
+    # Update the project name and emit a change if we need to
+    data_project = data.get("project", self.project)
+    is_module_root = not data_project == self.project
+    self.project = data_project
+
+
+    # Find the module library if it's a real one
+    shared_libraries = list(data["shared_libraries"])
+    project_lib = next(iter(x for x in data["shared_libraries"] if is_module_root and x["name"] == data_project), None)
+    if project_lib:
+      shared_libraries.remove(project_lib)
+
+    # If we are a module root, then we might need to emit an interface library
+    if is_module_root:
+      self.project = data_project
+      print("project({})\n".format(self.project), file=self.output)
+      # Emit an interface library IFF we don't have a library named the same thing
+      if project_lib:
+        self._emit_library(project_lib)
+      else:
+        self._emit_interface_library(self.project, data)
+
+    # Add to project, header files that aren't owned by targets or children
+    # BUT don't bother searching if we haven't got a project
+    if data["generate"] and self.project and self.scan:
+      headers = self._find_project_headers(data)
+      if headers:
+        print("target_sources( {project}\n  INTERFACE\n{headers}\n)\n".format(
+          project=self.project, headers="\n".join("    ${{CMAKE_CURRENT_SOURCE_DIR}}/{}".format(x) for x in _nice_file_sorting(headers))),
+          file=self.output)
+
+    # Add any todo warning
+    if data["todo"]:
+        print("message(WARNING \"{}\")\n".format(data["todo"]), file=self.output)
+
+    # Emit libtbx BEFORE libraries, if we have 
+    if "libtbx_refresh" in data:
+      self._emit_libtbx_refresh(data["libtbx_refresh"])
+
+    # Emit any other library targets
+    for library in shared_libraries:
+      self._emit_library(library)
 
     # Emit subdirectory traversal
     for dir in sorted(data["subdirectories"]):
