@@ -153,9 +153,10 @@ class FileProcessor(object):
       include_paths = library.get("include_paths", [])
       if library["name"] == self.project and not include_paths:
         include_paths.append("${CMAKE_CURRENT_SOURCE_DIR}/..")
+      include_paths = [self._resolve_include_path(x) for x in include_paths]
       
       if include_paths:
-        print("target_include_directories({name} PUBLIC {incs})\n".format(name=self.project, incs=" ".join(include_paths)), file=libtext)
+        print("target_include_directories({name} PUBLIC {incs})\n".format(name=library["name"], incs=" ".join(include_paths)), file=libtext)
 
       # IF we have optional dependencies, add the if() wrappers
       if library["dependencies"] and optional_deps:
