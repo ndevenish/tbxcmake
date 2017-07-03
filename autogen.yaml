@@ -6,9 +6,10 @@
 # Automatic extra dependencies
 dependencies:
   ann: [annlib, annlib_adaptbx, scitbx]
-  cctbx: ["Boost::boost"]
+  cctbx: [boost]
   _pycbf: ["HDF5::C"]
   cbf: ["HDF5::C", "scitbx"]
+  cctbx_large_scale_merging_ext: eigen
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx

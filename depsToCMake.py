@@ -27,7 +27,9 @@ EXTERNAL_DEPENDENCY_MAP = {
   "hdf5_c": "HDF5::C",
   "tiff": "TIFF::TIFF",
   "GL": "OpenGL::GL",
-  "GLU": "OpenGL::GLU"
+  "GLU": "OpenGL::GLU",
+  "eigen": "Eigen::Eigen",
+  "boost": "Boost::boost"
 }
 
 # Dependencies that are optional
