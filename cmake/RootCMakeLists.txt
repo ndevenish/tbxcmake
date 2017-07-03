@@ -33,6 +33,7 @@ message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
+find_package(Eigen3 REQUIRED)
 
 # Add HDF5
 find_package(HDF5 REQUIRED COMPONENTS C CXX)
