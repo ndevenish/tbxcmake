@@ -72,6 +72,8 @@ endmacro()
 # Include the three standard 'everything' directories - module, cctbx_project and build include
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cctbx_project ${CMAKE_BINARY_DIR}/include)
 
+set(LIBRARY_OUTPUT_DIRECTORY "lib")
+
 # Write the Boost adaptbx size_t file - this is specially generated
 include(BoostAdapTBXSizing)
 
