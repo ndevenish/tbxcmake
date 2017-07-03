@@ -118,6 +118,11 @@ class FileProcessor(object):
       if library_type == "python_library":
         library["dependencies"] = list(set(library["dependencies"])-{"boost_python"})
       
+      # Unless the name matches the project, add the project as a dependency.
+      # Python libraries have this done automatically.
+      if library["name"] != self.project and not library_type == "python_library":
+        library["dependencies"].insert(0, self.project)
+
       sources = self.macros["source_join"].join(library["sources"])
 
 
