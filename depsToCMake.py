@@ -48,6 +48,7 @@ def target_name(name):
 
 def _normalise_yaml_target(data):
   data["sources"] = data.get("sources", [])
+  data["generated_sources"] = data.get("generated_sources", [])
   assert "name" in data
   data["location"] = data.get("location", None)
   data["todo"] = data.get("todo", None)
@@ -103,7 +104,9 @@ class FileProcessor(object):
       "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
       "library":        "add_library ( {name} {STATIC}\n            {sources} )",
       "source_join": "\n            ",
-      "libtbx_refresh": "add_libtbx_refresh_command( ${{CMAKE_CURRENT_SOURCE_DIR}}/{filename}\n     OUTPUT {sources} )"}
+      "libtbx_refresh": "add_libtbx_refresh_command( ${{CMAKE_CURRENT_SOURCE_DIR}}/{filename}\n     OUTPUT {sources} )",
+      "add_generated": "add_generated_sources({target}\n    SOURCES {sources} )"
+      }
     self.project = parent.project if parent else None
 
   def _find_project_headers(self, data):
@@ -129,13 +132,18 @@ class FileProcessor(object):
         library["dependencies"].insert(0, self.project)
 
       sources = self.macros["source_join"].join(library["sources"])
+      generated_sources = self.macros["source_join"].join(library["generated_sources"])
 
+      if "generated_sources" in library:
+        print(library["name"], library["generated_sources"])
 
       indent = ""
       libtext = StringIO()
 
       print(self.macros[library_type].format(name=library["name"], sources=sources, STATIC=STATIC),
         file=libtext)
+      if generated_sources:
+        print(self.macros["add_generated"].format(target=library["name"], sources=generated_sources), file=libtext)
       
       # Calculate any dependencies
       if library["dependencies"]:
