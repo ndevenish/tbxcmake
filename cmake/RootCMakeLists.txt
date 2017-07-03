@@ -29,18 +29,24 @@ if (${BUILD_PYTHON_LIBS})
 else()
   find_package(Boost REQUIRED)
 endif()
+message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
 
 # Add HDF5
-find_package(HDF5 REQUIRED COMPONENTS CXX)
+find_package(HDF5 REQUIRED COMPONENTS C CXX)
 add_library(HDF5::CXX SHARED IMPORTED)
 set_target_properties(HDF5::CXX PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${HDF5_CXX_INCLUDE_DIRS}"
   INTERFACE_COMPILE_DEFINITIONS "${HDF5_CXX_DEFINITIONS}"
   IMPORTED_LOCATION             "${HDF5_CXX_LIBRARIES}" )
-
+add_library(HDF5::C SHARED IMPORTED)
+set_target_properties(HDF5::C PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_INCLUDE_DIRS}"
+  INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}"
+  IMPORTED_LOCATION             "${HDF5_C_LIBRARIES}" )
+message("Found HDF5 at: ${HDF5_INCLUDE_DIRS}")
 
 # Convenience macro for setting up python shared libraries
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
@@ -48,9 +54,14 @@ macro(add_python_library name)
   cmake_parse_arguments(ADDPYLIB "" "" SOURCES ${ARGN})
   if (BUILD_PYTHON_LIBS)
     add_library(${name} SHARED ${ADDPYLIB_SOURCES})
+    # Add to a project meta-target
+    if(NOT TARGET ${PROJECT_NAME}_meta)
+      add_custom_target(${PROJECT_NAME}_meta)
+    endif()
     # If the project name is also a target, then add it
     if (TARGET ${PROJECT_NAME})
       target_link_libraries(${name} ${PROJECT_NAME} Boost::python Python::Libs )
+      add_dependencies(${PROJECT_NAME}_meta ${name})
     else()
       target_link_libraries(${name} Boost::python Python::Libs )
     endif()
@@ -58,5 +69,6 @@ macro(add_python_library name)
   endif()
 endmacro()
 
+# Include the three standard 'everything' directories - module, cctbx_project and build include
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cctbx_project ${CMAKE_BINARY_DIR}/include)
 include(autogen_CMakeLists.txt)
