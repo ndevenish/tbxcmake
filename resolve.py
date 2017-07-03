@@ -128,6 +128,8 @@ class LogParser(object):
     self.link_targets = [x for x in gcc if not x["-c"]]
     self.link_targets.extend(ar)
 
+    definitions = set(itertools.chain(*[x["-D"] for x in gcc if x["-D"]]))
+    print("All definitions: ", definitions)
     # Used to look at non-abs paths... but these are probably code-generated into build directory
     # # Handle any entries without absolute source paths
     # for entry in [x for x in gcc if not all(os.path.isabs(y) for y in x["<source>"])]:
