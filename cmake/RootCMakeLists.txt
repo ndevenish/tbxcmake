@@ -101,6 +101,19 @@ set(LIBRARY_OUTPUT_DIRECTORY "lib")
 
 # Write the Boost adaptbx size_t file - this is specially generated
 include(BoostAdapTBXSizing)
+# Do the CCP4IOGenration steps
+include(CCP4IOGeneration)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/ccp4_diskio_f.c ccp4io_adaptbx/ccp4_diskio_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/ccp4/ccp4_general.c ccp4io_adaptbx/ccp4_general.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/ccp4_general_f.c ccp4io_adaptbx/ccp4_general_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/ccp4_parser_f.c ccp4io_adaptbx/ccp4_parser_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/ccp4/ccp4_program.c ccp4io_adaptbx/ccp4_program.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/ccp4_unitcell_f.c ccp4io_adaptbx/ccp4_unitcell_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/cmaplib_f.c ccp4io_adaptbx/cmaplib_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/cmtzlib_f.c ccp4io_adaptbx/cmtzlib_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/csymlib_f.c ccp4io_adaptbx/csymlib_f.c)
+rewrite_printf(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/fortran/library_f.c ccp4io_adaptbx/library_f.c)
+rewrite_csymlib(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/ccp4/csymlib.c ccp4io_adaptbx/csymlib.c)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
