@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 # 3.5 definite minimum
 
 
@@ -37,9 +37,9 @@ find_package(OpenGL)
 find_package(HDF5 REQUIRED COMPONENTS CXX)
 add_library(HDF5::CXX SHARED IMPORTED)
 set_target_properties(HDF5::CXX PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES ${HDF5_CXX_INCLUDE_DIRS}
-  INTERFACE_COMPILE_DEFINITIONS ${HDF5_CXX_DEFINITIONS}
-  IMPORTED_LOCATION             ${HDF5_CXX_LIBRARIES} )
+  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_CXX_INCLUDE_DIRS}"
+  INTERFACE_COMPILE_DEFINITIONS "${HDF5_CXX_DEFINITIONS}"
+  IMPORTED_LOCATION             "${HDF5_CXX_LIBRARIES}" )
 
 
 # Convenience macro for setting up python shared libraries
