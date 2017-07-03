@@ -200,7 +200,7 @@ class Target(object):
       info["location"] = self.output_path
     
     # Generated sources are in the build directory
-    specialSources = [x for x in self.sources if not x.startswith(fullPath)]
+    specialSources = [x for x in self.sources if not os.path.isabs(x)]
     if specialSources:
       info["generated_sources"] = specialSources
 
