@@ -168,7 +168,7 @@ class FileProcessor(object):
   def _emit_libtbx_refresh(self, refresh_list):
     # Run the libtbx-refreshing generation if we have any
     # if "libtbx_refresh" in data:
-    sources = self.macros["source_join"].join(refresh_list)
+    sources = self.macros["source_join"].join(os.path.join("${CMAKE_BINARY_DIR}", x) for x in refresh_list)
     print(self.macros["libtbx_refresh"].format(filename="libtbx_refresh.py", sources=sources), file=self.output)
     print(file=self.output)
 
