@@ -7,8 +7,8 @@
 dependencies:
   ann: [annlib, annlib_adaptbx, scitbx]
   cctbx: [boost]
-  _pycbf: ["HDF5::C"]
-  cbf: ["HDF5::C", "scitbx"]
+  _pycbf: [hdf5_c, python]
+  cbf: [hdf5_c, scitbx]
   cctbx_large_scale_merging_ext: eigen
   cctbx_xray_ext: fable
 
