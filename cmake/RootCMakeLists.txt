@@ -84,5 +84,7 @@ set(LIBRARY_OUTPUT_DIRECTORY "lib")
 # Write the Boost adaptbx size_t file - this is specially generated
 include(BoostAdapTBXSizing)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include(autogen_CMakeLists.txt)
 
