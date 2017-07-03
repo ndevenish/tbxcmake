@@ -60,6 +60,7 @@ def _normalise_yaml(data):
   data["subdirectories"] = data.get("subdirectories", [])
   data["tests"] = data.get("tests", [])
   data["shared_libraries"] = [_normalise_yaml_target(x) for x in data.get("shared_libraries", [])]
+  data["static_libraries"] = [_normalise_yaml_target(x) for x in data.get("static_libraries", [])]
   data["todo"] = data.get("todo", None)
   return data
 
@@ -98,7 +99,7 @@ class FileProcessor(object):
     self.output = StringIO()
     self.macros = {
       "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
-      "library":        "add_library ( {name}\n            {sources} )",
+      "library":        "add_library ( {name} {STATIC}\n            {sources} )",
       "source_join": "\n            ",
       "libtbx_refresh": "add_libtbx_refresh_command( ${{CMAKE_CURRENT_SOURCE_DIR}}/{filename}\n     OUTPUT {sources} )"}
     self.project = parent.project if parent else None
@@ -115,12 +116,14 @@ class FileProcessor(object):
   def _emit_library(self, library):
       library_type = "python_library" if "boost_python" in library["dependencies"] else "library"
 
+      STATIC = "STATIC" if library["static"] else ""
+
       if library_type == "python_library":
         library["dependencies"] = list(set(library["dependencies"])-{"boost_python"})
       
       # Unless the name matches the project, add the project as a dependency.
       # Python libraries have this done automatically.
-      if library["name"] != self.project and not library_type == "python_library":
+      if library["name"] != self.project and not library_type == "python_library" and self.project:
         library["dependencies"].insert(0, self.project)
 
       sources = self.macros["source_join"].join(library["sources"])
@@ -129,7 +132,7 @@ class FileProcessor(object):
       indent = ""
       libtext = StringIO()
 
-      print(self.macros[library_type].format(name=library["name"], sources=sources),
+      print(self.macros[library_type].format(name=library["name"], sources=sources, STATIC=STATIC),
         file=libtext)
       
       # Calculate any dependencies
@@ -142,7 +145,6 @@ class FileProcessor(object):
         deps = [target_name(x) for x in library["dependencies"]]
         # Work out any optional dependencies so we can test them
         optional_deps = [target_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
-
         print("target_link_libraries({name} {deps})".format(
           name=library["name"], deps=" ".join(deps)),
         file=libtext)
@@ -205,12 +207,16 @@ class FileProcessor(object):
     is_module_root = not data_project == self.project
     self.project = data_project
 
-
     # Find the module library if it's a real one
-    shared_libraries = list(data["shared_libraries"])
-    project_lib = next(iter(x for x in data["shared_libraries"] if is_module_root and x["name"] == data_project), None)
+    for lib in data["shared_libraries"]:
+      lib["static"] = False
+    for lib in data["static_libraries"]:
+      lib["static"] = True
+    library_targets = list(data["shared_libraries"]) + list(data["static_libraries"])
+    
+    project_lib = next(iter(x for x in library_targets if is_module_root and x["name"] == data_project), None)
     if project_lib:
-      shared_libraries.remove(project_lib)
+      library_targets.remove(project_lib)
 
     # If we are a module root, then we might need to emit an interface library
     if is_module_root:
@@ -240,7 +246,7 @@ class FileProcessor(object):
       self._emit_libtbx_refresh(data["libtbx_refresh"])
 
     # Emit any other library targets
-    for library in shared_libraries:
+    for library in library_targets:
       self._emit_library(library)
 
     # Emit subdirectory traversal

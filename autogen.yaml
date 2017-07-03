@@ -8,12 +8,15 @@ dependencies:
   ann: [annlib, annlib_adaptbx]
   cctbx: ["Boost::boost"]
   _pycbf: ["HDF5::C"]
+  cbf: ["HDF5::C"]
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx
 # but we still want it in the annlib folder
 forced_locations:
   ann: annlib
+  cbf: cbflib
+  # ccp4io: ccp4io
 
 # Folder to use (instead of PWD/..) for specific target/module include paths
 # This allows handling of packages with 'standard' layout. Prepend

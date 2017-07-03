@@ -119,15 +119,14 @@ class LogParser(object):
         del entry["<mode>"]
         entry["-o"] = entry["<archive>"]
         del entry["<archive>"]
+        entry["-l"] = []
         ar.append(entry)
       pickle.dump((gcc, ar), open("logparse.pickle", "wb"))
 
-    import pdb
-    pdb.set_trace()
     # Break these down into categories
     self.objects = [x for x in gcc if x["-c"]]
     self.link_targets = [x for x in gcc if not x["-c"]]
-    # self.static_targets = 
+    self.link_targets.extend(ar)
 
     # Used to look at non-abs paths... but these are probably code-generated into build directory
     # # Handle any entries without absolute source paths
@@ -155,7 +154,7 @@ class Target(object):
   def __init__(self, name, module, relative_path, module_root, sources, libraries):
 
     self.output_path = os.path.dirname(name)
-    if name.endswith(".so"):
+    if name.endswith(".so") or name.endswith(".a"):
       name, extension = os.path.splitext(os.path.basename(name))
     else:
       name = os.path.basename(name)
@@ -170,6 +169,8 @@ class Target(object):
     self.sources = sources
     self.libraries = libraries
     self.include_paths = None
+  def __repr__(self):
+    return "<Target: {}>".format(self.name)
   @property
   def is_executable(self):
     return not self.extension.endswith(".so")
@@ -178,7 +179,10 @@ class Target(object):
     return self.is_executable and ("tst" in self.name or "test" in self.name)
   @property
   def is_library(self):
-    return self.extension.endswith(".so")
+    return self.extension in {".so", ".a"}
+  @property
+  def is_static_library(self):
+    return self.extension == ".a"
   def describe(self):
     """Return a BuildDeps description dictionary"""
 
@@ -210,6 +214,8 @@ class Target(object):
 
 
 
+def _get_target(name, tlist):
+  return next(iter(x for x in tlist if x.name == name), None)
 
 def _build_target_list(logdata):
   # List of all modules and their path
@@ -263,8 +269,6 @@ def _build_target_list(logdata):
   if objects_unused:
     print("{} objects unused.".format(len(objects_unused)))
     objects_unused = [x for x in logdata.objects if id(x) in objects_unused]
-    import pdb
-    pdb.set_trace()
   return targets, modules
 
 class BuildInfo(object):
@@ -324,8 +328,12 @@ class BuildInfo(object):
 
     for target in self.targets:
       if target.is_library:
-        targetlist = data.get("shared_libraries", [])
-        data["shared_libraries"] = targetlist
+        if target.is_static_library:
+          targetlist = data.get("static_libraries", [])
+          data["static_libraries"] = targetlist
+        else:
+          targetlist = data.get("shared_libraries", [])
+          data["shared_libraries"] = targetlist
       elif target.is_executable and target.is_test:
         targetlist = data.get("tests", [])
         data["tests"] = targetlist
@@ -375,6 +383,8 @@ if __name__ == "__main__":
   targets, module_paths = _build_target_list(logdata)
   # Quick fix: Add annlib path to module list (will only be used if needed)
   module_paths["annlib"] = "annlib"
+  module_paths["ccp4io"] = "ccp4io"
+  module_paths["."] = None
   
   # Make a list of all dependencies that AREN'T targets
   all_dependencies = set(itertools.chain(*[x.libraries for x in targets]))
@@ -382,14 +392,14 @@ if __name__ == "__main__":
   print("External dependencies: ", external_dependencies)
 
   # Find any targets that match the name of a module but aren't at module level
-  # This corrects 'spotfinder'
-  misdir_modlibs = [x for x in targets if x.name == x.module and not x.path == module_paths[x.module]]
-  # If any of these don't match their directory name, then promote them up until they do
+  # This corrects 'spotfinder' and 'ccp4io' for example
+  # Find any targets that match the name of a module, and make sure they are in the right place
+  misdir_modlibs = [x for x in targets if x.name in module_paths and not x.path == module_paths[x.module]]
   if misdir_modlibs:
     # print("Found module-named libraries outside of expected path:", ", ".join(x.name for x in misdir_modlibs))
     for target in misdir_modlibs:
       prepath = target.path
-      target.path = module_paths[target.module]
+      target.path = module_paths[target.name]
       print("Moving module-named {} from {} to {}".format(target.name, prepath, target.path))
 
   # Generate the target tree information
