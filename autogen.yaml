@@ -15,6 +15,7 @@ dependencies:
   rstbx: [annlib_adaptbx, annlib]
   scitbx_examples_bevington_ext: eigen
   scitbx_lbfgs_ext: fable
+  legacy_scale: [annlib_adaptbx, annlib]
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx
