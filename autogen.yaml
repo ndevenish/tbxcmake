@@ -12,6 +12,7 @@ dependencies:
   cctbx_large_scale_merging_ext: eigen
   cctbx_xray_ext: fable
   iotbx_shelx_ext: fable
+  rstbx: [annlib_adaptbx, annlib]
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx
