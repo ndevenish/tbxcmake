@@ -135,9 +135,6 @@ class FileProcessor(object):
       sources = self.macros["source_join"].join(library["sources"])
       generated_sources = self.macros["source_join"].join(library["generated_sources"])
 
-      if "generated_sources" in library:
-        print(library["name"], library["generated_sources"])
-
       indent = ""
       libtext = StringIO()
 
