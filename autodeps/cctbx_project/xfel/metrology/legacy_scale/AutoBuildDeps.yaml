@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [annlib, cctbx, annlib_adaptbx]
+  location: lib
+  name: legacy_scale
+  sources: [scale_core.cpp, bandpass_gaussian.cpp]
+- dependencies: [cctbx, legacy_scale, ann, boost_python, scitbx_boost_python]
+  location: lib
+  name: xfel_legacy_scale_ext
+  sources: [ext.cpp]

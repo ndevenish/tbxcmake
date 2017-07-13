@@ -1,0 +1,10 @@
+shared_libraries:
+- dependencies: [ccp4io, cctbx]
+  location: lib
+  name: iotbx_mtz
+  sources: [object.cpp, crystal.cpp, dataset.cpp, column.cpp]
+- dependencies: [ccp4io, cctbx, iotbx_mtz, boost_python, scitbx_boost_python]
+  location: lib
+  name: iotbx_mtz_ext
+  sources: [ext.cpp, object_bpl.cpp, crystal_bpl.cpp, dataset_bpl.cpp, column_bpl.cpp,
+    batch_bpl.cpp]

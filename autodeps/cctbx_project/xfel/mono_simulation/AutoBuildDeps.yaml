@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [annlib, cctbx, annlib_adaptbx]
+  location: lib
+  name: xfel_mono_sim
+  sources: [bandpass_gaussian.cpp, ccixfel_core.cpp]
+- dependencies: [cctbx, ann, xfel_mono_sim, boost_python, scitbx_boost_python]
+  location: lib
+  name: xfel_mono_sim_ext
+  sources: [ext.cpp]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_model_serialize_ext
+  sources: [serialize_ext.cc]

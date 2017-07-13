@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_ramachandran_restraints_ext
+  sources: [ramachandran_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_reference_coordinate_ext
+  sources: [reference_coordinate_ext.cpp]

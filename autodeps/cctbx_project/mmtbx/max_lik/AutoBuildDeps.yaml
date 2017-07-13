@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_max_lik_ext
+  sources: [max_lik_ext.cpp, max_lik.cpp]

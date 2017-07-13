@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [ann, omptbx]
+  location: lib
+  name: dxtbxspotfinder
+  sources: [libdistl.cpp, distl.cpp]
+- dependencies: [spotfinder, omptbx, dxtbxspotfinder, boost_python, scitbx_boost_python]
+  location: lib
+  name: spotfinder_dxtbx_ext
+  sources: [ext.cpp]

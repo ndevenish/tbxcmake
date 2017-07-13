@@ -1,0 +1,12 @@
+project: spotfinder
+shared_libraries:
+- dependencies: [ann, omptbx]
+  location: lib
+  name: spotfinder
+  sources: [core_toolbox/spot.cpp, core_toolbox/libdistl.cpp, core_toolbox/hough.cpp,
+    core_toolbox/distl.cpp, core_toolbox/spotfilter.cpp]
+- dependencies: [spotfinder, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: spotfinder_distltbx_ext
+  sources: [core_toolbox/boost_python/distltbx_ext.cpp, diffraction/geometry.cpp]
+subdirectories: [core_toolbox, array_family, dxtbx_toolbox]

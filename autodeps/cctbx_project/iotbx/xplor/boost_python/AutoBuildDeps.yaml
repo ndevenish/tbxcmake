@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, iotbx_xplor, boost_python]
+  location: lib
+  name: iotbx_xplor_ext
+  sources: [xplor_ext.cpp]

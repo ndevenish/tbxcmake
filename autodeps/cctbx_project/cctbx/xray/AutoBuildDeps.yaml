@@ -1,0 +1,13 @@
+shared_libraries:
+- dependencies: [cctbx, fable, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_xray_ext
+  sources: [boost_python/conversions.cpp, boost_python/curvatures_simple.cpp, boost_python/extinction.cpp,
+    boost_python/f_model_bpl.cpp, boost_python/fast_gradients.cpp, boost_python/gradient_flags.cpp,
+    boost_python/gradients_direct.cpp, boost_python/grouped_data.cpp, boost_python/minimization.cpp,
+    boost_python/parameter_map.cpp, boost_python/sampled_model_density.cpp, boost_python/sampling_base.cpp,
+    boost_python/scatterer.cpp, boost_python/scatterer_flags.cpp, boost_python/scattering_type_registry.cpp,
+    boost_python/structure_factors_direct.cpp, boost_python/structure_factors_simple.cpp,
+    boost_python/targets.cpp, boost_python/twin_components.cpp, boost_python/twin_targets.cpp,
+    boost_python/xray_ext.cpp, targets/shelxl_wght_ls_bpl.cpp]
+subdirectories: [observations]

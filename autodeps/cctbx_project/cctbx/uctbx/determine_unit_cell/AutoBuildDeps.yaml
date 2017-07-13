@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: determine_unit_cell_ext
+  sources: [ext.cpp]

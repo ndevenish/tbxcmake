@@ -1,0 +1,15 @@
+shared_libraries:
+- location: lib
+  name: iotbx_pdb
+  sources: [hybrid_36_c.c, hybrid_36_cpp.cpp, utils.cpp, write_utils.cpp, hierarchy.cpp,
+    hierarchy_select.cpp, hierarchy_atoms.cpp, construct_hierarchy.cpp, overall_counts.cpp,
+    hierarchy_write.cpp, atom_selection.cpp, input.cpp, input_write.cpp]
+- dependencies: [iotbx_pdb, cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: iotbx_pdb_ext
+  sources: [ext.cpp, hybrid_36_bpl.cpp, common_residue_names_bpl.cpp, rna_dna_atom_names_bpl.cpp,
+    input_bpl.cpp, xray_structure_bpl.cpp]
+- dependencies: [iotbx_pdb, cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: iotbx_pdb_hierarchy_ext
+  sources: [hierarchy_ext.cpp, hierarchy_atom_bpl.cpp, hierarchy_atoms_bpl.cpp]

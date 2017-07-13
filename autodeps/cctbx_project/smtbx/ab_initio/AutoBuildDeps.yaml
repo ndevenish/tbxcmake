@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python]
+  location: lib
+  name: smtbx_ab_initio_ext
+  sources: [ab_initio_ext.cpp]

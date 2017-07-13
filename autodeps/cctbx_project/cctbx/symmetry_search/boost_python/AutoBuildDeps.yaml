@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_symmetry_search_ext
+  sources: [symmetry_search_ext.cpp]

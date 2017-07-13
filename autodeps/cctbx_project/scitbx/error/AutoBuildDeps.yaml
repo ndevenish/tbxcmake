@@ -1,0 +1,4 @@
+tests:
+- location: scitbx/error
+  name: tst_error
+  sources: [tst_error.cpp]

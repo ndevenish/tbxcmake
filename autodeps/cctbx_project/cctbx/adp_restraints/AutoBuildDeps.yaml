@@ -1,0 +1,6 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_adp_restraints_ext
+  sources: [adp_restraints_bpl.cpp, adp_restraints_ext.cpp, adp_similarity_bpl.cpp,
+    aniso_restraints_bpl.cpp, fixed_u_eq_adp_bpl.cpp, isotropic_adp_bpl.cpp, rigid_bond_bpl.cpp]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [tiff, cbf]
+  location: lib
+  name: dxtbx_ext
+  sources: [to_ewald_sphere_helpers.cc, ext.cpp]

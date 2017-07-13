@@ -1,0 +1,7 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_geometry_restraints_ext
+  sources: [angle_bpl.cpp, bond_bpl.cpp, bond_similarity_bpl.cpp, bond_sorted_bpl.cpp,
+    chirality_bpl.cpp, dihedral_bpl.cpp, geometry_restraints_ext.cpp, motif_bpl.cpp,
+    nonbonded_bpl.cpp, nonbonded_sorted_bpl.cpp, parallelity_bpl.cpp, planarity_bpl.cpp]

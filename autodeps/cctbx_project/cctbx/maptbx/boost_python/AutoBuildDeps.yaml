@@ -1,0 +1,7 @@
+shared_libraries:
+- dependencies: [cctbx, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_maptbx_ext
+  sources: [basic_map.cpp, coordinate_transformers.cpp, grid_indices_around_sites.cpp,
+    grid_tags.cpp, gridding.cpp, mapper.cpp, maptbx_ext.cpp, misc.cpp, peak_search.cpp,
+    pymol_interface.cpp, real_space_refinement.cpp, statistics.cpp, structure_factors.cpp]

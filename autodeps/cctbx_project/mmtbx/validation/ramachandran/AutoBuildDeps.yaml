@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_validation_ramachandran_ext
+  sources: [rama_eval_bpl.cpp]

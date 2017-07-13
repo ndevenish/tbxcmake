@@ -1,0 +1,2 @@
+project: dials
+subdirectories: [viewer, util, algorithms, test, array_family, model]

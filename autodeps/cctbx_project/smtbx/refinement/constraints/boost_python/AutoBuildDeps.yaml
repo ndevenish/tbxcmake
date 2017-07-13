@@ -1,0 +1,8 @@
+shared_libraries:
+- dependencies: [cctbx, smtbx_refinement_constraints, boost_python, scitbx_boost_python]
+  location: lib
+  name: smtbx_refinement_constraints_ext
+  sources: [affine.cpp, constraints_ext.cpp, direction.cpp, geometrical_hydrogens.cpp,
+    independent_scalar_parameters.cpp, occupancy.cpp, reparametrisation.cpp, rigid.cpp,
+    same_group.cpp, scatterer_parameters.cpp, shared.cpp, special_position.cpp, symmetry_equivalent.cpp,
+    u_eq_dependent_u_iso.cpp, u_iso_dependent_u_iso.cpp]

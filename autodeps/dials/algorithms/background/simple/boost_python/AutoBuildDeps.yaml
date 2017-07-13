@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_background_simple_ext
+  sources: [background_simple_ext.cc, creator.cc, modeller.cc, outlier_rejector.cc]

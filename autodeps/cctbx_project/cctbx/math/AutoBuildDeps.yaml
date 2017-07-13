@@ -1,0 +1,6 @@
+programs:
+- dependencies: [cctbx]
+  location: cctbx/math
+  name: time_trigonometry
+  sources: [time_trigonometry.cpp]
+subdirectories: [boost_python]

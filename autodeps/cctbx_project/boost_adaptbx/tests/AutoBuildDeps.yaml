@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: boost_adaptbx_python_streambuf_test_ext
+  sources: [python_streambuf_test_ext.cpp]
+tests:
+- location: boost_adaptbx/tests
+  name: tst_optional_copy
+  sources: [tst_optional_copy.cpp]

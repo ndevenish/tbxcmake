@@ -1,0 +1,4 @@
+tests:
+- location: dials/test/algorithms/spot_prediction
+  name: tst_reeke_model
+  sources: [tst_reeke_model.cc]

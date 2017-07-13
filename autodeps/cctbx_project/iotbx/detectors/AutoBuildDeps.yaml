@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: iotbx_detectors_bruker_ext
+  sources: [bruker_ext.cpp, bruker.cpp]
+- dependencies: [boost_python]
+  location: lib
+  name: iotbx_detectors_ext
+  sources: [detectors_ext.cpp, image_divider.cpp]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_statistics_ext
+  sources: [statistics_ext.cc]

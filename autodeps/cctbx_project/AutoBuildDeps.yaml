@@ -1,0 +1,21 @@
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: cma_es_ext
+  sources: [cma_es/cma/cmaes.cpp, cma_es/cma_es_ext.cpp]
+- dependencies: [boost_python]
+  include_paths: ['!#base/cctbx_project/ucif/antlr3/include', '!#base/cctbx_project/ucif/antlr3']
+  location: lib
+  name: iotbx_cif_ext
+  sources: [ucif/antlr3/src/antlr3baserecognizer.c, ucif/antlr3/src/antlr3basetree.c,
+    ucif/antlr3/src/antlr3basetreeadaptor.c, ucif/antlr3/src/antlr3bitset.c, ucif/antlr3/src/antlr3collections.c,
+    ucif/antlr3/src/antlr3commontoken.c, ucif/antlr3/src/antlr3commontree.c, ucif/antlr3/src/antlr3commontreeadaptor.c,
+    ucif/antlr3/src/antlr3commontreenodestream.c, ucif/antlr3/src/antlr3convertutf.c,
+    ucif/antlr3/src/antlr3cyclicdfa.c, ucif/antlr3/src/antlr3debughandlers.c, ucif/antlr3/src/antlr3encodings.c,
+    ucif/antlr3/src/antlr3exception.c, ucif/antlr3/src/antlr3filestream.c, ucif/antlr3/src/antlr3inputstream.c,
+    ucif/antlr3/src/antlr3intstream.c, ucif/antlr3/src/antlr3lexer.c, ucif/antlr3/src/antlr3parser.c,
+    ucif/antlr3/src/antlr3rewritestreams.c, ucif/antlr3/src/antlr3string.c, ucif/antlr3/src/antlr3tokenstream.c,
+    ucif/antlr3/src/antlr3treeparser.c, iotbx/cif/boost_python/cif_ext.cpp, ucif/cifParser.cpp,
+    ucif/cifLexer.cpp]
+subdirectories: [gltbx, prime, iotbx, rstbx, xfel, cctbx, spotfinder, fable, mmtbx,
+  scitbx, chiltbx, omptbx, boost_adaptbx, dxtbx, smtbx, cbflib_adaptbx, simtbx]

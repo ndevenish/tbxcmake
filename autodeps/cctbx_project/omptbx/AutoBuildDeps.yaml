@@ -1,0 +1,9 @@
+project: omptbx
+shared_libraries:
+- location: lib
+  name: omptbx
+  sources: [stubs.cpp]
+- dependencies: [omptbx, boost_python]
+  location: lib
+  name: omptbx_ext
+  sources: [ext.cpp]

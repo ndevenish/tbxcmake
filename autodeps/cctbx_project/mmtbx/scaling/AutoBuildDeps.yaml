@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_scaling_ext
+  sources: [scaling_ext.cpp, twinning_bpl.cpp, relative_scaling_bpl.cpp, outlier_bpl.cpp]

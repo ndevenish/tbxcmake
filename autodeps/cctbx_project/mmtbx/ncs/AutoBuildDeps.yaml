@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_ncs_ext
+  sources: [tncs_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_ncs_restraints_ext
+  sources: [restraints_ext.cpp]

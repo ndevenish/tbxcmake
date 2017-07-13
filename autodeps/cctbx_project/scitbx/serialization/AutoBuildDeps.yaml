@@ -1,0 +1,4 @@
+tests:
+- location: scitbx/serialization
+  name: tst_base_256
+  sources: [tst_base_256.cpp]

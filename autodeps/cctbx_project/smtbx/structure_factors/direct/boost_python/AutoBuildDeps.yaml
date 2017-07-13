@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python]
+  location: lib
+  name: smtbx_structure_factors_direct_ext
+  sources: [ext.cpp, standard_xray.cpp]

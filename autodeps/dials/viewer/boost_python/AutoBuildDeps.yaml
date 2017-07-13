@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_viewer_ext
+  sources: [RGB_2d.cc, RGB_2d_ext.cc]

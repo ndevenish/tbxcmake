@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_profile_model_gaussian_rs_ext
+  sources: [gaussian_rs_ext.cc]

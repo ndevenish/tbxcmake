@@ -1,0 +1,26 @@
+programs:
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: exe_dev
+  name: cctbx.convert_ccp4_symop_lib
+  sources: [convert_ccp4_symop_lib.cpp]
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: exe_dev
+  name: cctbx.find_distances
+  sources: [find_distances.cpp]
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: exe_dev
+  name: cctbx.getting_started
+  sources: [getting_started.cpp]
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: exe_dev
+  name: cctbx.lattice_symmetry
+  sources: [lattice_symmetry.cpp]
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: exe_dev
+  name: cctbx.sym_equiv_sites
+  sources: [sym_equiv_sites.cpp]
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: exe_dev
+  name: cctbx.sys_abs_equiv_space_groups
+  sources: [sys_abs_equiv_space_groups.cpp]
+subdirectories: [merging]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python]
+  location: lib
+  name: smtbx_refinement_restraints_ext
+  sources: [origin_fixing.cpp, restraints_ext.cpp]

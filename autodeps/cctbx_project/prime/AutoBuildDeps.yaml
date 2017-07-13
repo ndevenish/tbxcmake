@@ -1,0 +1,7 @@
+project: prime
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: prime_ext
+  sources: [ext.cpp]
+subdirectories: [index_ambiguity]

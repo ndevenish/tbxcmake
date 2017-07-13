@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_array_family_flex_ext
+  sources: [flex_ext.cpp, flex_hendrickson_lattman.cpp, flex_miller_index.cpp, flex_xray_scatterer.cpp]

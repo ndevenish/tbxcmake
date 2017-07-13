@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [ann, boost_python]
+  location: lib
+  name: annlib_ext
+  sources: [annlib_ext.cpp]

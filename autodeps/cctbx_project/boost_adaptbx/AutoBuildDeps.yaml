@@ -1,0 +1,27 @@
+project: boost_adaptbx
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: boost_optional_ext
+  sources: [optional_ext.cpp]
+- dependencies: [boost_python]
+  location: lib
+  name: boost_python_hybrid_times_ext
+  sources: [hybrid_times_ext.cpp]
+- dependencies: [boost_python]
+  location: lib
+  name: boost_python_meta_ext
+  sources: [meta_ext.cpp]
+- dependencies: [boost_python]
+  location: lib
+  name: boost_rational_ext
+  sources: [rational_ext.cpp]
+- dependencies: [boost_python]
+  location: lib
+  name: boost_tuple_ext
+  sources: [tuple_ext.cpp]
+- dependencies: [boost_python]
+  location: lib
+  name: std_pair_ext
+  sources: [std_pair_ext.cpp]
+subdirectories: [graph, tests]

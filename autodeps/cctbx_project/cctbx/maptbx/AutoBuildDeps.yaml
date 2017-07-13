@@ -1,0 +1,11 @@
+shared_libraries:
+- dependencies: [cctbx, cctbx_sgtbx_asu, iotbx_xplor, omptbx]
+  location: lib
+  name: asymmetric_map
+  sources: [asymmetric_map.cpp]
+- dependencies: [cctbx_sgtbx_asu, iotbx_xplor, boost_python, asymmetric_map, cctbx,
+    omptbx, scitbx_boost_python]
+  location: lib
+  name: cctbx_asymmetric_map_ext
+  sources: [asymmetric_map_ext.cpp]
+subdirectories: [boost_python]

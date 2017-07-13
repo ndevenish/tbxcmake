@@ -1,0 +1,14 @@
+shared_libraries:
+- dependencies: [cctbx, cctbx_sgtbx_asu, omptbx]
+  location: lib
+  name: mmtbx_masks
+  sources: [atom_mask.cpp]
+- dependencies: [cctbx_sgtbx_asu, boost_python, cctbx, omptbx, mmtbx_masks, scitbx_boost_python]
+  location: lib
+  name: mmtbx_masks_ext
+  sources: [masks_ext.cpp]
+tests:
+- dependencies: [iotbx_pdb, cctbx, cctbx_sgtbx_asu, omptbx, mmtbx_masks]
+  location: mmtbx/masks
+  name: tst_mask
+  sources: [tst_mask.cpp]

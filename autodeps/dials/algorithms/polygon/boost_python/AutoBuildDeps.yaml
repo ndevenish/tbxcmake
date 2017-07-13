@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_polygon_ext
+  sources: [polygon_ext.cc]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_polygon_spatial_interpolation_ext
+  sources: [spatial_interpolation_ext.cc]

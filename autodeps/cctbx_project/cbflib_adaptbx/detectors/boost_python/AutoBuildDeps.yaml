@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cbf, boost_python]
+  location: lib
+  name: cbflib_ext
+  sources: [cbflib_ext.cpp]

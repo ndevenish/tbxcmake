@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: scitbx_fftpack_ext
+  sources: [fftpack_ext.cpp]

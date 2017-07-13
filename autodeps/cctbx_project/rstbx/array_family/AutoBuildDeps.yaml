@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, rstbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: rstbx_array_family_flex_ext
+  sources: [ext.cpp, flex_rstbx_arrays.cpp]

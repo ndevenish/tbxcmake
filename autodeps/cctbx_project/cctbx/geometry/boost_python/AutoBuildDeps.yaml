@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_geometry_ext
+  sources: [geometry_ext.cpp]

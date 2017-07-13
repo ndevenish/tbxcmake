@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_dmtbx_ext
+  sources: [dmtbx_ext.cpp, triplet_generator.cpp, triplet_phase_relation.cpp]

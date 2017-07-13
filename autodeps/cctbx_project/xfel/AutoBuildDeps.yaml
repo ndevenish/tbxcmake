@@ -1,0 +1,15 @@
+project: xfel
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: acqiris_ext
+  sources: [acqiris_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: xfel_ext
+  sources: [ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: xfel_metrology_ext
+  sources: [metrology_ext.cpp]
+subdirectories: [mono_simulation, vonHamos, metrology]

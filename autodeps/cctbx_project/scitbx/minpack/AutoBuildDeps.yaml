@@ -1,0 +1,8 @@
+shared_libraries:
+- location: lib
+  name: scitbx_minpack
+  sources: [raw.cpp]
+- dependencies: [scitbx_minpack, boost_python, scitbx_boost_python]
+  location: lib
+  name: scitbx_minpack_ext
+  sources: [ext.cpp]

@@ -1,0 +1,6 @@
+shared_libraries:
+- dependencies: [boost_python, scitbx_boost_python]
+  location: lib
+  name: scitbx_sparse_ext
+  sources: [vector.cpp, matrix.cpp, approx_equal.cpp, random.cpp, lu_factorization.cpp,
+    sparse_ext.cpp]

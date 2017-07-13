@@ -1,0 +1,14 @@
+shared_libraries:
+- dependencies: [cctbx]
+  location: lib
+  name: cctbx_sgtbx_asu
+  sources: [cut.cpp, direct_space_asu.cpp, reference_table.cpp]
+- dependencies: [cctbx, cctbx_sgtbx_asu, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_sgtbx_asu_ext
+  sources: [asu_ext.cpp]
+tests:
+- dependencies: [cctbx, cctbx_sgtbx_asu]
+  location: cctbx/sgtbx/direct_space_asu/proto
+  name: tst_asu
+  sources: [tst_asu.cpp]

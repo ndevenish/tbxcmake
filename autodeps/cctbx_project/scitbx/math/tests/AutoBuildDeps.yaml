@@ -1,0 +1,4 @@
+tests:
+- location: scitbx/math/tests
+  name: tst
+  sources: [tst.cpp]

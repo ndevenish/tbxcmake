@@ -1,0 +1,13 @@
+project: rstbx
+shared_libraries:
+- dependencies: [annlib, cctbx, annlib_adaptbx]
+  location: lib
+  name: rstbx
+  sources: [dps_core/dps_core.cpp, dps_core/directional_fft.cpp, dps_core/direction.cpp,
+    indexing_api/indexing_api.cpp, diffraction/ewald_sphere.cpp, diffraction/partial_spot_position_partial_H.cpp]
+- dependencies: [cctbx, rstbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: rstbx_ext
+  sources: [ext.cpp]
+subdirectories: [simage, symmetry, diffraction, apps, indexing_api, simulation, array_family,
+  bandpass, bpcx]

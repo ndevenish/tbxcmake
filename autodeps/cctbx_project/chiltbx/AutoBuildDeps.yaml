@@ -1,0 +1,5 @@
+project: chiltbx
+tests:
+- location: chiltbx
+  name: handle_test
+  sources: [handle_test.cpp]

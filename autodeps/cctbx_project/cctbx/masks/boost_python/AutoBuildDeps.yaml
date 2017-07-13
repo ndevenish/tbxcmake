@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_masks_ext
+  sources: [masks_ext.cpp]

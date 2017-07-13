@@ -1,0 +1,6 @@
+project: ccp4io_adaptbx
+shared_libraries:
+- dependencies: [ccp4io, boost_python]
+  location: lib
+  name: ccp4io_adaptbx_ext
+  sources: [ext.cpp]

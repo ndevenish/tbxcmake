@@ -1,0 +1,8 @@
+libtbx_refresh: [iotbx/pdb/hybrid_36_fem.cpp]
+project: iotbx
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: iotbx_wildcard_ext
+  sources: [wildcard_ext.cpp]
+subdirectories: [mtz, detectors, dsn6, misc, ccp4_map, shelx, pdb, xplor]

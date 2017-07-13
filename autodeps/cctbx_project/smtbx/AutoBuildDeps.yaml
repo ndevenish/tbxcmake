@@ -1,0 +1,3 @@
+libtbx_refresh: [include/smtbx/boost_python/flex_fwd.h]
+project: smtbx
+subdirectories: [stl, refinement, array_family, ab_initio, structure_factors]

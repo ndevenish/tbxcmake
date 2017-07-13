@@ -1,0 +1,4 @@
+shared_libraries:
+- location: lib
+  name: scitbx_slatec
+  sources: [lib_c.c]

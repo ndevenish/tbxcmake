@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [rstbx, boost_python, cctbx, ann, spotfinder, scitbx_boost_python]
+  location: lib
+  name: rstbx_integration_ext
+  sources: [integration_ext.cpp]

@@ -1,0 +1,6 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_model_data_ext
+  sources: [image_volume.cc, adjacency_list.cc, shoebox.cc, observation.cc, prediction.cc,
+    pixel_list.cc, ray.cc, image.cc, data_ext.cc]

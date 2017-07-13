@@ -1,0 +1,5 @@
+shared_libraries:
+- location: lib
+  name: iotbx_xplor
+  sources: [map_reader.cpp, map_writer.cpp]
+subdirectories: [boost_python]

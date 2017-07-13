@@ -1,0 +1,45 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_attenuation_coefficient_ext
+  sources: [attenuation_coefficient_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_chemical_elements_ext
+  sources: [chemical_elements_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_covalent_radii_ext
+  sources: [covalent_radii_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_fp_fdp_ext
+  sources: [fp_fdp_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_henke_ext
+  sources: [henke_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_icsd_radii_ext
+  sources: [icsd_radii_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_neutron_ext
+  sources: [neutron_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_sasaki_ext
+  sources: [sasaki_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_tiny_pse_ext
+  sources: [tiny_pse_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_wavelengths_ext
+  sources: [wavelengths_ext.cpp]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_eltbx_xray_scattering_ext
+  sources: [xray_scattering_ext.cpp]

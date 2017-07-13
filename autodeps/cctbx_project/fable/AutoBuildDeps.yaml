@@ -1,0 +1,7 @@
+project: fable
+project_include_path: [.]
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: fable_ext
+  sources: [ext.cpp]

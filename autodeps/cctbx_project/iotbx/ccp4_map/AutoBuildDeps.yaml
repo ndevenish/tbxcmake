@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [ccp4io, cctbx, boost_python]
+  location: lib
+  name: iotbx_ccp4_map_ext
+  sources: [ext.cpp]

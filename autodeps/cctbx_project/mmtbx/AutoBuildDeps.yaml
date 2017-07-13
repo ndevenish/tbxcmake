@@ -1,0 +1,9 @@
+project: mmtbx
+shared_libraries:
+- dependencies: [boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_alignment_ext
+  sources: [alignment_ext.cpp]
+subdirectories: [building, max_lik, ncs, rsr, hydrogens, geometry, utils, f_model,
+  tls, bulk_solvent, validation, scaling, masks, den, secondary_structure, dynamics,
+  geometry_restraints, cablam, rotamer]

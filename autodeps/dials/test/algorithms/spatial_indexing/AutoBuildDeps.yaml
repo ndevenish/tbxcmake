@@ -1,0 +1,10 @@
+tests:
+- location: dials/test/algorithms/spatial_indexing
+  name: tst_collision_detection
+  sources: [tst_collision_detection.cc]
+- location: dials/test/algorithms/spatial_indexing
+  name: tst_octree
+  sources: [tst_octree.cc]
+- location: dials/test/algorithms/spatial_indexing
+  name: tst_quadtree
+  sources: [tst_quadtree.cc]

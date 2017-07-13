@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_translation_search_ext
+  sources: [fast_nv1995.cpp, fast_terms.cpp, symmetry_flags.cpp, translation_search_ext.cpp]

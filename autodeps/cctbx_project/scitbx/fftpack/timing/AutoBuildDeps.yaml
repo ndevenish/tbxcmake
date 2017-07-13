@@ -1,0 +1,10 @@
+programs:
+- dependencies: [omptbx]
+  location: scitbx/fftpack/timing
+  name: fftpack_timer
+  sources: [fftpack_timer.cpp]
+tests:
+- dependencies: [omptbx]
+  location: scitbx/fftpack/timing
+  name: test0
+  sources: [test0.cpp]

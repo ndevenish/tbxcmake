@@ -1,0 +1,4 @@
+tests:
+- location: scitbx/sparse/tests
+  name: tst_sparse
+  sources: [tst_sparse.cpp]

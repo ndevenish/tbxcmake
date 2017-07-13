@@ -1,0 +1,3 @@
+libtbx_refresh: [lib/pycbf.py]
+project: cbflib_adaptbx
+subdirectories: [detectors]

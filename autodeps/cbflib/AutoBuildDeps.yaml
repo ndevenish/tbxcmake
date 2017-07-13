@@ -1,0 +1,20 @@
+project: cbflib
+project_include_path: [include]
+shared_libraries:
+- dependencies: [python, cbf, hdf5_c]
+  location: lib
+  name: _pycbf
+  sources: [pycbf/pycbf_wrap.c, src/cbf_airy_disk.c]
+static_libraries:
+- dependencies: [scitbx, hdf5_c]
+  include_paths: ['!.']
+  location: lib
+  name: cbf
+  sources: [src/cbf.c, src/cbf_alloc.c, src/cbf_ascii.c, src/cbf_binary.c, src/cbf_byte_offset.c,
+    src/cbf_canonical.c, src/cbf_codes.c, src/cbf_compress.c, src/cbf_context.c, src/cbf_file.c,
+    src/cbf_lex.c, src/cbf_nibble_offset.c, src/cbf_packed.c, src/cbf_predictor.c,
+    src/cbf_read_binary.c, src/cbf_read_mime.c, src/cbf_simple.c, src/cbf_string.c,
+    src/cbf_stx.c, src/cbf_tree.c, src/cbf_uncompressed.c, src/cbf_write.c, src/cbf_write_binary.c,
+    src/cbf_ws.c, src/img.c, src/md5c.c, ../cctbx_project/cbflib_adaptbx/detectors/buffer_based_service.cpp,
+    ../cctbx_project/cbflib_adaptbx/detectors/cbf_adaptor.cpp, ../cctbx_project/cbflib_adaptbx/detectors/cbf_byte_offset_optimized.cpp,
+    ../cctbx_project/cbflib_adaptbx/detectors/mar_adaptor.cpp]

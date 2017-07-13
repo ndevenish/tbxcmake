@@ -1,0 +1,29 @@
+libtbx_refresh: [include/scitbx/array_family/detail/operator_functors.h, include/scitbx/array_family/detail/std_imports.h,
+  include/scitbx/array_family/operator_traits_builtin.h, include/scitbx/array_family/ref_algebra.h,
+  include/scitbx/array_family/ref_apply.h, include/scitbx/array_family/shared_algebra.h,
+  include/scitbx/array_family/shared_apply.h, include/scitbx/array_family/shared_plain_apply.h,
+  include/scitbx/array_family/shared_reductions.h, include/scitbx/array_family/small_algebra.h,
+  include/scitbx/array_family/small_apply.h, include/scitbx/array_family/small_plain_apply.h,
+  include/scitbx/array_family/small_reductions.h, include/scitbx/array_family/tiny_algebra.h,
+  include/scitbx/array_family/tiny_apply.h, include/scitbx/array_family/tiny_plain_apply.h,
+  include/scitbx/array_family/tiny_reductions.h, include/scitbx/array_family/versa_algebra.h,
+  include/scitbx/array_family/versa_apply.h, include/scitbx/array_family/versa_plain_apply.h,
+  include/scitbx/array_family/versa_reductions.h, include/scitbx/array_family/boost_python/flex_fwd.h,
+  include/scitbx/lbfgs_fem.hpp, scitbx/lbfgs/lbfgs_fem.cpp, scitbx/lbfgs/sdrive_fem.cpp]
+project: scitbx
+shared_libraries:
+- dependencies: [boost_python]
+  location: lib
+  name: scitbx_boost_python
+  sources: [boost_python/utils.cpp, boost_python/slice.cpp, array_family/boost_python/utils.cpp]
+- dependencies: [boost_python, scitbx_boost_python]
+  location: lib
+  name: scitbx_cubicle_neighbors_ext
+  sources: [cubicle_neighbors_ext.cpp]
+- dependencies: [boost_python, scitbx_boost_python]
+  location: lib
+  name: scitbx_r3_utils_ext
+  sources: [r3_utils_ext.cpp]
+subdirectories: [lbfgsb, wigner, random, lstbx, graphics_utils, suffixtree, fftpack,
+  examples, matrix, lbfgs, array_family, math, linalg, slatec, minpack, serialization,
+  iso_surface, stl, rigid_body, glmtbx, sparse, error]

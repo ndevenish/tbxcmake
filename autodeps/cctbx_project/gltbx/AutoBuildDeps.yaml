@@ -1,0 +1,46 @@
+libtbx_refresh: [gltbx/font_ucs_10x20.cpp, gltbx/font_ucs_8x13.cpp, gltbx/font_ucs_9x15.cpp,
+  gltbx/FONTS_UCS_DONE_FLAG_FILE, gltbx/gl_defines_00_bpl.cpp, gltbx/gl_defines_01_bpl.cpp,
+  gltbx/gl_defines_02_bpl.cpp, gltbx/gl_defines_03_bpl.cpp, gltbx/gl_defines_04_bpl.cpp,
+  gltbx/gl_defines_05_bpl.cpp, gltbx/gl_defines_06_bpl.cpp, gltbx/gl_defines_07_bpl.cpp,
+  gltbx/gl_functions_00_bpl.cpp, gltbx/gl_functions_01_bpl.cpp, gltbx/gl_functions_02_bpl.cpp,
+  gltbx/gl_functions_03_bpl.cpp, gltbx/gl_functions_04_bpl.cpp, gltbx/gl_functions_05_bpl.cpp,
+  gltbx/gl_functions_06_bpl.cpp, gltbx/gl_functions_07_bpl.cpp, gltbx/gl_functions_08_bpl.cpp,
+  gltbx/gl_functions_09_bpl.cpp, gltbx/gl_functions_10_bpl.cpp, gltbx/gl_functions_11_bpl.cpp,
+  gltbx/gl_functions_12_bpl.cpp, gltbx/gl_functions_13_bpl.cpp, gltbx/gl_functions_14_bpl.cpp,
+  gltbx/gl_functions_15_bpl.cpp, gltbx/glu_defines_00_bpl.cpp, gltbx/glu_defines_01_bpl.cpp,
+  gltbx/glu_functions_00_bpl.cpp, gltbx/glu_functions_01_bpl.cpp, gltbx/glu_functions_02_bpl.cpp,
+  gltbx/glu_functions_03_bpl.cpp]
+project: gltbx
+shared_libraries:
+- dependencies: [GL, GLU, boost_python, scitbx_boost_python]
+  generated_sources: [gltbx/font_ucs_8x13.cpp, gltbx/font_ucs_9x15.cpp, gltbx/font_ucs_10x20.cpp]
+  location: lib
+  name: gltbx_fonts_ext
+  sources: [fonts_ext.cpp]
+- dependencies: [GL, GLU, boost_python, scitbx_boost_python]
+  generated_sources: [gltbx/gl_defines_00_bpl.cpp, gltbx/gl_defines_01_bpl.cpp, gltbx/gl_defines_02_bpl.cpp,
+    gltbx/gl_defines_03_bpl.cpp, gltbx/gl_defines_04_bpl.cpp, gltbx/gl_defines_05_bpl.cpp,
+    gltbx/gl_defines_06_bpl.cpp, gltbx/gl_defines_07_bpl.cpp, gltbx/gl_functions_00_bpl.cpp,
+    gltbx/gl_functions_01_bpl.cpp, gltbx/gl_functions_02_bpl.cpp, gltbx/gl_functions_03_bpl.cpp,
+    gltbx/gl_functions_04_bpl.cpp, gltbx/gl_functions_05_bpl.cpp, gltbx/gl_functions_06_bpl.cpp,
+    gltbx/gl_functions_07_bpl.cpp, gltbx/gl_functions_08_bpl.cpp, gltbx/gl_functions_09_bpl.cpp,
+    gltbx/gl_functions_10_bpl.cpp, gltbx/gl_functions_11_bpl.cpp, gltbx/gl_functions_12_bpl.cpp,
+    gltbx/gl_functions_13_bpl.cpp, gltbx/gl_functions_14_bpl.cpp, gltbx/gl_functions_15_bpl.cpp]
+  location: lib
+  name: gltbx_gl_ext
+  sources: [gl_ext.cpp]
+- dependencies: [GL, GLU, boost_python, scitbx_boost_python]
+  generated_sources: [gltbx/glu_defines_00_bpl.cpp, gltbx/glu_defines_01_bpl.cpp,
+    gltbx/glu_functions_00_bpl.cpp, gltbx/glu_functions_01_bpl.cpp, gltbx/glu_functions_02_bpl.cpp,
+    gltbx/glu_functions_03_bpl.cpp]
+  location: lib
+  name: gltbx_glu_ext
+  sources: [glu_ext.cpp]
+- dependencies: [GL, GLU, boost_python, scitbx_boost_python]
+  location: lib
+  name: gltbx_quadrics_ext
+  sources: [quadrics_ext.cpp]
+- dependencies: [GL, GLU, boost_python, scitbx_boost_python]
+  location: lib
+  name: gltbx_viewer_utils_ext
+  sources: [viewer_utils_ext.cpp]

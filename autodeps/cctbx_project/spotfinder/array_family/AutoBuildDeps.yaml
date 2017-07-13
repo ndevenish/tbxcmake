@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [spotfinder, omptbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: spotfinder_array_family_flex_ext
+  sources: [flex_ext.cpp, flex_distl_spot.cpp]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, rstbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: rstbx_bpcx_detector_model_ext
+  sources: [detector_model_ext.cpp, sensor.cpp]

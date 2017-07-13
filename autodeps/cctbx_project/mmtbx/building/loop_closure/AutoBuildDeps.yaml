@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [iotbx_pdb, cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_building_loop_closure_ext
+  sources: [ccd_bpl.cpp]

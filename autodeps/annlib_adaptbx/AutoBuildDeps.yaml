@@ -1,0 +1,15 @@
+libtbx_refresh: [annlib_adaptbx/include/ANNSELF_INCLUDE/ANN.h, annlib_adaptbx/include/ANNSELF_INCLUDE/ANNperf.h,
+  annlib_adaptbx/include/ANNSELF_INCLUDE/ANNx.h, annlib_adaptbx/self_include/ANN.cpp,
+  annlib_adaptbx/self_include/bd_fix_rad_search.cpp, annlib_adaptbx/self_include/bd_pr_search.cpp,
+  annlib_adaptbx/self_include/bd_search.cpp, annlib_adaptbx/self_include/bd_tree.cpp,
+  annlib_adaptbx/self_include/bd_tree.h, annlib_adaptbx/self_include/brute.cpp, annlib_adaptbx/self_include/kd_dump.cpp,
+  annlib_adaptbx/self_include/kd_fix_rad_search.cpp, annlib_adaptbx/self_include/kd_fix_rad_search.h,
+  annlib_adaptbx/self_include/kd_pr_search.cpp, annlib_adaptbx/self_include/kd_pr_search.h,
+  annlib_adaptbx/self_include/kd_search.cpp, annlib_adaptbx/self_include/kd_search.h,
+  annlib_adaptbx/self_include/kd_split.cpp, annlib_adaptbx/self_include/kd_split.h,
+  annlib_adaptbx/self_include/kd_tree.cpp, annlib_adaptbx/self_include/kd_tree.h,
+  annlib_adaptbx/self_include/kd_util.cpp, annlib_adaptbx/self_include/kd_util.h,
+  annlib_adaptbx/self_include/perf.cpp, annlib_adaptbx/self_include/pr_queue.h, annlib_adaptbx/self_include/pr_queue_k.h]
+project: annlib_adaptbx
+project_include_path: [include, '#build/annlib_adaptbx/include/']
+subdirectories: [ann]

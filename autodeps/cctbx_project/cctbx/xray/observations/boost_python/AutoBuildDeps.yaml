@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_xray_observations_ext
+  sources: [observations.cpp, observations_ext.cpp]

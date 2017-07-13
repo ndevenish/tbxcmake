@@ -1,0 +1,6 @@
+shared_libraries:
+- dependencies: [cctbx, ann, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_shoebox_ext
+  sources: [find_overlapping.cc, mask_builder.cc, mask_code.cc, mask_empirical.cc,
+    mask_overlapping.cc, overload_checker.cc, shoebox_ext.cc]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python]
+  location: lib
+  name: iotbx_dsn6_map_ext
+  sources: [ext.cpp]

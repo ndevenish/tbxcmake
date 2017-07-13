@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python]
+  location: lib
+  name: iotbx_dtrek_ext
+  sources: [dtrek_ext.cpp]
+- dependencies: [cctbx, boost_python]
+  location: lib
+  name: iotbx_scalepack_ext
+  sources: [scalepack_ext.cpp]

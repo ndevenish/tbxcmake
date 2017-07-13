@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_integration_ext
+  sources: [corrections.cc, integration_ext.cc]
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_integration_integrator_ext
+  sources: [integration_integrator_ext.cc]

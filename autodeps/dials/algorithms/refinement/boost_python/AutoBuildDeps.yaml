@@ -1,0 +1,6 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_refinement_helpers_ext
+  sources: [gallego_yezzi.cc, gaussian_smoother.cc, mahalanobis.cc, outlier_helpers.cc,
+    parameterisation_helpers.cc, refinement_ext.cc, restraints_helpers.cc, rtmats.cc]

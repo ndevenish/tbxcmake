@@ -1,0 +1,7 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_crystal_ext
+  sources: [asu_clusters_bpl.cpp, close_packing_bpl.cpp, coordination_sequences_bpl.cpp,
+    crystal_ext.cpp, direct_space_asu_bpl.cpp, incremental_pairs_bpl.cpp, neighbors_bpl.cpp,
+    pair_tables_bpl.cpp, site_cluster_analysis_bpl.cpp, symmetry_bpl.cpp]

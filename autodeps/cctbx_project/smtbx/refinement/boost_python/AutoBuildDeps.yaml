@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, smtbx_refinement_constraints, boost_python, scitbx_boost_python]
+  location: lib
+  name: smtbx_refinement_least_squares_ext
+  sources: [least_squares_ext.cpp, weighting_schemes.cpp, least_squares.cpp]

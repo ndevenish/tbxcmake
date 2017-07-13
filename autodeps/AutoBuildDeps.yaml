@@ -1,0 +1,15 @@
+generate: false
+programs:
+- generated_sources: [iotbx/pdb/hybrid_36_fem.cpp]
+  location: iotbx/pdb
+  name: hybrid_36_fem
+- generated_sources: [scitbx/lbfgs/lbfgs_fem.cpp, scitbx/lbfgs/sdrive_fem.cpp]
+  location: scitbx/lbfgs
+  name: sdrive_fem
+shared_libraries:
+- dependencies: [GL, GLU, boost_python, scitbx_boost_python]
+  location: lib
+  name: gltbx_util_ext
+  sources: [cctbx_project/gltbx/util_ext.cpp, gui_resources/gl2ps/gl2ps.c]
+subdirectories: [annlib, ccp4io, cbflib, cctbx_project, dials, annlib_adaptbx, xia2,
+  ccp4io_adaptbx]

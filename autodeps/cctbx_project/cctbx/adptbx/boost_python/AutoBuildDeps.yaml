@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: cctbx_adptbx_ext
+  sources: [adptbx_ext.cpp, hirshfeld.cpp]

@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [eigen, boost_python]
+  location: lib
+  name: cctbx_large_scale_merging_ext
+  sources: [large_scale_merging_ext.cpp]

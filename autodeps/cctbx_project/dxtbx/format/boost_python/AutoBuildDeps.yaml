@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [tiff, cbf, hdf5]
+  location: lib
+  name: dxtbx_format_image_ext
+  sources: [image_ext.cc]
+- dependencies: [tiff, cbf, hdf5]
+  location: lib
+  name: dxtbx_format_nexus_ext
+  sources: [nexus_ext.cc]

@@ -1,0 +1,13 @@
+tests:
+- dependencies: [cctbx, smtbx_refinement_constraints]
+  location: smtbx/refinement/constraints/tests
+  name: tst_geometrical_hydrogens
+  sources: [tst_geometrical_hydrogens.cpp]
+- dependencies: [cctbx, smtbx_refinement_constraints]
+  location: smtbx/refinement/constraints/tests
+  name: tst_reparametrisation
+  sources: [tst_reparametrisation.cpp]
+- dependencies: [cctbx, smtbx_refinement_constraints]
+  location: smtbx/refinement/constraints/tests
+  name: tst_special_position
+  sources: [tst_special_position.cpp]

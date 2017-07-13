@@ -1,0 +1,7 @@
+shared_libraries:
+- location: lib
+  name: smtbx_refinement_constraints
+  sources: [affine.cpp, geometrical_hydrogens.cpp, occupancy.cpp, reparametrisation.cpp,
+    rigid.cpp, same_group.cpp, shared.cpp, special_position.cpp, symmetry_equivalent.cpp,
+    u_eq_dependent_u_iso.cpp, u_iso_dependent_u_iso.cpp]
+subdirectories: [tests, boost_python]

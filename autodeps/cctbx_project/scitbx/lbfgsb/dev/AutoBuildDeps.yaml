@@ -1,0 +1,10 @@
+programs:
+- location: scitbx/lbfgsb/dev
+  name: driver1
+  sources: [driver1.cpp]
+- location: scitbx/lbfgsb/dev
+  name: driver2
+  sources: [driver2.cpp]
+- location: scitbx/lbfgsb/dev
+  name: driver3
+  sources: [driver3.cpp]

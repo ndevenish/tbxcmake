@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: simtbx_nanoBragg_ext
+  sources: [nanoBragg_ext.cpp, nanoBragg.cpp]

@@ -1,0 +1,13 @@
+tests:
+- location: scitbx/matrix/tests
+  name: tst_cholesky
+  sources: [tst_cholesky.cpp]
+- location: scitbx/matrix/tests
+  name: tst_givens
+  sources: [tst_givens.cpp]
+- location: scitbx/matrix/tests
+  name: tst_householder
+  sources: [tst_householder.cpp]
+- location: scitbx/matrix/tests
+  name: tst_svd
+  sources: [tst_svd.cpp]

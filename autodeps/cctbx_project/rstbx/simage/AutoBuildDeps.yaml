@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, rstbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: rstbx_simage_ext
+  sources: [ext.cpp]

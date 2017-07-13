@@ -1,0 +1,6 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_algorithms_image_filter_ext
+  sources: [anisotropic_diffusion.cc, convolve.cc, distance.cc, fano_filter.cc, filter_ext.cc,
+    mean_and_variance.cc, median.cc, summed_area.cc]

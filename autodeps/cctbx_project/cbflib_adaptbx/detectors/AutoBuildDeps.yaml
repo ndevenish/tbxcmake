@@ -1,0 +1,6 @@
+subdirectories: [boost_python]
+tests:
+- dependencies: [cbf]
+  location: exe_dev
+  name: cbflib.tst_memory
+  sources: [tst_memory.cpp]

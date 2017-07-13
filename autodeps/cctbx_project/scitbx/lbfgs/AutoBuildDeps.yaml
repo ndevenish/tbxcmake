@@ -1,0 +1,10 @@
+shared_libraries:
+- dependencies: [fable, boost_python, scitbx_boost_python]
+  generated_sources: [scitbx/lbfgs/lbfgs_fem.cpp]
+  location: lib
+  name: scitbx_lbfgs_ext
+  sources: [ext.cpp]
+tests:
+- location: scitbx/lbfgs
+  name: tst_lbfgs
+  sources: [tst_lbfgs.cpp]

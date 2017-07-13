@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [boost_python, scitbx_boost_python]
+  location: lib
+  name: scitbx_lstbx_normal_equations_ext
+  sources: [lstbx_ext.cpp, normal_equations.cpp]

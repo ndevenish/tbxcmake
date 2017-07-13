@@ -1,0 +1,9 @@
+shared_libraries:
+- dependencies: [iotbx_pdb, cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_dssp_ext
+  sources: [dssp_ext.cpp]
+- dependencies: [iotbx_pdb, cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: mmtbx_secondary_structure_ext
+  sources: [ext.cpp]

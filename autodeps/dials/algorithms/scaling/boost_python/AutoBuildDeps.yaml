@@ -1,0 +1,5 @@
+shared_libraries:
+- dependencies: [cctbx, boost_python, scitbx_boost_python]
+  location: lib
+  name: dials_scaling_helpers_ext
+  sources: [obs_manager_helpers.cc, scale_parameterisation_helpers.cc, scaling_ext.cc]
