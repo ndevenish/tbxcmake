@@ -38,23 +38,35 @@ find_package(OpenGL)
 find_package(Eigen3 REQUIRED)
 
 # Add HDF5
-find_package(HDF5 REQUIRED COMPONENTS C CXX)
+find_package(HDF5 REQUIRED COMPONENTS C)
 add_library(HDF5::HDF5 INTERFACE IMPORTED)
 set_target_properties(HDF5::HDF5 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${HDF5_INCLUDE_DIRS}"
   INTERFACE_COMPILE_DEFINITIONS "${HDF5_DEFINITIONS}"
   INTERFACE_LINK_LIBRARIES      "${HDF5_LIBRARIES}" )
-add_library(HDF5::CXX INTERFACE IMPORTED)
-set_target_properties(HDF5::CXX PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_CXX_INCLUDE_DIRS}"
-  INTERFACE_COMPILE_DEFINITIONS "${HDF5_CXX_DEFINITIONS}"
-  INTERFACE_LINK_LIBRARIES      "${HDF5_CXX_LIBRARIES}" )
-add_dependencies(HDF5::CXX HDF5::HDF5)
+# add_library(HDF5::CXX INTERFACE IMPORTED)
+# set_target_properties(HDF5::CXX PROPERTIES
+#   INTERFACE_INCLUDE_DIRECTORIES "${HDF5_CXX_INCLUDE_DIRS}"
+#   INTERFACE_COMPILE_DEFINITIONS "${HDF5_CXX_DEFINITIONS}"
+#   INTERFACE_LINK_LIBRARIES      "${HDF5_CXX_LIBRARIES};HDF5::HDF5" )
+# add_dependencies(HDF5::CXX HDF5::HDF5)
 add_library(HDF5::C INTERFACE IMPORTED)
 set_target_properties(HDF5::C PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_INCLUDE_DIRS}"
   INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS}"
-  INTERFACE_LINK_LIBRARIES      "${HDF5_C_LIBRARIES}")
+  INTERFACE_LINK_LIBRARIES      "${HDF5_C_LIBRARIES};HDF5::HDF5")
+add_dependencies(HDF5::C HDF5::HDF5)
+
+message("HDF5:")
+message("      i: ${HDF5_INCLUDE_DIRS}")
+message("      D: ${HDF5_DEFINITIONS}")
+message("      l: ${HDF5_LIBRARIES}")
+message(" CXX: i: ${HDF5_CXX_INCLUDE_DIRS}")
+message("      D: ${HDF5_CXX_DEFINITIONS}")
+message("      l: ${HDF5_CXX_LIBRARIES}")
+message("   C: i: ${HDF5_C_INCLUDE_DIRS}")
+message("      D: ${HDF5_C_DEFINITIONS}")
+message("      l: ${HDF5_C_LIBRARIES}")
 
 # Convenience macro for setting up python shared libraries
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
@@ -99,7 +111,7 @@ endfunction()
 # Include the three standard 'everything' directories - module, cctbx_project and build include
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/cctbx_project ${CMAKE_BINARY_DIR}/include)
 
-set(LIBRARY_OUTPUT_DIRECTORY "lib")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${CMAKE_BINARY_DIR}/lib")
 
 # Write the Boost adaptbx size_t file - this is specially generated
 include(BoostAdapTBXSizing)

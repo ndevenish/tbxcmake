@@ -24,7 +24,7 @@ EXTERNAL_DEPENDENCY_MAP = {
   # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
   "boost_python": "Boost::python",
   "python": "Python::Libs",
-  "hdf5": "HDF5::CXX",
+  "hdf5": "HDF5::HDF5",
   "hdf5_c": "HDF5::C",
   "tiff": "TIFF::TIFF",
   "GL": "OpenGL::GL",
@@ -134,9 +134,6 @@ class FileProcessor(object):
 
       sources = self.macros["source_join"].join(library["sources"])
       generated_sources = self.macros["source_join"].join(library["generated_sources"])
-
-      if "generated_sources" in library:
-        print(library["name"], library["generated_sources"])
 
       indent = ""
       libtext = StringIO()

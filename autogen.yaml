@@ -14,6 +14,12 @@ dependencies:
   dxtbx_ext: boost_python   # dxtbx_ext seems to be missing the link to boost_python in the libtbx build
   dxtbx_format_nexus_ext: boost_python
   dxtbx_format_image_ext: boost_python
+  iotbx_shelx_ext: fable
+  rstbx: [annlib_adaptbx, annlib]
+  scitbx_examples_bevington_ext: eigen
+  scitbx_lbfgs_ext: fable
+  legacy_scale: [annlib_adaptbx, annlib]
+  xfel_mono_sim: [annlib_adaptbx, annlib]
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx

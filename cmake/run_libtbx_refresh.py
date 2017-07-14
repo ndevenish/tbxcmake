@@ -178,7 +178,7 @@ libtbx.topological_sort = generate_topological_sort()
 # import pdb
 # pdb.set_trace()
 
-class LibTBXPath(PosixPath):
+class LibTBXPath(type(Path())):
   """Slight variant to PosixPath to behave like a libtbx path"""
   __abs__ = lambda x: str(x)
 
