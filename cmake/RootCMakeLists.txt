@@ -9,6 +9,8 @@ include(LibTBXRefresher)
 option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 
+set(CMAKE_CXX_STANDARD 98)
+
 if (${BUILD_PYTHON_LIBS})
   # Add python interpreter as an imported executable
   find_package(PythonInterp REQUIRED)  
