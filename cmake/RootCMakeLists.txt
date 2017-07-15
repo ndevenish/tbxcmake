@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 # 3.5 definite minimum
 
-
 # Add the included modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 include(LibTBXRefresher)
@@ -28,6 +27,10 @@ if (${BUILD_PYTHON_LIBS})
   # Find boost python libraries
   find_package(Boost REQUIRED COMPONENTS python)
   include_directories(${PYTHON_INCLUDE_DIRS})
+  # Add python as a link property
+  set_property( TARGET Boost::python
+                APPEND 
+                PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES Python::Libs)
 else()
   find_package(Boost REQUIRED)
 endif()
@@ -71,20 +74,23 @@ message("      l: ${HDF5_C_LIBRARIES}")
 # Convenience macro for setting up python shared libraries
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
 macro(add_python_library name)
-  cmake_parse_arguments(ADDPYLIB "" "" SOURCES ${ARGN})
   if (BUILD_PYTHON_LIBS)
-    add_library(${name} MODULE ${ADDPYLIB_SOURCES})
-    # Add to a project meta-target
-    if(NOT TARGET ${PROJECT_NAME}_meta)
-      add_custom_target(${PROJECT_NAME}_meta)
-    endif()
-    # If the project name is also a target, then add it
-    if (TARGET ${PROJECT_NAME})
-      target_link_libraries(${name} ${PROJECT_NAME} Boost::python Python::Libs )
+    add_library(${name} MODULE ${ARGN})
+    # Tie to current project if we've set one
+    if (NOT ${PROJECT_NAME} MATCHES "^Project$")
+      # Add to a project meta-target
+      if(NOT TARGET ${PROJECT_NAME}_meta)
+        add_custom_target(${PROJECT_NAME}_meta)
+      endif()
       add_dependencies(${PROJECT_NAME}_meta ${name})
-    else()
-      target_link_libraries(${name} Boost::python Python::Libs )
+
+      # If the project name is also a target, then add it as a dependency
+      if (TARGET ${PROJECT_NAME})
+        target_link_libraries(${name} ${PROJECT_NAME})
+      endif()
     endif()
+
+    target_link_libraries(${name} Boost::python )
     set_target_properties(${name} PROPERTIES PREFIX "")
   endif()
 endmacro()
