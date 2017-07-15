@@ -73,7 +73,7 @@ message("      l: ${HDF5_C_LIBRARIES}")
 macro(add_python_library name)
   cmake_parse_arguments(ADDPYLIB "" "" SOURCES ${ARGN})
   if (BUILD_PYTHON_LIBS)
-    add_library(${name} SHARED ${ADDPYLIB_SOURCES})
+    add_library(${name} MODULE ${ADDPYLIB_SOURCES})
     # Add to a project meta-target
     if(NOT TARGET ${PROJECT_NAME}_meta)
       add_custom_target(${PROJECT_NAME}_meta)
