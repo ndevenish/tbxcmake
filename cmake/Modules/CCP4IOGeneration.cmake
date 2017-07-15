@@ -13,7 +13,6 @@
 
 function(rewrite_printf source dest)
   if(${source} IS_NEWER_THAN ${CMAKE_BINARY_DIR}/${dest})
-    message("File ${source} is newer than ${CMAKE_BINARY_DIR}/${dest}")
     message("Writing ${dest}")
     file(READ ${source} TEXT)
     # STRING(REGEX REPLACE ";" "\\\;" TEXT "${TEXT}")
