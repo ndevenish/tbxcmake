@@ -39,6 +39,7 @@ OPTIONAL_DEPENDENCIES = {"OpenGL::GLU"}
 # Having one of these means the others are not necessary
 IMPLICIT_DEPENDENCIES = {
   "GLU": {"GL"},
+  "boost_python": {"python"}
 }
 
 def target_name(name):
@@ -65,6 +66,7 @@ def _normalise_yaml(data):
   data["tests"] = data.get("tests", [])
   data["shared_libraries"] = [_normalise_yaml_target(x) for x in data.get("shared_libraries", [])]
   data["static_libraries"] = [_normalise_yaml_target(x) for x in data.get("static_libraries", [])]
+  data["python_extensions"] = [_normalise_yaml_target(x) for x in data.get("python_extensions", [])]
   data["todo"] = data.get("todo", None)
   return data
 
@@ -102,7 +104,7 @@ class FileProcessor(object):
 
     self.output = StringIO()
     self.macros = {
-      "python_library": "add_python_library ( {name}\n    SOURCES {sources} )",
+      "python_library": "add_python_library ( {name}\n            {sources} )",
       "library":        "add_library ( {name} {STATIC}\n            {sources} )",
       "source_join": "\n            ",
       "libtbx_refresh": "add_libtbx_refresh_command( ${{CMAKE_CURRENT_SOURCE_DIR}}/{filename}\n     OUTPUT {sources} )",
@@ -120,7 +122,7 @@ class FileProcessor(object):
     return {x[len(self.headers_directory)+1:] for x in all_headers}
 
   def _emit_library(self, library):
-      library_type = "python_library" if "boost_python" in library["dependencies"] else "library"
+      library_type = "python_library" if library["python_extension"] else "library"
 
       STATIC = "STATIC" if library["static"] else ""
 
@@ -223,9 +225,15 @@ class FileProcessor(object):
     # Find the module library if it's a real one
     for lib in data["shared_libraries"]:
       lib["static"] = False
+      lib["python_extension"] = False
     for lib in data["static_libraries"]:
       lib["static"] = True
-    library_targets = list(data["shared_libraries"]) + list(data["static_libraries"])
+      lib["python_extension"] = False
+    for lib in data["python_extensions"]:
+      lib["static"] = False
+      lib["python_extension"] = True
+
+    library_targets = list(data["shared_libraries"]) + list(data["static_libraries"]) + list(data["python_extensions"])
     
     project_lib = next(iter(x for x in library_targets if is_module_root and x["name"] == data_project), None)
     if project_lib:

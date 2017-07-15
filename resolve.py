@@ -161,8 +161,13 @@ class Target(object):
     else:
       name = os.path.basename(name)
       extension = ""
+    
     if name.startswith("lib"):
       name = name[3:]
+      self.prefix = "lib"
+    else:
+      self.prefix = ""
+
     self.name = name
     self.extension = extension
     self.module = module
@@ -173,18 +178,27 @@ class Target(object):
     self.include_paths = None
   def __repr__(self):
     return "<Target: {}>".format(self.name)
+  
   @property
   def is_executable(self):
     return not self.extension.endswith(".so")
+  
   @property
   def is_test(self):
     return self.is_executable and ("tst" in self.name or "test" in self.name)
+  
   @property
   def is_library(self):
     return self.extension in {".so", ".a"}
+  
   @property
   def is_static_library(self):
     return self.extension == ".a"
+
+  @property
+  def is_python_library(self):
+    return self.is_library and self.prefix != "lib" and "boost_python" in self.libraries
+
   def describe(self):
     """Return a BuildDeps description dictionary"""
 
@@ -329,10 +343,14 @@ class BuildInfo(object):
       data["libtbx_refresh"] = list(self.libtbx_refresh_files)
 
     for target in self.targets:
+      # Get the list to append to (targetlist)
       if target.is_library:
         if target.is_static_library:
           targetlist = data.get("static_libraries", [])
           data["static_libraries"] = targetlist
+        elif target.is_python_library:
+          targetlist = data.get("python_extensions", [])
+          data["python_extensions"] = targetlist
         else:
           targetlist = data.get("shared_libraries", [])
           data["shared_libraries"] = targetlist
