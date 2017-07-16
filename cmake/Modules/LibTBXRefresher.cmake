@@ -14,6 +14,7 @@ function(add_libtbx_refresh_command refresh_script)
   endif()
   if (NOT TARGET refresh_meta)
     add_custom_target(refresh_meta)
+    set_target_properties (refresh_meta PROPERTIES FOLDER meta)
   endif()
   # Extract the output parameters from this
   # cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -26,6 +27,7 @@ function(add_libtbx_refresh_command refresh_script)
   # Make a custom target and then tie the parent target to this
   add_custom_target(${PROJECT_NAME}_refresh
     DEPENDS ${TBXR_OUTPUT} )
+  set_target_properties (${PROJECT_NAME}_refresh PROPERTIES FOLDER refresh)
   add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_refresh)
   add_dependencies(refresh_meta ${PROJECT_NAME}_refresh)
 endfunction()
