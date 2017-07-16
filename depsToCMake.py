@@ -19,6 +19,7 @@ import yaml
 from StringIO import StringIO
 import fnmatch
 import itertools
+from collections import Counter
 
 EXTERNAL_DEPENDENCY_MAP = {
   # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
@@ -42,11 +43,23 @@ IMPLICIT_DEPENDENCIES = {
   "boost_python": {"python"}
 }
 
-def target_name(name):
+# Global target count tracker to avoid conflicts in names
+target_count = Counter()
+
+def dependency_name(name):
   """Given a dependency name, gets the 'real' target name"""
   if name in EXTERNAL_DEPENDENCY_MAP:
     return EXTERNAL_DEPENDENCY_MAP[name]
   return name
+
+def target_name(name):
+  """Given a name, returns a unique name to use for CMake target purposes"""
+  target_count[name] += 1
+  count = target_count[name]
+  if count == 1:
+    return name
+  return name + "_{}".format(count)
+
 
 def _normalise_yaml_target(data):
   data["sources"] = data.get("sources", [])
@@ -67,6 +80,8 @@ def _normalise_yaml(data):
   data["shared_libraries"] = [_normalise_yaml_target(x) for x in data.get("shared_libraries", [])]
   data["static_libraries"] = [_normalise_yaml_target(x) for x in data.get("static_libraries", [])]
   data["python_extensions"] = [_normalise_yaml_target(x) for x in data.get("python_extensions", [])]
+  data["programs"] = [_normalise_yaml_target(x) for x in data.get("programs", [])]
+  data["tests"] = [_normalise_yaml_target(x) for x in data.get("tests", [])]
   data["todo"] = data.get("todo", None)
   return data
 
@@ -121,6 +136,14 @@ class FileProcessor(object):
     all_headers = find_headers(self.headers_directory, exclusions)
     return {x[len(self.headers_directory)+1:] for x in all_headers}
 
+  def _process_dependencies(self, deps):
+    """Runs any processing on name, cross-links etc for dependencies"""
+    # Remove any implicit dependencies
+    deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in deps if x in IMPLICIT_DEPENDENCIES]))
+    # If we have an alternate name for any dependencies, use that
+    deps = [dependency_name(x) for x in deps]
+    return deps
+
   def _emit_library(self, library):
       library_type = "python_library" if library["python_extension"] else "library"
 
@@ -148,13 +171,10 @@ class FileProcessor(object):
       # Calculate any dependencies
       if library["dependencies"]:
         indent = ""
-        deps = set(library["dependencies"])
-        # Remove any implicit dependencies
-        deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in library["dependencies"] if x in IMPLICIT_DEPENDENCIES]))
-        # If we have an alternate name for any dependencies, use that
-        deps = [target_name(x) for x in library["dependencies"]]
+        deps = self._process_dependencies(set(library["dependencies"]))
+
         # Work out any optional dependencies so we can test them
-        optional_deps = [target_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
+        optional_deps = [dependency_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
         print("target_link_libraries({name} {deps})".format(
           name=library["name"], deps=" ".join(deps)),
         file=libtext)
@@ -211,6 +231,29 @@ class FileProcessor(object):
       include = " ".join([self._resolve_include_path(x) for x in data["project_include_path"]])
     print("add_library( {name} INTERFACE )".format(name=self.project), file=self.output)
     print("target_include_directories({name} INTERFACE {include})\n".format(name=self.project, include=include), file=self.output)
+
+  def _emit_program(self, data):
+    """Emits the cmake code to build an executable. Returns the target name"""
+    name = data["name"]
+    target = target_name(data["name"])
+    generated_sources = data["generated_sources"]
+
+    print("add_executable({name} {sources})".format(name=target, 
+      sources=" ".join(itertools.chain(data["sources"], generated_sources))), file=self.output)
+    deps = self._process_dependencies(set(data["dependencies"]))
+    # If name != target we collided with another, so set the name explicitly
+    if name != target:
+      print('set_target_properties({target} PROPERTIES OUTPUT_NAME "{name}")'.format(target=target, name=name), file=self.output)
+    if generated_sources:
+        print(self.macros["add_generated"].format(target=target, sources=generated_sources), file=self.output)
+    if deps:
+      print("target_link_libraries({name} {deps})".format(name=target, deps=" ".join(deps)), file=self.output)
+    return target
+      
+  def _emit_test(self, data):
+    target = self._emit_program(data)
+    print("add_test(NAME {name} COMMAND {target})".format(name=target, target=target), file=self.output)
+
 
   def process(self):
     """Read and process the dependency file"""
@@ -269,6 +312,15 @@ class FileProcessor(object):
     # Emit any other library targets
     for library in library_targets:
       self._emit_library(library)
+
+    for program in list(data["programs"]):
+      self._emit_program(program)
+      print(file=self.output)
+
+    for test in list(data["tests"]):
+      self._emit_test(test)
+      print(file=self.output)
+
 
     # Emit subdirectory traversal
     for dir in sorted(data["subdirectories"]):
