@@ -75,11 +75,11 @@ message("      l: ${HDF5_C_LIBRARIES}")
 
 function(set_project_relative_folder target)
   string(REGEX REPLACE "^${PROJECT_SOURCE_DIR}/?" "" PROJECT_RELATIVE_DIR ${CMAKE_CURRENT_LIST_DIR})
-  message("In Project ${PROJECT_SOURCE_DIR}")
-  message("           ${CMAKE_CURRENT_LIST_DIR}")
-  message("         = ${PROJECT_RELATIVE_DIR}")
+  # message("In Project ${PROJECT_SOURCE_DIR}")
+  # message("           ${CMAKE_CURRENT_LIST_DIR}")
+  # message("         = ${PROJECT_RELATIVE_DIR}")
   set_target_properties (${name} PROPERTIES FOLDER "${PROJECT_NAME}/${PROJECT_RELATIVE_DIR}")
-  message("           Setting relative folder for ${target} to ${PROJECT_RELATIVE_DIR}")
+  # message("           Setting relative folder for ${target} to ${PROJECT_RELATIVE_DIR}")
 endfunction()
 
 # Convenience function for setting up python shared libraries
