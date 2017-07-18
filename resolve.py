@@ -6,15 +6,15 @@ Automatically analyse a build log to determine the input and output targets
 of a build process.
 
 Usage: 
-  resolve.py [<buildlog>] [<overrides>] [options] [--root=<rootpath>] [--target=<target>] [--name=]
+  resolve.py <buildlog> [<overrides>] [options] [--root=<rootpath>] [--target=<target>] [--name=<name>]
 
 Options:
   -h --help          Show this screen.
   --name=<name>      Filename for writing to target [default: AutoBuildDeps.yaml]
   --target=<target>  Write build dependency files to a target directory
   --root=<rootpath>  Explicitly constrain the dependency tree to a particular root
-  --autogen=<file>   File to use for autogen information
 """
+#   --autogen=<file>   File to use for autogen information [default: Autogen.yaml]
 
 from __future__ import print_function
 import itertools
@@ -432,7 +432,7 @@ class BuildInfo(object):
 if __name__ == "__main__":
   options = docopt(__doc__)
   logging.basicConfig(level=logging.INFO)
-  logdata = LogParser(options["<buildlog>"] or "buildbuild.log")
+  logdata = LogParser(options["<buildlog>"] or "bootstrap.log")
 
   overrides_filename = options["<overrides>"] or "autogen.yaml"
 
