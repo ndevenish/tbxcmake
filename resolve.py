@@ -90,12 +90,27 @@ Options:
   --dylib         Produce a mach-o shared library that has file type MH_DYLIB.
   --nostartfiles Do not use the standard system startup files when linking.
   --Wl=<ARG>      Pass the comma separated arguments in args to the linker.
+  --framework=<NAME> This option tells the linker to search for `name.framework/name' the framework search path.
 """
 ar_usage = """Usage:
   ar <mode> <archive> <source>...
 """
+ld_usage = """Usage:
+  ld [options] [-o OUT] [-l LIB]... [<source>]...
+
+Options:
+  -o OUT          The output file
+  -l LIB          Extra library targets to link
+  --dynamic       The default.  Implied by -dylib, -bundle, or -execute
+  -m              Don't treat multiple definitions as an error.  This is no longer supported. This option is obsolete.
+  -r              Merges object files to produce another mach-o object file with file type MH_OBJECT
+  -d              Force definition of common symbols.  That is, transform tentative definitions into real definitions.
+  --bind_at_load  Sets a bit in the mach header of the resulting binary which tells dyld to bind all symbols when the binary is loaded, rather than lazily.
+"""
+
 # GCC arguments to replace -ARG with --ARG
-gcc_short_to_long = {"bundle", "dylib", "shared", "undefined", "nostartfiles"}
+gcc_short_to_long = {"bundle", "dylib", "shared", "undefined", "nostartfiles", "framework"}
+ld_short_to_long = {"dynamic", "bind_at_load"}
 
 class LogParser(object):
   def __init__(self, filename):
@@ -107,6 +122,7 @@ class LogParser(object):
       # Extract everything we recognise as a command
       gcc_lines = []
       ar_lines = []
+      ld_lines = []
       for line in open(filename):
         firstPart = next(iter(line.split()), None)
         if firstPart is None:
@@ -114,8 +130,11 @@ class LogParser(object):
         command = os.path.basename(firstPart)
         # import pdb
         # pdb.set_trace()
-        if command in {"g++", "c++", "gcc"}:
+        if command in {"g++", "c++", "gcc", "cc"}:
           gcc_lines.append(line.strip())
+        # On e.g. mac we can have direct calls to ld
+        if command == "ld":
+          ld_lines.append(line.strip())
         if command == "ar":
           ar_lines.append(line.strip())
 
@@ -123,21 +142,33 @@ class LogParser(object):
       gcc = []
       for line in gcc_lines:
         try:
-          # line = line.replace(" -shared ", " --shared ")
-          
-          # line = line.replace(" -bundle", " --bundle")
-          # line = line.replace(" -dylib", " --dylib")
           # Quick fix for replacing with following space
           line = line + " "
           for directive in gcc_short_to_long:
             line = line.replace(" -"+directive+" ", " --"+directive+" ")
           line = line.replace("--undefined ", "--undefined=")
+          line = line.replace("--framework ", "--framework=")
           line = line.replace("-Wl,", "--Wl=")
           
           gcc.append(docopt(gcc_usage, argv=shlex.split(line)[1:]))
         except SystemExit:
           logger.error("Error reading:" + line)
           raise
+      for line in ld_lines:
+        try:
+          # Quick fix for replacing with following space
+          line = line + " "
+          for directive in ld_short_to_long:
+            line = line.replace(" -"+directive+" ", " --"+directive+" ")          
+          # Just pretend that this was a gcc invocation
+          ldopt = docopt(ld_usage, argv=shlex.split(line)[1:])
+          ldopt["-c"] = False
+          ldopt["-D"] = []
+          gcc.append(ldopt)
+        except SystemExit:
+          logger.error("Error reading:" + line)
+          raise
+
       for line in ar_lines:
         try:
           entry = docopt(ar_usage, argv=shlex.split(line)[1:])
@@ -178,7 +209,7 @@ class LogParser(object):
     # Validate that for every target, we have all the sources as outputs
     for target in self.link_targets:
       for tsource in target["<source>"]:
-        assert any(x["-o"] == tsource for x in self.objects), "No source for target"
+        assert any(x["-o"] == tsource for x in itertools.chain(self.objects, self.link_targets)), "No source for target {}".format(tsource)
 
 
 class Target(object):
