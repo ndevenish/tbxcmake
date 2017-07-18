@@ -25,6 +25,7 @@ import pickle
 from functools import reduce
 import operator
 import yaml
+import re
 import logging
 logger = logging.getLogger(__name__)
 
@@ -84,10 +85,17 @@ Options:
   -w              Inhibit all warning messages
   -s              Remove all symbol table and relocation information from the executable
   --shared        Produce a shared object which can then be linked
+  --undefined=<TREAT>  Specifies how undefined symbols are to be treated.
+  --bundle        Produce a mach-o bundle that has file type MH_BUNDLE.
+  --dylib         Produce a mach-o shared library that has file type MH_DYLIB.
+  --nostartfiles Do not use the standard system startup files when linking.
+  --Wl=<ARG>      Pass the comma separated arguments in args to the linker.
 """
 ar_usage = """Usage:
   ar <mode> <archive> <source>...
 """
+# GCC arguments to replace -ARG with --ARG
+gcc_short_to_long = {"bundle", "dylib", "shared", "undefined", "nostartfiles"}
 
 class LogParser(object):
   def __init__(self, filename):
@@ -96,25 +104,46 @@ class LogParser(object):
     if os.path.isfile("logparse.pickle") and os.path.getmtime("logparse.pickle") > os.path.getmtime(filename):
       gcc, ar = pickle.load(open("logparse.pickle", "rb"))
     else:
+      # Extract everything we recognise as a command
       gcc_lines = []
       ar_lines = []
       for line in open(filename):
-        if line.startswith("g++") or line.startswith("gcc"):
+        firstPart = next(iter(line.split()), None)
+        if firstPart is None:
+          continue
+        command = os.path.basename(firstPart)
+        # import pdb
+        # pdb.set_trace()
+        if command in {"g++", "c++", "gcc"}:
           gcc_lines.append(line.strip())
-        if line.startswith("ar"):
+        if command == "ar":
           ar_lines.append(line.strip())
 
       ar = []
       gcc = []
       for line in gcc_lines:
         try:
-          line = line.replace(" -shared ", " --shared ")
+          # line = line.replace(" -shared ", " --shared ")
+          
+          # line = line.replace(" -bundle", " --bundle")
+          # line = line.replace(" -dylib", " --dylib")
+          # Quick fix for replacing with following space
+          line = line + " "
+          for directive in gcc_short_to_long:
+            line = line.replace(" -"+directive+" ", " --"+directive+" ")
+          line = line.replace("--undefined ", "--undefined=")
+          line = line.replace("-Wl,", "--Wl=")
+          
           gcc.append(docopt(gcc_usage, argv=shlex.split(line)[1:]))
         except SystemExit:
-          logger.error("Error reading ", line)
+          logger.error("Error reading:" + line)
           raise
       for line in ar_lines:
-        entry = docopt(ar_usage, argv=shlex.split(line)[1:])
+        try:
+          entry = docopt(ar_usage, argv=shlex.split(line)[1:])
+        except SystemExit:
+          logger.error("Error docopt reading: " + line)
+          raise
         assert entry["<mode>"] == "rc", "Unknown ar command"
         del entry["<mode>"]
         entry["-o"] = entry["<archive>"]
