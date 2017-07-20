@@ -31,7 +31,8 @@ EXTERNAL_DEPENDENCY_MAP = {
   "GLU": "OpenGL::GLU",
   "OpenGL": "OpenGL::GL",
   "eigen": "Eigen::Eigen",
-  "boost": "Boost::boost"
+  "boost": "Boost::boost",
+  "pcre": "PCRE::PCRE"
 }
 
 # Dependencies that are optional

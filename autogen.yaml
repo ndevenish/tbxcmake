@@ -22,6 +22,7 @@ dependencies:
   xfel_mono_sim: [annlib_adaptbx, annlib]
   ccp4io: scitbx
   cma_es_ext: scitbx
+  cbf: pcre
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx
