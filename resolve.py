@@ -473,6 +473,10 @@ if __name__ == "__main__":
   # Generate the target tree information
   tree = BuildInfo.build_target_tree(targets)
   
+  # Remove Boost from the tree
+  if "boost" in tree.subdirectories:
+    del tree.subdirectories["boost"]
+
   # Now, let's integrate the data from our overrides file
   if os.path.isfile(overrides_filename):
     override = yaml.load(open(overrides_filename))
