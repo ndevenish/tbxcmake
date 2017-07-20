@@ -247,7 +247,7 @@ class Target(object):
   
   @property
   def is_executable(self):
-    return not self.extension.endswith(".so")
+    return not self.is_library
   
   @property
   def is_test(self):
@@ -255,7 +255,7 @@ class Target(object):
   
   @property
   def is_library(self):
-    return self.extension in {".so", ".a"}
+    return self.extension in {".so", ".a", ".dylib"}
   
   @property
   def is_static_library(self):
