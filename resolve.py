@@ -494,6 +494,10 @@ if __name__ == "__main__":
   # Remove Boost from the tree
   if "boost" in tree.subdirectories:
     del tree.subdirectories["boost"]
+    bpy = [x for x in tree.targets if "boost_python.dylib" in x.name]
+    if bpy:
+      assert len(bpy) == 1
+      tree.targets.remove(bpy[0])
 
   # Now, let's integrate the data from our overrides file
   if os.path.isfile(overrides_filename):
