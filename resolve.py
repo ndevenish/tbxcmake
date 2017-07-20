@@ -461,8 +461,6 @@ if __name__ == "__main__":
   overrides_filename = options["<overrides>"] or "autogen.yaml"
 
   if options["--target"]:
-    if not os.path.isdir(options["--target"]):
-      logger.error("Error: Target must be a valid directory")
     options["--target"] = os.path.abspath(options["--target"])
 
   # Extract target metadata
