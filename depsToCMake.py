@@ -20,8 +20,8 @@ from StringIO import StringIO
 import fnmatch
 import itertools
 
+# Tells us how to convert internal dependency names to what we need in cmake
 EXTERNAL_DEPENDENCY_MAP = {
-  # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
   "boost_python": "Boost::python",
   "python": "Python::Libs",
   "hdf5": "HDF5::HDF5",
@@ -29,19 +29,20 @@ EXTERNAL_DEPENDENCY_MAP = {
   "tiff": "TIFF::TIFF",
   "GL": "OpenGL::GL",
   "GLU": "OpenGL::GLU",
+  "OpenGL": "OpenGL::GL",
   "eigen": "Eigen::Eigen",
   "boost": "Boost::boost"
 }
 
 # Dependencies that are optional
-OPTIONAL_DEPENDENCIES = {"OpenGL::GLU"}
+OPTIONAL_DEPENDENCIES = {"OpenGL::GL"}
 
 # Having one of these means the others are not necessary
 IMPLICIT_DEPENDENCIES = {
-  "GLU": {"GL"},
+  "OpenGL::GLU": {"OpenGL::GL"},
 }
 
-def target_name(name):
+def dependency_name(name):
   """Given a dependency name, gets the 'real' target name"""
   if name in EXTERNAL_DEPENDENCY_MAP:
     return EXTERNAL_DEPENDENCY_MAP[name]
@@ -147,12 +148,12 @@ class FileProcessor(object):
       if library["dependencies"]:
         indent = ""
         deps = set(library["dependencies"])
+        # If we have an alternate name for any dependencies, use that
+        deps = {dependency_name(x) for x in library["dependencies"]}
         # Remove any implicit dependencies
         deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in library["dependencies"] if x in IMPLICIT_DEPENDENCIES]))
-        # If we have an alternate name for any dependencies, use that
-        deps = [target_name(x) for x in library["dependencies"]]
         # Work out any optional dependencies so we can test them
-        optional_deps = [target_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
+        optional_deps = [dependency_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
         print("target_link_libraries({name} {deps})".format(
           name=library["name"], deps=" ".join(deps)),
         file=libtext)
