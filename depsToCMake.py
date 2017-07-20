@@ -142,7 +142,7 @@ class FileProcessor(object):
       "library":        "add_library ( {name} {STATIC}\n            {sources} )",
       "source_join": "\n            ",
       "libtbx_refresh": "add_libtbx_refresh_command( ${{CMAKE_CURRENT_SOURCE_DIR}}/{filename}\n     OUTPUT {sources} )",
-      "add_generated": "add_generated_sources({target}\n    SOURCES {sources} )"
+      "add_generated": "add_generated_sources({target}\n            {sources} )"
       }
     self.project = parent.project if parent else None
 

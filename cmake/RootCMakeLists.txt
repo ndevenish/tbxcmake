@@ -116,9 +116,7 @@ endfunction()
 
 # Add generated sources to a target
 function(add_generated_sources target )
-  cmake_parse_arguments(ADDGEN "" "" SOURCES ${ARGN})
-  set(ADDGEN_LIST "")
-  foreach(f ${ADDGEN_SOURCES})
+  foreach(f ${ARGN})
     set(ABS_SRC "${CMAKE_BINARY_DIR}/${f}" )
     set_source_files_properties("${ABS_SRC}" PROPERTIES GENERATED TRUE)
     target_sources(${target} PRIVATE ${ABS_SRC})
