@@ -362,11 +362,8 @@ class FileProcessor(object):
     output_data = self.output.getvalue()
 
     # Calculate the relative path for templating
-    print("For ", output_file)
     relative_file = os.path.relpath(output_file, start=self.root_parent.target_directory)
-    print("  Relative: {}".format(relative_file))
     template_data = find_template(relative_file)
-    print("  Template:", template_data is not None)
     # If we got ANY template data, then use that instead (even if empty)
     if template_data is not None:
       output_data = template_data
