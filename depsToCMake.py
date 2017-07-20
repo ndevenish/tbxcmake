@@ -165,7 +165,7 @@ class FileProcessor(object):
   def _process_dependencies(self, deps):
     """Runs any processing on name, cross-links etc for dependencies"""
     # If we have an alternate name for any dependencies, use that
-    deps = [dependency_name(x) for x in deps]
+    deps = {dependency_name(x) for x in deps}
 
     # Remove any implicit dependencies
     deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in deps if x in IMPLICIT_DEPENDENCIES]))
