@@ -4,13 +4,15 @@
 """Processes a dependency yaml tree into CMakeLists files.
 
 Usage:
-  depsToCMake.py <depfile> [--target=<target>] [--headers=<root>] [--scan]
+  depsToCMake.py <depfile> [options] [--target=<target>] [--headers=<root>] [--scan]
 
 Options:
   --target=<target>     Set a root folder for writing CMakeLists (else: source)
   --headers=<root>      Set a search folder for headers (else: target)
   --scan                Scan for headers and add to project library
+  --override=<path>     Location to look for custom CMakeLists [default: cmake_templates]
 """
+
 from __future__ import print_function
 from docopt import docopt
 import sys
@@ -21,8 +23,8 @@ import fnmatch
 import itertools
 from collections import Counter
 
+# Tells us how to convert internal dependency names to what we need in cmake
 EXTERNAL_DEPENDENCY_MAP = {
-  # ['cbf', 'boost_python', 'hdf5', 'tiff', 'ann', 'ccp4io', 'GL', 'GLU']
   "boost_python": "Boost::python",
   "python": "Python::Libs",
   "hdf5": "HDF5::HDF5",
@@ -30,16 +32,18 @@ EXTERNAL_DEPENDENCY_MAP = {
   "tiff": "TIFF::TIFF",
   "GL": "OpenGL::GL",
   "GLU": "OpenGL::GLU",
+  "OpenGL": "OpenGL::GL",
   "eigen": "Eigen::Eigen",
-  "boost": "Boost::boost"
+  "boost": "Boost::boost",
+  "pcre": "PCRE::PCRE"
 }
 
 # Dependencies that are optional
-OPTIONAL_DEPENDENCIES = {"OpenGL::GLU"}
+OPTIONAL_DEPENDENCIES = {"OpenGL::GL"}
 
 # Having one of these means the others are not necessary
 IMPLICIT_DEPENDENCIES = {
-  "GLU": {"GL"},
+  "OpenGL::GLU": {"OpenGL::GL"},
   "boost_python": {"python"}
 }
 
@@ -60,6 +64,20 @@ def target_name(name):
     return name
   return name + "_{}".format(count)
 
+_TEMPLATE_DIR = None
+def find_template(path):
+  """Given a path, looks for a pre-prepared template file for that path.
+  
+  Returns None if there is no template. If the found template is empty, this
+  indicates that there should be no output file written (quick hack)
+  """
+  if _TEMPLATE_DIR is None:
+    return None
+  template_path = os.path.join(_TEMPLATE_DIR, path)
+  if not os.path.isfile(template_path):
+    return None
+  source = open(template_path).read()
+  return source
 
 def _normalise_yaml_target(data):
   data["sources"] = data.get("sources", [])
@@ -104,7 +122,8 @@ def _nice_file_sorting(files):
   return sorted(files, key=lambda x: (os.path.dirname(x), os.path.basename(x)))
 
 class FileProcessor(object):
-  def __init__(self, filename, target_dir=None, headers_dir=None, parent=None, scan=True):
+  def __init__(self, filename, target_dir=None, headers_dir=None, parent=None, scan=True, override=None):
+    self.parent = parent
     self.scan = scan
     self.filename = filename
     self.source_directory = os.path.abspath(os.path.dirname(filename))
@@ -127,6 +146,13 @@ class FileProcessor(object):
       }
     self.project = parent.project if parent else None
 
+  @property
+  def root_parent(self):
+    root = self
+    while root.parent:
+      root = root.parent
+    return root
+
   def _find_project_headers(self, data):
     """Accumulate all header files in this tree, excluding:
       - specified subdirectories
@@ -138,10 +164,11 @@ class FileProcessor(object):
 
   def _process_dependencies(self, deps):
     """Runs any processing on name, cross-links etc for dependencies"""
-    # Remove any implicit dependencies
-    deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in deps if x in IMPLICIT_DEPENDENCIES]))
     # If we have an alternate name for any dependencies, use that
     deps = [dependency_name(x) for x in deps]
+
+    # Remove any implicit dependencies
+    deps = deps - set(itertools.chain(*[IMPLICIT_DEPENDENCIES[x] for x in deps if x in IMPLICIT_DEPENDENCIES]))
     return deps
 
   def _emit_library(self, library):
@@ -172,7 +199,6 @@ class FileProcessor(object):
       if library["dependencies"]:
         indent = ""
         deps = self._process_dependencies(set(library["dependencies"]))
-
         # Work out any optional dependencies so we can test them
         optional_deps = [dependency_name(x) for x in deps if x in OPTIONAL_DEPENDENCIES]
         print("target_link_libraries({name} {deps})".format(
@@ -330,11 +356,27 @@ class FileProcessor(object):
     output_filename = "CMakeLists.txt"
     if not data["generate"]:
       output_filename = "autogen_CMakeLists.txt"
+    output_file = os.path.join(self.target_directory, output_filename)
 
-    # If the folder doesn't exist, make it
-    if not os.path.isdir(self.target_directory):
-      os.makedirs(self.target_directory)
-    open(os.path.join(self.target_directory, output_filename), 'w').write(self.output.getvalue())
+    # Explicitly grab the output data (so we can overwrite if needed)
+    output_data = self.output.getvalue()
+
+    # Calculate the relative path for templating
+    print("For ", output_file)
+    relative_file = os.path.relpath(output_file, start=self.root_parent.target_directory)
+    print("  Relative: {}".format(relative_file))
+    template_data = find_template(relative_file)
+    print("  Template:", template_data is not None)
+    # If we got ANY template data, then use that instead (even if empty)
+    if template_data is not None:
+      output_data = template_data
+
+    # Don't write empty files
+    if output_data.strip():
+      # If the folder doesn't exist, make it
+      if not os.path.isdir(self.target_directory):
+        os.makedirs(self.target_directory)
+      open(output_file, 'w').write(output_data)
 
     # Now descend into each of the child processes
     for dir in data["subdirectories"]:
@@ -354,5 +396,8 @@ if __name__ == "__main__":
     assert os.path.isdir(options["--target"]) or not os.path.exists(options["--target"]), "Target exists but is not a directory"
   if options["--headers"]:
     assert os.path.isdir(options["--headers"]), "Headers path must exist"
-  FileProcessor(rootFile, target_dir=options["--target"], headers_dir=options["--headers"], scan=options["--scan"]).process()
+  if options["--override"]:
+    assert os.path.isdir(options["--override"])
+    _TEMPLATE_DIR = options["--override"]
+  FileProcessor(rootFile, target_dir=options["--target"], headers_dir=options["--headers"], scan=options["--scan"], override=options["--override"]).process()
 

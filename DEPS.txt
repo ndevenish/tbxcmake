@@ -1,0 +1,13 @@
+Required building dependencies:
+  HDF5
+  Eigen
+  Boost (w/Boost-python)
+  libTiff
+Optional building Dependencies:
+  OpenGL
+
+Run-time Binary dependencies:
+  wxPython
+
+Run-time Python package dependencies:
+

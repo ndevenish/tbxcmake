@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
-# 3.5 definite minimum
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # Add the included modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -41,6 +40,9 @@ message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
 find_package(Eigen3 REQUIRED)
+
+# Used by CBFlib, if present
+find_package(PCRE)
 
 # Add HDF5
 find_package(HDF5 REQUIRED COMPONENTS C)
