@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
-# 3.5 definite minimum
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 
 # Add the included modules
@@ -37,6 +36,7 @@ find_package(TIFF REQUIRED)
 find_package(OpenGL)
 find_package(Eigen3 REQUIRED)
 
+# Used by CBFlib, if present
 find_package(PCRE)
 
 # Add HDF5
