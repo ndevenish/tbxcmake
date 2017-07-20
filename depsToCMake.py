@@ -174,7 +174,10 @@ class FileProcessor(object):
   def _emit_library(self, library):
       library_type = "python_library" if library["python_extension"] else "library"
 
-      STATIC = "STATIC" if library["static"] else ""
+      # STATIC = "STATIC" if library["static"] else ""
+      if library["static"]:
+        print("Building {} as static-optional despite source being static".format(library["name"]))
+      STATIC = ""
 
       if library_type == "python_library":
         library["dependencies"] = list(set(library["dependencies"])-{"boost_python"})
