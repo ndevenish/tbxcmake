@@ -258,26 +258,53 @@ class FileProcessor(object):
     print("add_library( {name} INTERFACE )".format(name=self.project), file=self.output)
     print("target_include_directories({name} INTERFACE {include})\n".format(name=self.project, include=include), file=self.output)
 
-  def _emit_program(self, data):
+  def _emit_program(self, data, is_test=False):
     """Emits the cmake code to build an executable. Returns the target name"""
     name = data["name"]
     target = target_name(data["name"])
+    sources = data["sources"]
     generated_sources = data["generated_sources"]
+    
+    # IF the target is entirely generated sources, then we can't just add them separately
+    # because then the executable has nothing to base it's language selection on.
+    # Just manually set the generated_sources flag
+    if not sources and generated_sources:
+      print("# As target is entirely generated sources, manually toggle the generated property", file=self.output)
+      for source in generated_sources:
+        print('set_source_files_properties("${{CMAKE_BINARY_DIR}}/{}" PROPERTIES GENERATED TRUE)'.format(source), file=self.output)
+      sources = ["${CMAKE_BINARY_DIR}/"+x for x in generated_sources]
+      generated_sources = []
 
     print("add_executable({name} {sources})".format(name=target, 
-      sources=" ".join(itertools.chain(data["sources"], generated_sources))), file=self.output)
+      sources=" ".join(sources)), file=self.output)
     deps = self._process_dependencies(set(data["dependencies"]))
+    target_properties = []
+
     # If name != target we collided with another, so set the name explicitly
     if name != target:
-      print('set_target_properties({target} PROPERTIES OUTPUT_NAME "{name}")'.format(target=target, name=name), file=self.output)
+      target_properties.append(("OUTPUT_NAME", name))
+    
+    # If we aren't a test, we might have a special destination...
+    # This is always only 'exe_dev' from inspection of mac build
+    if not is_test and data["location"] == "exe_dev":
+      target_properties.append(("RUNTIME_OUTPUT_DIRECTORY", "${CMAKE_BINARY_DIR}/exe_dev"))
+
+    if target_properties:
+      maxlen = max(len(x) for x,y in target_properties)
+      prop_data = ["    {} {}".format(x.ljust(maxlen), y) for x, y in target_properties]
+      if len(target_properties) == 1:
+        print('set_target_properties({target} PROPERTIES {props})'.format(target=target, props=prop_data[0]), file=self.output)
+      else:
+        print('set_target_properties({target}\n    PROPERTIES\n{props}\n)'.format(target=target, props="\n".join(prop_data)), file=self.output)
+    # If (some of) the sources are generated, add them now
     if generated_sources:
-        print(self.macros["add_generated"].format(target=target, sources=generated_sources), file=self.output)
+        print(self.macros["add_generated"].format(target=target, sources=" ".join(generated_sources)), file=self.output)
     if deps:
       print("target_link_libraries({name} {deps})".format(name=target, deps=" ".join(deps)), file=self.output)
     return target
       
   def _emit_test(self, data):
-    target = self._emit_program(data)
+    target = self._emit_program(data, is_test=True)
     print("add_test(NAME {name} COMMAND {target})".format(name=target, target=target), file=self.output)
 
 
