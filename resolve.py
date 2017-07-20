@@ -456,7 +456,7 @@ class BuildInfo(object):
 if __name__ == "__main__":
   options = docopt(__doc__)
   logging.basicConfig(level=logging.INFO)
-  logdata = LogParser(options["<buildlog>"] or "bootstrap.log")
+  logdata = LogParser(options["<buildlog>"])
 
   overrides_filename = options["<overrides>"] or "autogen.yaml"
 
