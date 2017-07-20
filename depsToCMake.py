@@ -4,13 +4,15 @@
 """Processes a dependency yaml tree into CMakeLists files.
 
 Usage:
-  depsToCMake.py <depfile> [--target=<target>] [--headers=<root>] [--scan]
+  depsToCMake.py <depfile> [options] [--target=<target>] [--headers=<root>] [--scan]
 
 Options:
   --target=<target>     Set a root folder for writing CMakeLists (else: source)
   --headers=<root>      Set a search folder for headers (else: target)
   --scan                Scan for headers and add to project library
+  --override=<path>     Location to look for custom CMakeLists [default: cmake_templates]
 """
+
 from __future__ import print_function
 from docopt import docopt
 import sys
@@ -48,6 +50,21 @@ def dependency_name(name):
   if name in EXTERNAL_DEPENDENCY_MAP:
     return EXTERNAL_DEPENDENCY_MAP[name]
   return name
+
+_TEMPLATE_DIR = None
+def find_template(path):
+  """Given a path, looks for a pre-prepared template file for that path.
+  
+  Returns None if there is no template. If the found template is empty, this
+  indicates that there should be no output file written (quick hack)
+  """
+  if _TEMPLATE_DIR is None:
+    return None
+  template_path = os.path.join(_TEMPLATE_DIR, path)
+  if not os.path.isfile(template_path):
+    return None
+  source = open(template_path).read()
+  return source
 
 def _normalise_yaml_target(data):
   data["sources"] = data.get("sources", [])
@@ -89,7 +106,8 @@ def _nice_file_sorting(files):
   return sorted(files, key=lambda x: (os.path.dirname(x), os.path.basename(x)))
 
 class FileProcessor(object):
-  def __init__(self, filename, target_dir=None, headers_dir=None, parent=None, scan=True):
+  def __init__(self, filename, target_dir=None, headers_dir=None, parent=None, scan=True, override=None):
+    self.parent = parent
     self.scan = scan
     self.filename = filename
     self.source_directory = os.path.abspath(os.path.dirname(filename))
@@ -111,6 +129,13 @@ class FileProcessor(object):
       "add_generated": "add_generated_sources({target}\n    SOURCES {sources} )"
       }
     self.project = parent.project if parent else None
+
+  @property
+  def root_parent(self):
+    root = self
+    while root.parent:
+      root = root.parent
+    return root
 
   def _find_project_headers(self, data):
     """Accumulate all header files in this tree, excluding:
@@ -272,11 +297,27 @@ class FileProcessor(object):
     output_filename = "CMakeLists.txt"
     if not data["generate"]:
       output_filename = "autogen_CMakeLists.txt"
+    output_file = os.path.join(self.target_directory, output_filename)
 
-    # If the folder doesn't exist, make it
-    if not os.path.isdir(self.target_directory):
-      os.makedirs(self.target_directory)
-    open(os.path.join(self.target_directory, output_filename), 'w').write(self.output.getvalue())
+    # Explicitly grab the output data (so we can overwrite if needed)
+    output_data = self.output.getvalue()
+
+    # Calculate the relative path for templating
+    print("For ", output_file)
+    relative_file = os.path.relpath(output_file, start=self.root_parent.target_directory)
+    print("  Relative: {}".format(relative_file))
+    template_data = find_template(relative_file)
+    print("  Template:", template_data is not None)
+    # If we got ANY template data, then use that instead (even if empty)
+    if template_data is not None:
+      output_data = template_data
+
+    # Don't write empty files
+    if output_data.strip():
+      # If the folder doesn't exist, make it
+      if not os.path.isdir(self.target_directory):
+        os.makedirs(self.target_directory)
+      open(output_file, 'w').write(output_data)
 
     # Now descend into each of the child processes
     for dir in data["subdirectories"]:
@@ -296,5 +337,8 @@ if __name__ == "__main__":
     assert os.path.isdir(options["--target"]) or not os.path.exists(options["--target"]), "Target exists but is not a directory"
   if options["--headers"]:
     assert os.path.isdir(options["--headers"]), "Headers path must exist"
-  FileProcessor(rootFile, target_dir=options["--target"], headers_dir=options["--headers"], scan=options["--scan"]).process()
+  if options["--override"]:
+    assert os.path.isdir(options["--override"])
+    _TEMPLATE_DIR = options["--override"]
+  FileProcessor(rootFile, target_dir=options["--target"], headers_dir=options["--headers"], scan=options["--scan"], override=options["--override"]).process()
 
