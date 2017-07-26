@@ -1,6 +1,8 @@
 
 get_filename_component(LIBTBX_REFRESH_PY ${CMAKE_CURRENT_LIST_DIR}/../run_libtbx_refresh.py ABSOLUTE)
 
+include(CMakeParseArguments)
+
 function(add_libtbx_refresh_command refresh_script)
   # Check that we haven't done this for this project before
   if (NOT TARGET Python::Python)
