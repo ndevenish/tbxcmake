@@ -36,7 +36,7 @@ target_include_directories(cbf PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(cbf PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.)
 
 # The cbf extra files require scitbx
-target_link_libraries(cbf PUBLIC scitbx)
+target_link_libraries(cbf PUBLIC HDF5::HDF5 scitbx)
 
 # Conditionally include PCRE, or disable it
 if (TARGET PCRE::PCRE)
