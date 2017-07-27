@@ -39,8 +39,8 @@ target_include_directories(cbf PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.)
 target_link_libraries(cbf PUBLIC HDF5::HDF5 scitbx)
 
 # Conditionally include PCRE, or disable it
-if (TARGET PCRE::PCRE)
-  target_link_libraries(cbf PUBLIC PCRE::PCRE)
+if (TARGET PCRE::POSIX)
+  target_link_libraries(cbf PUBLIC PCRE::POSIX)
 else()
   target_compile_definitions(cbf PRIVATE CBF_NO_REGEX)
 endif()
