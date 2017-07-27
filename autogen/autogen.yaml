@@ -33,6 +33,7 @@ dependencies:
   asymmetric_map: [cctbx, cctbx_sgtbx_asu, iotbx_xplor, omptbx]
   iotbx_mtz: [ccp4io, cctbx]
   smtbx_refinement_constraints_ext: [cctbx, scitbx_boost_python, smtbx_refinement_constraints]
+  smtbx_refinement_constraints: scitbx
 
 
 # Change the root location of certain libraries. This handles problems 
