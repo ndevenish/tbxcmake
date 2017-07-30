@@ -13,6 +13,7 @@ Options:
   --name=<name>      Filename for writing to target [default: AutoBuildDeps.yaml]
   --target=<target>  Write build dependency files to a target directory
   --root=<rootpath>  Explicitly constrain the dependency tree to a particular root
+  --allinone         Generate one dependency file with nested subdirectory data
 """
 #   --autogen=<file>   File to use for autogen information [default: Autogen.yaml]
 
@@ -391,7 +392,7 @@ class BuildInfo(object):
   def __repr__(self):
     return "<BuildInfo {}>".format(self.path)
 
-  def generate(self):
+  def generate(self, embed_subdirs=False):
     """Generate the BuildDeps file, as a dictionary to yaml-write"""
     data = {}
 
@@ -400,7 +401,10 @@ class BuildInfo(object):
       if self.include_paths:
         data["project_include_path"] = self.include_paths
     if self.subdirectories:
-      data["subdirectories"] = self.subdirectories.keys()
+      if embed_subdirs:
+        data["subdirectories"] = {x: self.subdirectories[x].generate(embed_subdirs) for x in self.subdirectories}
+      else:
+        data["subdirectories"] = self.subdirectories.keys()
 
     if self.libtbx_refresh_files:
       data["libtbx_refresh"] = list(self.libtbx_refresh_files)
@@ -540,5 +544,9 @@ if __name__ == "__main__":
           tree.get_path(module_paths[name]).include_paths = paths
 
   if options["--target"]:
-    tree.write_depfiles(root=options["--target"], filename=options["--name"])
+    if options["--allinone"]:
+      with open(os.path.join(options["--target"], options["--name"]), "w") as f:
+        f.write(yaml.dump(tree.generate(embed_subdirs=True)))
+    else:
+      tree.write_depfiles(root=options["--target"], filename=options["--name"])
 
