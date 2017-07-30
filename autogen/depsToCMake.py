@@ -92,7 +92,6 @@ def _normalise_yaml_target(data):
   
 def _normalise_yaml(data):
   "Alter the raw yaml-read data so that we have an expected structure"
-  data["generate"] = data.get("generate", True)
   data["subdirectories"] = data.get("subdirectories", [])
   data["tests"] = data.get("tests", [])
   data["shared_libraries"] = [_normalise_yaml_target(x) for x in data.get("shared_libraries", [])]
@@ -350,7 +349,7 @@ class FileProcessor(object):
 
     # Add to project, header files that aren't owned by targets or children
     # BUT don't bother searching if we haven't got a project
-    if data["generate"] and self.project and self.scan:
+    if self.project and self.scan:
       headers = self._find_project_headers(data)
       if headers:
         print("target_sources( {project}\n  INTERFACE\n{headers}\n)\n".format(
@@ -384,7 +383,8 @@ class FileProcessor(object):
 
     # Write the target CMakeLists
     output_filename = "CMakeLists.txt"
-    if not data["generate"]:
+    # If we are the root folder, then write to a special name
+    if os.path.relpath(self.target_directory, start=self.root_parent.target_directory) == ".":
       output_filename = "autogen_CMakeLists.txt"
     output_file = os.path.join(self.target_directory, output_filename)
 

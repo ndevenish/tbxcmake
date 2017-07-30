@@ -354,7 +354,7 @@ def _build_target_list(logdata):
   return targets, modules
 
 class BuildInfo(object):
-  def __init__(self, module, path, parent=None, generate=True):
+  def __init__(self, module, path, parent=None):
     self.module = module
     self.path = path
     self.parent = parent
@@ -362,7 +362,6 @@ class BuildInfo(object):
     self.include_paths = None
     self.subdirectories = {}
     self.targets = []
-    self._generate = generate
     self.libtbx_refresh_files = []
 
   def get_path(self, path):
@@ -395,8 +394,6 @@ class BuildInfo(object):
   def generate(self):
     """Generate the BuildDeps file, as a dictionary to yaml-write"""
     data = {}
-    if not self._generate:
-      data["generate"] = self._generate
 
     if self.parent and self.module != self.parent.module:
       data["project"] = self.module
@@ -436,7 +433,7 @@ class BuildInfo(object):
   def build_target_tree(cls, targets):
     # Now we have a list of targets, along with their basic directory
     # Make a directory tree for every target
-    root = BuildInfo(None, "", generate=False)
+    root = BuildInfo(None, "")
 
     # Add each target to the dependency tree
     for target in targets:
@@ -452,6 +449,7 @@ class BuildInfo(object):
       makedirs(os.path.dirname(targetPath))
       with open(targetPath, 'w') as depfile:
         depfile.write(yaml.dump(info.generate()))
+
 
 if __name__ == "__main__":
   options = docopt(__doc__)
