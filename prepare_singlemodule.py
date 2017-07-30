@@ -7,6 +7,11 @@ Designed to make travis-based testing intuitive (e.g. working with updates
 directly on the individual repositories). This means you can check out a 
 single repository (at whatever branch or pull request it comes from) and
 have the rest of the build automatically constructed around it.
+
+Run this in the root of your 'module' directory, with:
+  - the autobuild repository checked out in a 'cmake' subdirectory
+  - Any custom parts of the build checked out into the properly named folders
+
 """
 
 import os, sys
