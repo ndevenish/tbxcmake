@@ -79,6 +79,13 @@ message("   C: i: ${HDF5_C_INCLUDE_DIRS}")
 message("      D: ${HDF5_C_DEFINITIONS_CLEAN}")
 message("      l: ${HDF5_C_LIBRARIES}")
 
+# If the compiler supports the flag, disable multichar warnings (used in boost::mpl::string)
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-Wno-multichar" MULTICHAR_FLAG)
+if(MULTICHAR_FLAG)
+  add_compile_options("-Wno-multichar")
+endif()
+
 enable_testing()
 
 function(set_project_relative_folder target)
