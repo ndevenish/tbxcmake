@@ -309,11 +309,14 @@ class FileProcessor(object):
     target = self._emit_program(data, is_test=True)
     print("add_test(NAME {name} COMMAND {target})".format(name=target, target=target), file=self.output)
 
+  def _read_source(self):
+    """Returns a yaml-loaded dictionary, from either file or preconstructed data"""
+    return yaml.load(open(self.filename))
 
   def process(self):
     """Read and process the dependency file"""
     print("Loading {}".format(self.filename))
-    data = _normalise_yaml(yaml.load(open(self.filename)))
+    data = _normalise_yaml(self._read_source())
     
     # Update the project name and emit a change if we need to
     data_project = data.get("project", self.project)
