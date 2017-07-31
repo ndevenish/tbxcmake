@@ -3,6 +3,14 @@
 """
 Prepares a directory for cmake-based building.
 
+Usage:
+  prepare_singlemodule.py [options]
+
+Options:
+  -h, --help    Show this message
+  --write-log   Writes the commit ID's of all repositories to commit_ids.txt
+  --no-cmake    Don't attempt to copy cmakelists out of cmake/cmakelists/
+
 Designed to make travis-based testing intuitive (e.g. working with updates
 directly on the individual repositories). This means you can check out a 
 single repository (at whatever branch or pull request it comes from) and
@@ -11,7 +19,6 @@ have the rest of the build automatically constructed around it.
 Run this in the root of your 'module' directory, with:
   - the autobuild repository checked out in a 'cmake' subdirectory
   - Any custom parts of the build checked out into the properly named folders
-
 """
 
 import os, sys
@@ -33,6 +40,22 @@ def merge_tree(src, dst):
       if not os.path.exists(fulldstpath):
         print("Making ", fulldstpath)
 
+def get_commit_id(folder):
+  newenv = os.environ.copy()
+  newenv["GIT_DIR"] = os.path.join(folder, ".git")
+  ret = subprocess.check_output(["git", "rev-parse", "HEAD"], env=newenv)
+  assert len(ret.strip().splitlines()) == 1
+  return ret.strip()
+
+# Parse in a docopt-like way the system arguments
+if "-h" in sys.argv or "--help" in sys.argv:
+  print(__doc__.strip())
+  sys.exit()
+options = {
+  "--write-log": "--write-log" in sys.argv,
+  "--no-cmake": "--no-cmake" in sys.argv
+}
+
 # Map of folder names to repository locations
 repositories = {
   "dials":          "https://github.com/dials/dials.git",
@@ -47,15 +70,25 @@ repositories = {
   "gui_resources":  "https://github.com/dials/gui_resources.git",
 }
 
+commit_ids = {}
 for name, url in repositories.items():
   # Assume that if the path exists at all, the user knows what they are doing
-  if os.path.exists(name):
-    continue
-  # Convert to a list if not one already (allows multiple custom parameters)
-  if isinstance(url, basestring):
-    url = [url]
-  subprocess.check_call(["git", "clone", "--depth=1"]+url)
+  if not os.path.exists(name):
+    # Convert to a list if not one already (allows multiple custom parameters)
+    if isinstance(url, basestring):
+      url = [url]
+    subprocess.check_call(["git", "clone", "--depth=1"]+url)
 
-# Copy over tree of files from cmake
-merge_tree("cmake/cmakelists", os.getcwd())
-shutil.copy2("cmake/RootCMakeLists.txt", "CMakeLists.txt")
+  if options["--write-log"]:
+    commit_ids[name] = get_commit_id(name)
+
+if options["--write-log"]:
+  with open("commit_ids.txt", "wt") as f:
+    maxlen = max(len(x) for x in commit_ids)
+    for name, sha in sorted(commit_ids.items(), key=lambda (x,y): x):
+      f.write(name.ljust(maxlen) + " " + sha + "\n")
+
+if not options["--no-cmake"]:
+  # Copy over tree of files from cmake
+  merge_tree("cmake/cmakelists", os.getcwd())
+  shutil.copy2("cmake/RootCMakeLists.txt", "CMakeLists.txt")
