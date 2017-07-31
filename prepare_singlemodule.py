@@ -36,7 +36,7 @@ def merge_tree(src, dst):
 # Map of folder names to repository locations
 repositories = {
   "dials":          "https://github.com/dials/dials.git",
-  "cctbx_project":  "https://github.com/cctbx/cctbx_project.git",
+  "cctbx_project":  ["https://github.com/ndevenish/cctbx_project.git", "--branch", "pmaster"],
   "cbflib":         "https://github.com/yayahjb/cbflib.git",
   "ccp4io":         "https://github.com/dials/ccp4io.git",
   "xia2":           "https://github.com/xia2/xia2.git",
@@ -51,7 +51,10 @@ for name, url in repositories.items():
   # Assume that if the path exists at all, the user knows what they are doing
   if os.path.exists(name):
     continue
-  subprocess.check_call(["git", "clone", "--depth=1", url])
+  # Convert to a list if not one already (allows multiple custom parameters)
+  if isinstance(url, basestring):
+    url = [url]
+  subprocess.check_call(["git", "clone", "--depth=1"]+url)
 
 # Copy over tree of files from cmake
 merge_tree("cmake/cmakelists", os.getcwd())
