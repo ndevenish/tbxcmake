@@ -77,7 +77,7 @@ for name, url in repositories.items():
     # Convert to a list if not one already (allows multiple custom parameters)
     if isinstance(url, basestring):
       url = [url]
-    subprocess.check_call(["git", "clone", "--depth=1"]+url)
+    subprocess.check_call(["git", "clone"]+url)
 
   if options["--write-log"]:
     commit_ids[name] = get_commit_id(name)
