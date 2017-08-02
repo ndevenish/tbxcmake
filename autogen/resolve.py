@@ -14,6 +14,7 @@ Options:
   --target=<target>  Write build dependency files to a target directory
   --root=<rootpath>  Explicitly constrain the dependency tree to a particular root
   --allinone         Generate one dependency file with nested subdirectory data
+  --targetmap=<file> Write a basic target-source mapping file
 """
 #   --autogen=<file>   File to use for autogen information [default: Autogen.yaml]
 
@@ -487,10 +488,12 @@ if __name__ == "__main__":
       prepath = target.path
       target.path = module_paths[target.name]
       print("Moving module-named {} from {} to {}".format(target.name, prepath, target.path))
+      # Explicitly module == name for these...
+      target.module = target.name
 
   # Generate the target tree information
   tree = BuildInfo.build_target_tree(targets)
-  
+
   # Remove Boost from the tree
   if "boost" in tree.subdirectories:
     del tree.subdirectories["boost"]
@@ -528,6 +531,8 @@ if __name__ == "__main__":
         tree.get_path(target.path).targets.remove(target)
         tree.get_path(new_path).targets.append(target)
         target.path = new_path
+        # Reassign the module if we moved it
+        target.module = tree.get_path(new_path).module
 
     if "target_includes" in override:
       for name, paths in override["target_includes"].items():
@@ -542,6 +547,10 @@ if __name__ == "__main__":
         else:
           assert name in module_paths, "Name for extra includes {} not a target or module".format(name)
           tree.get_path(module_paths[name]).include_paths = paths
+
+  if options["--targetmap"]:
+    tdict = {x.name: {"sources": x.sources, "module": x.module} for x in targets}
+    open(options["--targetmap"], "w").write(yaml.dump(tdict))
 
   if options["--target"]:
     if options["--allinone"]:
