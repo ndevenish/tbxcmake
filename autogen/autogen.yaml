@@ -47,6 +47,7 @@ forced_locations:
   gltbx_util_ext: cctbx_project/gltbx
   hybrid_36_fem: cctbx_project/iotbx/pdb
   sdrive_fem: cctbx_project/scitbx/lbfgs
+  iotbx_cif_ext: cctbx_project/iotbx/cif/boost_python
   # ccp4io: ccp4io
 
 # Folder to use (instead of PWD/..) for specific target/module include paths
