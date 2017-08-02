@@ -10,6 +10,9 @@ Options:
   -h, --help    Show this message
   --write-log   Writes the commit ID's of all repositories to commit_ids.txt
   --no-cmake    Don't attempt to copy cmakelists out of cmake/cmakelists/
+  --shallow     Only get a shallow clone of each repository.
+  --reference=<DIR> Use an existing location as a git clone reference. Each
+                    repository is assumed to exist as a subdirectory of this.
 
 Designed to make travis-based testing intuitive (e.g. working with updates
 directly on the individual repositories). This means you can check out a 
@@ -21,9 +24,13 @@ Run this in the root of your 'module' directory, with:
   - Any custom parts of the build checked out into the properly named folders
 """
 
+from __future__ import print_function
+
 import os, sys
 import subprocess
 import shutil
+
+import docopt
 
 def merge_tree(src, dst):
   """Copy all files in source tree to destination, merging with an existing tree."""
@@ -47,14 +54,16 @@ def get_commit_id(folder):
   assert len(ret.strip().splitlines()) == 1
   return ret.strip()
 
-# Parse in a docopt-like way the system arguments
-if "-h" in sys.argv or "--help" in sys.argv:
-  print(__doc__.strip())
-  sys.exit()
-options = {
-  "--write-log": "--write-log" in sys.argv,
-  "--no-cmake": "--no-cmake" in sys.argv
-}
+# # Parse in a docopt-like way the system arguments
+# if "-h" in sys.argv or "--help" in sys.argv:
+#   print(__doc__.strip())
+#   sys.exit()
+# options = {
+#   "--write-log": "--write-log" in sys.argv,
+#   "--no-cmake": "--no-cmake" in sys.argv,
+#   "--shallow": "--shallow" in sys.argv,
+# }
+
 
 # Map of folder names to repository locations
 repositories = {
@@ -69,15 +78,30 @@ repositories = {
   "tntbx":          "https://github.com/dials/tntbx.git",
   "gui_resources":  "https://github.com/dials/gui_resources.git",
 }
+options = docopt.docopt(__doc__)
 
 commit_ids = {}
 for name, url in repositories.items():
   # Assume that if the path exists at all, the user knows what they are doing
   if not os.path.exists(name):
+    command = ["git", "clone"]
     # Convert to a list if not one already (allows multiple custom parameters)
     if isinstance(url, basestring):
       url = [url]
-    subprocess.check_call(["git", "clone"]+url)
+
+    if options["--shallow"]:
+      command.append("--depth=1")
+    
+    # If the reference path exists, pass that through
+    if options["--reference"]:
+      ref_path = os.path.join(options["--reference"], name)
+      ref_git = os.path.join(options["--reference"], name)
+      if os.path.isdir(ref_path):
+        command.append("--reference-if-able={}".format(ref_path))
+
+    command.extend(url)
+    print("Running:", " ".join(command))
+    subprocess.check_call(command)
 
   if options["--write-log"]:
     commit_ids[name] = get_commit_id(name)
