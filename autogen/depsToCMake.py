@@ -279,6 +279,9 @@ class FileProcessor(object):
 
     print("add_executable({name} {sources})".format(name=target, 
       sources=" ".join(sources)), file=self.output)
+    # Link to it's own project - not a super way to do this but works for now
+    print("target_link_libraries({name} ${{PROJECT_NAME}})".format(name=target, module=True), file=self.output)
+
     deps = self._process_dependencies(set(data["dependencies"]))
     target_properties = []
 
