@@ -115,4 +115,8 @@ if options["--write-log"]:
 if not options["--no-cmake"]:
   # Copy over tree of files from cmake
   merge_tree("cmake/cmakelists", os.getcwd())
-  shutil.copy2("cmake/RootCMakeLists.txt", "CMakeLists.txt")
+  try:
+    shutil.copy2("cmake/RootCMakeLists.txt", "CMakeLists.txt")
+  except shutil.Error:
+    # Happens if both files are the same
+    pass
