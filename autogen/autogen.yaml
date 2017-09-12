@@ -7,7 +7,7 @@
 dependencies:
   ann: [annlib_adaptbx, scitbx]
   cctbx: [boost]
-  _pycbf: [hdf5_c, python]
+  _pycbf: [hdf5_c, python, cbf]
   cbf: [hdf5_c, scitbx]
   cctbx_large_scale_merging_ext: eigen
   cctbx_xray_ext: fable
@@ -61,11 +61,13 @@ target_includes:
   cbflib: include
   # Last entry required if in scons-config e.g. no annlib module and all sources in it
   # referenced from within annlib_adaptbx
-  annlib_adaptbx: [include, "#build/annlib_adaptbx/include/", "#base/annlib/include"]
+  annlib_adaptbx: [include, "#build/annlib_adaptbx/include/"] #, "#base/annlib/include"]
   ccp4io: ["#base/ccp4io", "#base/ccp4io/libccp4/ccp4"]
   cbf: ["!."]
   iotbx_cif_ext: ["!#base/cctbx_project/ucif/antlr3/include", "!#base/cctbx_project/ucif/antlr3"]
   fable: "."
+  ann: ["#base/annlib/include"]
+  cbf: ["#base/cbflib/include", "#base/cbflib"]
 
 # List of files generated during build, but not via the usual mechanisms. These
 # will require special case handling, but listing them here lets us know this
