@@ -29,14 +29,14 @@ if (${BUILD_PYTHON_LIBS})
     IMPORTED_LOCATION             ${PYTHON_LIBRARIES} )
 
   # Find boost python libraries
-  find_package(Boost REQUIRED COMPONENTS python)
+  find_package(Boost COMPONENTS python thread REQUIRED)
   include_directories(${PYTHON_INCLUDE_DIRS})
   # Add python as a link property
   set_property( TARGET Boost::python
                 APPEND 
                 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES Python::Libs)
 else()
-  find_package(Boost REQUIRED)
+  find_package(Boost COMPONENTS thread REQUIRED)
 endif()
 message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 
