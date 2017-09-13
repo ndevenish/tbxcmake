@@ -37,6 +37,8 @@ dependencies:
   boost_adaptbx_boost_thread_test_ext: boost_thread
   rstbx: ann
   dxtbxspotfinder: spotfinder # This is a definitely missing dependency that relies on undefined
+  legacy_scale: ann
+  xfel_mono_sim: ann
 
 # Change the root location of certain libraries. This handles problems 
 # determining the 'proper' location e.g. annlib uses sources from annlib_adaptbx
