@@ -68,6 +68,7 @@ target_includes:
   fable: "."
   ann: ["#base/annlib/include"]
   cbf: ["#base/cbflib/include", "#base/cbflib"]
+  tntbx: [".", "include"]
 
 # List of files generated during build, but not via the usual mechanisms. These
 # will require special case handling, but listing them here lets us know this

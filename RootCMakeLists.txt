@@ -14,6 +14,11 @@ set(CMAKE_CXX_STANDARD 98)
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Ensure that we can't 
+if (BOOST_ROOT)
+  set(Boost_NO_SYSTEM_PATHS ON)
+endif()
+
 if (${BUILD_PYTHON_LIBS})
   # Add python interpreter as an imported executable
   find_package(PythonInterp REQUIRED)  
@@ -39,6 +44,7 @@ else()
   find_package(Boost COMPONENTS thread REQUIRED)
 endif()
 message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
+message("      Boost-python  at: ${Boost_PYTHON_LIBRARY}")
 
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
