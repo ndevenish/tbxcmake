@@ -48,24 +48,15 @@ def merge_tree(src, dst):
         print("Making ", fulldstpath)
 
 def get_commit_id(folder):
+  """Returns the current git commit ID of a repository, given it's working dir"""
   newenv = os.environ.copy()
   newenv["GIT_DIR"] = os.path.join(folder, ".git")
   ret = subprocess.check_output(["git", "rev-parse", "HEAD"], env=newenv)
   assert len(ret.strip().splitlines()) == 1
   return ret.strip()
 
-# # Parse in a docopt-like way the system arguments
-# if "-h" in sys.argv or "--help" in sys.argv:
-#   print(__doc__.strip())
-#   sys.exit()
-# options = {
-#   "--write-log": "--write-log" in sys.argv,
-#   "--no-cmake": "--no-cmake" in sys.argv,
-#   "--shallow": "--shallow" in sys.argv,
-# }
-
-
 # Map of folder names to repository locations
+# Either "URL String" or ["URL String", "and_list", "of", "arguments"]
 repositories = {
   "dials":          "https://github.com/dials/dials.git",
   "cctbx_project":  ["https://github.com/ndevenish/cctbx_project.git", "--branch", "pmaster"],
@@ -102,6 +93,8 @@ for name, url in repositories.items():
     command.extend(url)
     print("Running:", " ".join(command))
     subprocess.check_call(command)
+  else:
+    print("{} folder exists, skipping.".format(name))
 
   if options["--write-log"]:
     commit_ids[name] = get_commit_id(name)
