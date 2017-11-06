@@ -59,7 +59,7 @@ def get_commit_id(folder):
 # Either "URL String" or ["URL String", "and_list", "of", "arguments"]
 repositories = {
   "dials":          "https://github.com/dials/dials.git",
-  "cctbx_project":  ["https://github.com/ndevenish/cctbx_project.git", "--branch", "pmaster"],
+  "cctbx_project":  "https://github.com/cctbx/cctbx_project.git",
   "cbflib":         "https://github.com/yayahjb/cbflib.git",
   "ccp4io":         "https://github.com/dials/ccp4io.git",
   "xia2":           "https://github.com/xia2/xia2.git",

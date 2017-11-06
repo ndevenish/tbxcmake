@@ -11,7 +11,7 @@ REPO_LOCATIONS=$(cat<<EOF
   cbflib            yayahjb/cbflib.git
   ccp4io            dials/ccp4io.git
   ccp4io_adaptbx    dials/ccp4io_adaptbx.git
-  cctbx_project     ndevenish/cctbx_project.git
+  cctbx_project     cctbx/cctbx_project.git
   dials             dials/dials.git
   gui_resources     dials/gui_resources.git
   tntbx             dials/tntbx.git
