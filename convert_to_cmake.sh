@@ -133,6 +133,10 @@ else
   echo "Warning: No Eigen found; this could cause build to fail"
 fi
 
+# Where is the python the distribution is using?
+PYTHON_PATH=$(libtbx.python -c "import libtbx.load_env; print(abs(libtbx.env.python_exe))")
+cmake_vars="-DPYTHON_EXECUTABLE=${PYTHON_PATH} $cmake_vars"
+
 ###############################################################################
 # Running the CMake configure
 
