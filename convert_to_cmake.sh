@@ -108,7 +108,7 @@ echo "Using boost installation in $BOOST_DIR"
 cmake_vars="$cmake_vars -DBOOST_ROOT=${BOOST_DIR}"
 
 # Use the base as a generic search location
-cmake_vars="-DCMAKE_PREFIX_PATH=$DIST/base"
+cmake_vars="$cmake_vars -DCMAKE_PREFIX_PATH=$DIST/base"
 
 # Eigen
 if [[ -d $DIST/modules/eigen ]]; then
