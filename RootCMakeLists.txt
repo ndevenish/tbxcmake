@@ -8,7 +8,7 @@ include(LibTBXRefresher)
 
 option(BUILD_PYTHON_LIBS "Build the python shared libraries"    ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries"  ON)
-option(USE_OPENMP        "Use OpenMP (if available)"            OFF)
+option(USE_OPENMP        "Use OpenMP"                           OFF)
 
 # Generate more intuitive navigation structure for IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -95,7 +95,8 @@ message("      D: ${HDF5_C_DEFINITIONS_CLEAN}")
 message("      l: ${HDF5_C_LIBRARIES}")
 
 if (${USE_OPENMP})
-  find_package(OpenMP)
+  # If we asked for OpenMP, then we'd better have it
+  find_package(OpenMP REQUIRED)
 endif()
 
 # If the compiler supports the flag, disable multichar warnings (used in boost::mpl::string)
