@@ -3,15 +3,12 @@
 
 """Run a libtbx_refresh.py refresh file.
 
-This wraps the required parts of libtbx so as to remove any dependency on 
+This wraps the required parts of libtbx so as to remove any dependency on
 preconfigured libtbx build environments.
-
-Usage: runwrap.py --root=<rootpath> --output=<outpath> <file> 
-
-Where:
-  --root=<rootpath> The module root
 """
+
 from mock import Mock
+import argparse
 import imp
 import sys
 import os
@@ -19,7 +16,7 @@ import gzip
 import math
 import base64
 from StringIO import StringIO
-from docopt import docopt
+# from docopt import docopt
 from types import ModuleType
 from pathlib2 import Path, PosixPath
 import textwrap
@@ -245,19 +242,25 @@ def inject_script(module_path, globals):
   return module
 
 if __name__ == "__main__":
-  options = docopt(__doc__)
-  source = options["<file>"]
-  assert os.path.isdir(options["--root"])
-  sys.path.insert(0, os.path.join(options["--root"], "cctbx_project"))
-  sys.path.insert(0, options["--root"])
-  # assert os.path.isdir(options["--output"])
-  if not os.path.isdir(options["--output"]):
-    os.makedirs(options["--output"])
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument("--root", metavar="<rootpath>", help="The module root", required=True)
+  parser.add_argument("--output", metavar="<outpath>", required=True)
+  parser.add_argument("file", help="Path to file to process")
+
+  args = parser.parse_args()
+
+  source = args.file
+  assert os.path.isdir(ags.root)
+  sys.path.insert(0, os.path.join(args.root, "cctbx_project"))
+  sys.path.insert(0, args.root)
+
+  if not os.path.isdir(args.output):
+    os.makedirs(args.output)
 
   fakeself = RefreshSelf()
-  fakeself.env = FakeEnv(options["--root"], options["--output"])
+  fakeself.env = FakeEnv(args.root, args.output)
   libtbx.env = fakeself.env
-  
+
   inject_script(source, {"self": fakeself})
 
 
