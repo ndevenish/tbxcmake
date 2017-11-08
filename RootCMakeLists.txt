@@ -68,7 +68,13 @@ find_package(OpenGL)
 find_package(Eigen3 REQUIRED)
 
 # Used by CBFlib, if present
-find_package(PCRE)
+#find_package(PCRE)
+# As a hack: Define the no-regex flag here
+add_library(PCRE::PCRE INTERFACE IMPORTED)
+add_library(PCRE::POSIX INTERFACE IMPORTED)
+set_target_properties(PCRE::PCRE PROPERTIES
+  INTERFACE_COMPILE_DEFINITIONS "CBF_NO_REGEX")
+#CBF_NO_REGEX
 
 # Add HDF5
 find_package(HDF5 REQUIRED COMPONENTS C)
