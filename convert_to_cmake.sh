@@ -23,6 +23,9 @@ print_usage() {
   echo "Usage: convert_to_cmake.sh <distribution>"
 }
 
+###############################################################################
+# Validation of arguments and system configuration
+
 if [[ ! -d $1 ]]; then
   print_usage
   exit 1
@@ -35,6 +38,9 @@ fi
 
 DIST=$(pwd)/$1
 
+###############################################################################
+# Validation of target distribution
+
 stage "Activating distribution"
 # Activate the distribution
 if [[ ! -f $DIST/build/setpaths.sh ]]; then
@@ -43,7 +49,9 @@ if [[ ! -f $DIST/build/setpaths.sh ]]; then
 fi
 source $DIST/build/setpaths.sh
 
-#stage "Ensuring CMake modules repository is present"
+###############################################################################
+# Fetching the CMake/conversion infrastructure
+
 # Get the CMake checkout
 ( cd $DIST/modules
   if [[ ! -d cmake ]]; then
@@ -71,11 +79,16 @@ if [[ ! -f ${python_bin_dir}/tbx2cmake ]]; then
 fi
 export PATH=${python_bin_dir}:${PATH}
 
+###############################################################################
+# Generating the CMakeLists
+
 stage "Generating CMakeLists"
 ( cd $DIST/modules
   tbx2cmake . . )
 
-# stage "Generating CMake build"
+
+###############################################################################
+# Installing boost as a dependency rather than in-build
 
 # Boost - since we don't have a real boost installation, we need to
 # probably create a new boost installation somewhere.
@@ -101,6 +114,9 @@ if [[ ! -f ${BOOST_DIR}/.completed ]]; then
     )
 fi
 
+###############################################################################
+# Working out dependent locations and CMake arguments
+
 stage "Generating CMake build"
 
 echo "Distribution uses boost $boost_version"
@@ -117,7 +133,8 @@ else
   echo "Warning: No Eigen found; this could cause build to fail"
 fi
 
-echo
+###############################################################################
+# Running the CMake configure
 
 echo "Running cmake configuration with: $cmake_vars"
 echo
