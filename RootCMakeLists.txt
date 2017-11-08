@@ -31,20 +31,9 @@ if (${BUILD_PYTHON_LIBS})
   set_target_properties(Python::Python PROPERTIES
     IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
 
-  # Add python libraries as an imported library
-  find_package(PythonLibs REQUIRED)
-  add_library(Python::Libs SHARED IMPORTED)
-  set_target_properties(Python::Libs PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS}
-    IMPORTED_LOCATION             ${PYTHON_LIBRARIES} )
-
   # Find boost python libraries
   find_package(Boost COMPONENTS python numpy REQUIRED)
   include_directories(${PYTHON_INCLUDE_DIRS})
-  # Add python as a link property
-  set_property( TARGET Boost::python
-                APPEND
-                PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES Python::Libs)
 else()
   find_package(Boost REQUIRED)
 endif()
