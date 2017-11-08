@@ -187,3 +187,5 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(autogen_CMakeLists.txt)
 
+add_custom_target(dials.find_spots
+  DEPENDS )

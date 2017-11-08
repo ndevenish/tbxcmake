@@ -250,7 +250,7 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   source = args.file
-  assert os.path.isdir(ags.root)
+  assert os.path.isdir(args.root)
   sys.path.insert(0, os.path.join(args.root, "cctbx_project"))
   sys.path.insert(0, args.root)
 
