@@ -5,6 +5,33 @@ GITHUB_PREFIX=https://github.com/
 
 set -e
 
+# Display some help for the user
+print_usage() {
+  echo "Usage: convert_to_cmake.sh [-h|--help] [--no-configure] <distribution>"
+}
+
+# Process the command arguments
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+  key="$1"
+  case $key in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --no-configure)
+      no_run_configure=1
+      shift
+      ;;
+    *)    # unknown option
+      POSITIONAL+=("$1") # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
 # Generate output style codes for pretty output
 if [[ -n "$(command -v tput)" ]]; then
   BOLD=$(tput bold)
@@ -18,19 +45,25 @@ stage() {
   echo "${NC}== ${BOLD}$*${NC} ==${LIGHT}"
 }
 
-# Display some help for the user
-print_usage() {
-  echo "Usage: convert_to_cmake.sh <distribution>"
-}
 
 ###############################################################################
 # Validation of arguments and system configuration
 
-if [[ ! -d $1 ]]; then
+
+# No arguments, no actions
+if [[ $# -eq 0 ]]; then
   print_usage
   exit 1
 fi
 
+# Must have been passed a directory
+if [[ ! -d $1 ]]; then
+  echo "Error: Argument not a directory"
+  print_usage
+  exit 1
+fi
+
+# Check we have cmake available. Todo: Check version
 if [[ -z $(command -v cmake) ]]; then
   echo "Error: cmake executable could not be found"
   exit 1
@@ -140,8 +173,13 @@ cmake_vars="-DPYTHON_EXECUTABLE=${PYTHON_PATH} $cmake_vars"
 ###############################################################################
 # Running the CMake configure
 
-echo "Running cmake configuration with: $cmake_vars"
-echo
+if [[ ! $no_run_configure ]]; then
+  echo "Running cmake configuration with: $cmake_vars"
+  echo
 
-( cd $DIST/build
-  cmake $DIST/modules $cmake_vars )
+  ( cd $DIST/build
+    cmake $DIST/modules $cmake_vars )
+else
+  echo "Skipping configure on request."
+  echo "  Would have run with: $cmake_vars"
+fi
