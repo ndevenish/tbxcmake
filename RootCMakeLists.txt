@@ -9,13 +9,16 @@ include(LibTBXRefresher)
 option(BUILD_PYTHON_LIBS "Build the python shared libraries" ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 
+# Generate more intuitive navigation structure for IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Deliberately constrain to C++98
 set(CMAKE_CXX_STANDARD 98)
+
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Ensure that we can't
+# Ensure that we can't accidentally find system boost if given a custom root
 if (BOOST_ROOT)
   set(Boost_NO_SYSTEM_PATHS ON)
 endif()
@@ -46,6 +49,8 @@ else()
 endif()
 message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 message("      Boost-python  at: ${Boost_PYTHON_LIBRARY}")
+message("      Boost-numpy   at: ${Boost_NUMPY_LIBRARY}")
+
 
 find_package(TIFF REQUIRED)
 find_package(OpenGL)
