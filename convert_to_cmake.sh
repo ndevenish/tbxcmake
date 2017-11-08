@@ -119,5 +119,8 @@ fi
 
 echo
 
+echo "Running cmake configuration with: $cmake_vars"
+echo
+
 ( cd $DIST/build
   cmake $DIST/modules $cmake_vars )
