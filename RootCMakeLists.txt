@@ -12,17 +12,17 @@ option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_CXX_STANDARD 98)
-# Generate compile_commands.json
+# Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Ensure that we can't 
+# Ensure that we can't
 if (BOOST_ROOT)
   set(Boost_NO_SYSTEM_PATHS ON)
 endif()
 
 if (${BUILD_PYTHON_LIBS})
   # Add python interpreter as an imported executable
-  find_package(PythonInterp REQUIRED)  
+  find_package(PythonInterp REQUIRED)
   add_executable(Python::Python IMPORTED)
   set_target_properties(Python::Python PROPERTIES
     IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
@@ -39,7 +39,7 @@ if (${BUILD_PYTHON_LIBS})
   include_directories(${PYTHON_INCLUDE_DIRS})
   # Add python as a link property
   set_property( TARGET Boost::python
-                APPEND 
+                APPEND
                 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES Python::Libs)
 else()
   find_package(Boost REQUIRED)
@@ -51,7 +51,7 @@ find_package(TIFF REQUIRED)
 find_package(OpenGL)
 find_package(Eigen3 REQUIRED)
 
-# Used by CBFlib, if present
+# Used by CBFlib, if present
 find_package(PCRE)
 
 # Add HDF5
@@ -125,7 +125,7 @@ function(add_python_library name)
       if (TARGET ${PROJECT_NAME})
         target_link_libraries(${name} ${PROJECT_NAME})
       endif()
-      
+
       set_project_relative_folder(${name})
     endif()
 
@@ -134,7 +134,7 @@ function(add_python_library name)
   endif()
 endfunction()
 
-# Add generated sources to a target
+# Add generated sources to a target
 function(add_generated_sources target )
   foreach(f ${ARGN})
     set(ABS_SRC "${CMAKE_BINARY_DIR}/${f}" )
