@@ -17,10 +17,6 @@ if (NOT NUMPY_INCLUDE_DIRS)
 
     find_package_handle_standard_args(NUMPY DEFAULT_MSG NUMPY_INCLUDE_DIRS)
 
-    if (NOT NUMPY_FIND_QUIETLY)
-      message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
-    endif()
-
     mark_as_advanced (NUMPY_INCLUDE_DIRS)
 endif()
 
