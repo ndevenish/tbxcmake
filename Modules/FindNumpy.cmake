@@ -7,22 +7,27 @@
 
 include(FindPackageHandleStandardArgs)
 
-if (NOT NUMPY_INCLUDE_DIRS)
+if (NOT NUMPY_INCLUDE_DIR)
     exec_program ("${PYTHON_EXECUTABLE}"
       ARGS "-c 'import numpy; print numpy.get_include()'"
-      OUTPUT_VARIABLE NUMPY_INCLUDE_DIRS
+      OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
       RETURN_VALUE NUMPY_NOT_FOUND)
 
-    set(NUMPY_INCLUDE_DIRS ${NUMPY_INCLUDE_DIRS} CACHE PATH "Numpy include path")
+    if(NUMPY_NOT_FOUND)
+        set(NUMPY_INCLUDE_DIR NUMPY-NOTFOUND)
+    endif()
+    unset(NUMPY_NOT_FOUND)
 
-    find_package_handle_standard_args(NUMPY DEFAULT_MSG NUMPY_INCLUDE_DIRS)
+    set(NUMPY_INCLUDE_DIR ${NUMPY_INCLUDE_DIR} CACHE PATH "Numpy include path")
 
-    mark_as_advanced (NUMPY_INCLUDE_DIRS)
+    mark_as_advanced (NUMPY_INCLUDE_DIR)
 endif()
+
+find_package_handle_standard_args(NUMPY DEFAULT_MSG NUMPY_INCLUDE_DIR)
 
 # If we found, or were given, an include directory
 if (NOT TARGET Python::Numpy AND NUMPY_INCLUDE_DIRS)
   add_library(Python::Numpy INTERFACE IMPORTED)
   set_target_properties(Python::Numpy PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${PYTHON_INCLUDE_DIRS}")
+    INTERFACE_INCLUDE_DIRECTORIES "${NUMPY_INCLUDE_DIR}")
 endif()
