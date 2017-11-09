@@ -44,7 +44,7 @@ if (${BUILD_PYTHON_LIBS})
   #find_package(PythonLibs REQUIRED)
   message("Python Include path: ${PYTHON_INCLUDE_DIRS}")
 
-  find_path(Numpy REQUIRED)
+  find_package(Numpy REQUIRED)
 
   # Create an imported interface that just lets us access the header files
   # add_library(Python::Headers SHARED IMPORTED)
