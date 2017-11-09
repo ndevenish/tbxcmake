@@ -131,7 +131,7 @@ boost_version=$(cd $DIST && libtbx.python -c 'import re;ver=int(re.search(r"^\s*
 # Do we need to install boost?
 BOOST_DIR=$DIST/base/boost/$boost_version
 if [[ ! -f ${BOOST_DIR}/.completed ]]; then
-  stage "Installing boost ${boost_version}"
+  stage "Installing boost ${boost_version} to base/boost/${boost_version}"
   BOOST_BUILD_DIR=$DIST/base_tmp/boost-${boost_version}
   BOOST_URL="http://sourceforge.net/projects/boost/files/boost/${boost_version}/boost_${boost_version//\./_}.tar.gz"
   mkdir -p ${BOOST_BUILD_DIR}
