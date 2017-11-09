@@ -26,7 +26,7 @@ endif()
 find_package_handle_standard_args(NUMPY DEFAULT_MSG NUMPY_INCLUDE_DIR)
 
 # If we found, or were given, an include directory
-if (NOT TARGET Python::Numpy AND NUMPY_INCLUDE_DIRS)
+if (NOT TARGET Python::Numpy AND NUMPY_INCLUDE_DIR)
   add_library(Python::Numpy INTERFACE IMPORTED)
   set_target_properties(Python::Numpy PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${NUMPY_INCLUDE_DIR}")
