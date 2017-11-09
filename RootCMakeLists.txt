@@ -32,17 +32,20 @@ if (${BUILD_PYTHON_LIBS})
     IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
 
 # Get the include from python
-  exec_program(${PYTHON_EXECUTABLE} 
+  exec_program(${PYTHON_EXECUTABLE}
     ARGS -c "\"from distutils.sysconfig import get_python_inc; print(get_python_inc())\""
     OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
     RETURN_VALUE    RUN_RETURN)
   if (${RUN_RETURN})
     message(FATAL_ERROR "Could not determine python include path from python executable")
   endif()
-  
+
   # Add python libraries as an imported library
   #find_package(PythonLibs REQUIRED)
   message("Python Include path: ${PYTHON_INCLUDE_DIRS}")
+
+  find_path(Numpy REQUIRED)
+
   # Create an imported interface that just lets us access the header files
   # add_library(Python::Headers SHARED IMPORTED)
   # set_target_properties(Python::Headers PROPERTIES
