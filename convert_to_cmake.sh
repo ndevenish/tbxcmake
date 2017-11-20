@@ -38,6 +38,7 @@ if [[ -n "$(command -v tput)" ]]; then
   NC=$(tput sgr0)
   # LIGHT=$(tput setaf 7)
   LIGHT=$'\e[90m'
+  RED=$(tput setaf 1)
 fi
 
 # Convenience function to display a header
@@ -45,6 +46,10 @@ stage() {
   echo "${NC}== ${BOLD}$*${NC} ==${LIGHT}"
 }
 
+# Normalize a path, using python
+normpath() {
+  libtbx.python -c "import os; print(os.path.normpath(\"$1\"))"
+}
 
 ###############################################################################
 # Validation of arguments and system configuration
@@ -81,6 +86,8 @@ if [[ ! -f $DIST/build/setpaths.sh ]]; then
   exit 1
 fi
 source $DIST/build/setpaths.sh
+# Use this python to rewrite the distribution
+export DIST=$(normpath ${DIST})
 
 ###############################################################################
 # Fetching the CMake/conversion infrastructure
@@ -92,8 +99,12 @@ source $DIST/build/setpaths.sh
     git clone ${GITHUB_PREFIX}ndevenish/autobuild.git cmake
   else
     stage "Updating CMake module library"
-    ( cd cmake
-      git pull --rebase origin )
+    if [[ -n "$(cd cmake && git status --porcelain 2>/dev/null | grep -v "??")" ]]; then
+      echo "${NC}${RED}${BOLD}Warning: ${NC}${RED}Skipping update because checkout is dirty. May not be latest.${LIGHT}"
+    else
+      ( cd cmake
+        git pull --rebase origin )
+    fi
   fi
   # Make sure that the root CMakeLists is in the right place
   if [[ ! -e CMakeLists.txt ]]; then
@@ -103,6 +114,7 @@ source $DIST/build/setpaths.sh
 
 # Make sure the CMake conversion scripts are installed
 stage "Installing tbxtools"
+echo "libtbx.python site-packages: $(libtbx.python -c "import site; print(site.getsitepackages()[0])")"
 libtbx.python -mpip install --upgrade git+https://github.com/ndevenish/tbxtools.git
 
 # Work out where this is installed and make sure it's in the path
@@ -181,5 +193,6 @@ if [[ ! $no_run_configure ]]; then
     cmake $DIST/modules $cmake_vars )
 else
   echo "Skipping configure on request."
-  echo "  Would have run with: $cmake_vars"
+  echo "  Would have run:"
+  echo "    cmake $DIST/modules $cmake_vars"
 fi
