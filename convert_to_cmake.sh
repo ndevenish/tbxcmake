@@ -152,9 +152,10 @@ if [[ ! -f ${BOOST_DIR}/.completed ]]; then
     curl -L ${BOOST_URL} | tar --strip-components=1 -xz -C ${BOOST_BUILD_DIR}
   fi
   mkdir -p $BOOST_DIR
+  # Install boost. Include threading libraries.
   ( cd ${BOOST_BUILD_DIR} && \
     ./bootstrap.sh && \
-    ./b2 -j 3 -d0 --prefix=${BOOST_DIR} --with-python --with-thread install && \
+    ./b2 -j 3 -d0 --prefix=${BOOST_DIR} --with-python --with-thread --with-chrono --with-date_time --with-atomic install && \
     touch $BOOST_DIR/.completed
     )
 fi
