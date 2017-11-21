@@ -9,6 +9,7 @@ include(LibTBXRefresher)
 option(BUILD_PYTHON_LIBS "Build the python shared libraries"    ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries"  ON)
 option(USE_OPENMP        "Use OpenMP"                           OFF)
+option(USE_THREADS       "Use Boost::threads"                   OFF)
 
 # Generate more intuitive navigation structure for IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -79,7 +80,9 @@ if (${BUILD_PYTHON_LIBS})
                 PROPERTY INTERFACE_COMPILE_DEFINITIONS SCITBX_HAVE_NUMPY_INCLUDE)
 
   # Call find_package for boost again - to get optional dependencies
-  find_package(Boost COMPONENTS thread)
+  if(USE_THREADS)
+    find_package(Boost COMPONENTS thread)
+  endif()
 else()
   find_package(Boost REQUIRED)
 endif()
