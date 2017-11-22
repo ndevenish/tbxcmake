@@ -95,6 +95,7 @@ find_package(TIFF REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenGL)
 find_package(PNG)
+find_package(GTest)
 
 # Used by CBFlib, if present
 #find_package(PCRE)
