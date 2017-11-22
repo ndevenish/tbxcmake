@@ -14,8 +14,10 @@ option(USE_THREADS       "Use Boost::threads"                   OFF)
 # Generate more intuitive navigation structure for IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Deliberately constrain to C++98
-set(CMAKE_CXX_STANDARD 98)
+# Deliberately constrain to C++98 - but allow user to override
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 98)
+endif()
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
