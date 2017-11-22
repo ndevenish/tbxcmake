@@ -59,15 +59,20 @@ if (${BUILD_PYTHON_LIBS})
   include_directories(${PYTHON_INCLUDE_DIRS})
 
 
-  # If running on OSX, then linking fails without specifically linking to
-  # libpython. Since this is something we never want to do, explicitly state that
-  # we don't want to worry about undefined references when using Boost::python. This
-  # is a little overkill but the simplest way to solve the problem (at the cost of
-  # moving any real unresolved references to runtime).
+  # Because of link differences between linux and macOS - namely that by
+  # default macOS wants to resolve all symbols at link-time instead of
+  # at run-time, we need to change something when building on macOS. One
+  # solution is setting "-undefined dynamic_lookup" on the link command -
+  # this solves the problem, but also delays any errors from accidentally
+  # leaving out symbols until runtime. Setting -weak_library allows the
+  # symbols to be resolved at link-time, but doesn't seem to set up any
+  # hard tie to the specific library version. Therefore, it's not quite
+  # so important that CMake finds the correct python library.
   if(APPLE)
+    find_package(PythonLibs REQUIRED)
     set_property( TARGET Boost::python
                   APPEND
-                  PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-undefined,dynamic_lookup")
+                  PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${PYTHON_LIBRARIES}")
   endif()
 
   # Add python as a link property
