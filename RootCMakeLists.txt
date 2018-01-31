@@ -248,6 +248,8 @@ rewrite_csymlib(${CMAKE_SOURCE_DIR}/ccp4io/libccp4/ccp4/csymlib.c ccp4io_adaptbx
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+include(TBXDistribution)
+
 include(autogen_CMakeLists.txt)
 
 add_custom_target( dials.find_spots
