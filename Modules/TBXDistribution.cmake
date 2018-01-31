@@ -15,7 +15,6 @@
 #
 # ::
 #   add_libtbx_module(<name> [INTERFACE])
-#                            [INCLUDE_DIRECTORIES paths...]
 #                            [[GENERATED_FILES files...] | NO_REFRESH]
 #
 # Register the current directory as a libtbx module, and read the module
@@ -26,13 +25,6 @@
 # ``INTERFACE`` option is specified then this will be an interface
 # target, otherwise it will be a library of the default library type (as
 # specified by :variable:`BUILD_SHARED_LIBS`).
-#
-# By default, the parent directory of the module
-# (``${CMAKE_CURRENT_SOURCE_DIR}/..``) will be added to the header
-# include path list of the module target. If specified, the
-# ``INCLUDE_DIRECTORIES`` option will override this default with a list
-# of alternate folders, either specified absolutely or relative to the
-# current directory.
 #
 # If there is a ``libtbx_refresh.py`` file that generates source files for
 # inclusion as part of the build, then the output files must be specified
@@ -49,7 +41,7 @@ function(find_libtbx_module name)
 endfunction()
 
 function(add_libtbx_module name)
-  cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "INCLUDE_DIRECTORIES;GENERATED_FILES" ${ARGN})
+  cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "GENERATED_FILES" ${ARGN})
   set(TBX_MODULE ${name} PARENT_SCOPE)
   message(STATUS "Registering TBX module ${name}")
   if(TBX_INTERFACE)
@@ -58,16 +50,7 @@ function(add_libtbx_module name)
   else()
     message(STATUS "  ${name} is a LIBRARY module")
     message(WARNING "  Library module not currently coded")
-    
-  endif()
 
-  # Handle the given/default include directories
-  if (TBX_INCLUDE_DIRECTORIES)
-    target_include_directories( scitbx INTERFACE ${TBX_INCLUDE_DIRECTORIES} )
-    message(STATUS "  Custom Includes: ${TBX_INCLUDE_DIRECTORIES}")
-  else()
-    target_include_directories( scitbx INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/.. )
-    message(STATUS "  Default include.")
   endif()
 
   # Look for a libtbx libtbx_refresh
