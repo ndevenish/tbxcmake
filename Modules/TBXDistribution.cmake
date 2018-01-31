@@ -14,7 +14,7 @@
 # the module can not be found.
 #
 # ::
-#   add_libtbx_module(<name> [INTERFACE])
+#   add_libtbx_module(<name> [INTERFACE] source1 [source2 ...])
 #
 # Register the current directory as a libtbx module, and read the module
 # folder and sources to determine any hard/soft dependencies for the
@@ -25,6 +25,8 @@
 # target, otherwise it will be a library of the default library type (as
 # specified by :variable:`BUILD_SHARED_LIBS`).
 #
+# If the target module is not an interface module, then sources must
+# be present.
 
 # Temporarily remove:
 #                            [[GENERATED_FILES files...] | NO_REFRESH]
@@ -53,9 +55,7 @@ function(add_tbx_module name)
     add_library( ${name} INTERFACE )
     message(STATUS "  ${name} is an INTERFACE module")
   else()
-    message(STATUS "  ${name} is a LIBRARY module")
-    message(WARNING "  Library module not currently coded")
-
+    add_library( ${name} ${TBX_UNPARSED_ARGUMENTS})
   endif()
 
   # # Look for a libtbx libtbx_refresh
