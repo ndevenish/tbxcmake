@@ -30,11 +30,12 @@ endif()
 if (${BUILD_PYTHON_LIBS})
   # Add python interpreter as an imported executable
   find_package(PythonInterp REQUIRED)
+  message("Found python interpreter ${PYTHON_EXECUTABLE}")
   add_executable(Python::Python IMPORTED)
   set_target_properties(Python::Python PROPERTIES
     IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
 
-# Get the include from python
+  # Get the include from python
   exec_program(${PYTHON_EXECUTABLE}
     ARGS -c "\"from distutils.sysconfig import get_python_inc; print(get_python_inc())\""
     OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
@@ -73,6 +74,7 @@ if (${BUILD_PYTHON_LIBS})
     set_property( TARGET Boost::python
                   APPEND
                   PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${PYTHON_LIBRARIES}")
+    message("Python lib for weak linking: ${PYTHON_LIBRARIES}")
   endif()
 
   # Add python as a link property
