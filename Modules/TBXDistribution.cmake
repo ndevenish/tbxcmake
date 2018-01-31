@@ -19,7 +19,7 @@
 #
 # Register the current directory as a libtbx module, and read the module
 # folder and sources to determine any hard/soft dependencies for the
-# module.
+# module. Then, generate dispatchers for any command_line scripts.
 #
 # A target with the same name as the module will be created. If the
 # ``INTERFACE`` option is specified then this will be an interface
