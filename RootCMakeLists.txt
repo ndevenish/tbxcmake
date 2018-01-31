@@ -9,7 +9,6 @@ include(LibTBXRefresher)
 option(BUILD_PYTHON_LIBS "Build the python shared libraries"    ON)
 option(BUILD_SHARED_LIBS "Build libraries as shared libraries"  ON)
 option(USE_OPENMP        "Use OpenMP"                           OFF)
-option(USE_THREADS       "Use Boost::threads"                   OFF)
 
 # Generate more intuitive navigation structure for IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
