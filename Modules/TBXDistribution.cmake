@@ -157,7 +157,6 @@ endfunction()
 # <name> is used to create the default dispatcher name - <name>.<target>
 #
 function(_generate_libtbx_dispatchers name path)
-  message("  Generating dispatchers for ${path}")
   # Read the libtbx_config to see if there are any extra locations to search
   set(dispatcher_locations command_line)
   if (EXISTS ${path}/libtbx_config)
@@ -180,7 +179,6 @@ function(_generate_libtbx_dispatchers name path)
         continue()
       else()
         list(APPEND dispatcher_targets ${file})
-        message("    dispatcher: ${file}")
       endif()
     endforeach()
   endforeach()
@@ -199,7 +197,6 @@ function(_generate_libtbx_dispatchers name path)
     string(REGEX REPLACE "\\.[^.]*$" "" target_stripped_name "${target_stripped_name}")
     # Work out if we had any "rename" directives inside the file
     _get_libtbx_dispatcher_rename(${target} "${name}.${target_stripped_name}" dispatcher_names)
-    message("  Writing ${target} as ${dispatcher_names}")
     foreach(name ${dispatcher_names})
       # Write this dispatcher
       _write_dispatcher(${CMAKE_BINARY_DIR}/bin/${name} ${path}/${target})
