@@ -36,6 +36,9 @@
 include(CMakeParseArguments)
 include(${CMAKE_CURRENT_LIST_DIR}/JsonParser.cmake)
 
+# Store this location so we know where to look for relative files
+set(__TBXDistribution_list_dir ${CMAKE_CURRENT_LIST_DIR})
+
 function(find_libtbx_module name)
   message(WARNING "find_libtbx_module currently does nothing")
 endfunction()
@@ -120,6 +123,27 @@ function(_get_libtbx_dispatcher_rename file default output)
   set(${output} "${dispatcher_names}" PARENT_SCOPE)
 endfunction()
 
+# ::
+#   _write_dispatcher(<destination> <target>)
+#
+# Determines the type of dispatcher required to call <target> and writes
+# it out to <destination>.
+function(_write_dispatcher destination target)
+  # Template depends on the type of file...
+  if (target MATCHES "\\.py$")
+    set(dispatcher_template "${__TBXDistribution_list_dir}/../dispatcher.py.template")
+  elseif(target MATCHES "\\.sh$")
+    set(dispatcher_template "${__TBXDistribution_list_dir}/../dispatcher.sh.template")
+  else()
+    message(WARNING "Unknown dispatcher type for target ${target}; ignoring")
+    return()
+  endif()
+
+  configure_file(${dispatcher_template} ${destination})
+
+  # configure_file(${CMAKE_CURRENT_LIST_DIR}/../type_id_eq_h.template
+  #              ${CMAKE_BINARY_DIR}/include/boost_adaptbx/type_id_eq.h)
+endfunction()
 
 # ::
 #   _generate_libtbx_dispatchers(<name> <path>)
@@ -176,10 +200,9 @@ function(_generate_libtbx_dispatchers name path)
     message("  Writing ${target} as ${dispatcher_names}")
     foreach(name ${dispatcher_names})
       # Write this dispatcher
+      _write_dispatcher(${CMAKE_BINARY_DIR}/bin/${name} ${path}/${target})
     endforeach()
   endforeach()
-  # configure_file(${CMAKE_CURRENT_LIST_DIR}/../type_id_eq_h.template
-  #              ${CMAKE_BINARY_DIR}/include/boost_adaptbx/type_id_eq.h)
 endfunction()
 
 
