@@ -15,7 +15,6 @@
 #
 # ::
 #   add_libtbx_module(<name> [INTERFACE])
-#                            [[GENERATED_FILES files...] | NO_REFRESH]
 #
 # Register the current directory as a libtbx module, and read the module
 # folder and sources to determine any hard/soft dependencies for the
@@ -26,6 +25,9 @@
 # target, otherwise it will be a library of the default library type (as
 # specified by :variable:`BUILD_SHARED_LIBS`).
 #
+
+# Temporarily remove:
+#                            [[GENERATED_FILES files...] | NO_REFRESH]
 # If there is a ``libtbx_refresh.py`` file that generates source files for
 # inclusion as part of the build, then the output files must be specified
 # as a ``GENERATED_FILES`` argument. These files are passed to the
@@ -44,7 +46,7 @@ function(find_libtbx_module name)
 endfunction()
 
 function(add_tbx_module name)
-  cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "GENERATED_FILES" ${ARGN})
+  cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "" ${ARGN}) # GENERATED_FILES
   set(TBX_MODULE ${name} PARENT_SCOPE)
   message(STATUS "Registering TBX module ${name}")
   if(TBX_INTERFACE)
@@ -56,17 +58,17 @@ function(add_tbx_module name)
 
   endif()
 
-  # Look for a libtbx libtbx_refresh
-  if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/libtbx_refresh.py)
-    if (NOT TBX_GENERATED_FILES)
-      if (NOT TBX_NO_REFRESH)
-        message(WARNING "TBX Module ${name} has a libtbx_refresh.py, but no generated-file list has been passed. Unknown output.")
-      endif()
-    else()
-      # We've been given a list of files, and also have a generator. Register them.
-      add_libtbx_refresh_command(${CMAKE_CURRENT_SOURCE_DIR}/libtbx_refresh.py OUTPUT ${TBX_GENERATED_FILES})
-    endif()
-  endif()
+  # # Look for a libtbx libtbx_refresh
+  # if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/libtbx_refresh.py)
+  #   if (NOT TBX_GENERATED_FILES)
+  #     if (NOT TBX_NO_REFRESH)
+  #       message(WARNING "TBX Module ${name} has a libtbx_refresh.py, but no generated-file list has been passed. Unknown output.")
+  #     endif()
+  #   else()
+  #     # We've been given a list of files, and also have a generator. Register them.
+  #     add_libtbx_refresh_command(${CMAKE_CURRENT_SOURCE_DIR}/libtbx_refresh.py OUTPUT ${TBX_GENERATED_FILES})
+  #   endif()
+  # endif()
 
   # Generate dispatchers for this module
   _generate_libtbx_dispatchers(${name} ${CMAKE_CURRENT_SOURCE_DIR})
