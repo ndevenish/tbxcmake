@@ -56,7 +56,7 @@ if (${BUILD_PYTHON_LIBS})
   #   INTERFACE_INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS})
 
   # Find boost python libraries
-  find_package(Boost COMPONENTS python numpy REQUIRED)
+  find_package(Boost COMPONENTS python numpy thread REQUIRED)
   include_directories(${PYTHON_INCLUDE_DIRS})
 
 
@@ -88,12 +88,12 @@ if (${BUILD_PYTHON_LIBS})
                 APPEND
                 PROPERTY INTERFACE_COMPILE_DEFINITIONS SCITBX_HAVE_NUMPY_INCLUDE)
 
-  # Call find_package for boost again - to get optional dependencies
-  if(USE_THREADS)
-    find_package(Boost COMPONENTS thread)
-  endif()
+  # # Call find_package for boost again - to get optional dependencies
+  # if(USE_THREADS)
+  #   # find_package(Boost COMPONENTS thread)
+  # endif()
 else()
-  find_package(Boost REQUIRED)
+  find_package(Boost REQUIRED COMPONENTS thread)
 endif()
 message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 message("      Boost-python  at: ${Boost_PYTHON_LIBRARY}")
