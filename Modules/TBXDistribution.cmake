@@ -43,7 +43,7 @@ function(find_libtbx_module name)
   message(WARNING "find_libtbx_module currently does nothing")
 endfunction()
 
-function(add_libtbx_module name)
+function(add_tbx_module name)
   cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "GENERATED_FILES" ${ARGN})
   set(TBX_MODULE ${name} PARENT_SCOPE)
   message(STATUS "Registering TBX module ${name}")
@@ -127,15 +127,17 @@ endfunction()
 #   _write_dispatcher(<destination> <target>)
 #
 # Determines the type of dispatcher required to call <target> and writes
-# it out to <destination>.
-function(_write_dispatcher destination target)
+# it out to <destination>. Useful extra variables for template file:
+#   DISPATCHER_TARGET   The target script for the dispatcher to run
+#   PYTHON_EXECUTABLE   The full path to the python interpreter
+function(_write_dispatcher destination DISPATCHER_TARGET)
   # Template depends on the type of file...
   if (target MATCHES "\\.py$")
     set(dispatcher_template "${__TBXDistribution_list_dir}/../dispatcher.py.template")
   elseif(target MATCHES "\\.sh$")
     set(dispatcher_template "${__TBXDistribution_list_dir}/../dispatcher.sh.template")
   else()
-    message(WARNING "Unknown dispatcher type for target ${target}; ignoring")
+    message(WARNING "Unknown dispatcher type for target ${DISPATCHER_TARGET}; ignoring")
     return()
   endif()
 
