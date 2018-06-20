@@ -8,10 +8,11 @@
 include(FindPackageHandleStandardArgs)
 
 if (NOT NUMPY_INCLUDE_DIR)
-    exec_program ("${PYTHON_EXECUTABLE}"
-      ARGS "-c 'import numpy; print numpy.get_include()'"
+    execute_process(
+      COMMAND "${PYTHON_EXECUTABLE}"
+        -c "import numpy; print numpy.get_include()"
       OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
-      RETURN_VALUE NUMPY_NOT_FOUND)
+      RESULT_VARIABLE NUMPY_NOT_FOUND)
 
     if(NUMPY_NOT_FOUND)
         set(NUMPY_INCLUDE_DIR NUMPY-NOTFOUND)
