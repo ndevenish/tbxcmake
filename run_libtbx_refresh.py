@@ -18,7 +18,7 @@ import base64
 from StringIO import StringIO
 # from docopt import docopt
 from types import ModuleType
-from pathlib2 import Path, PosixPath
+from pathlib import Path, PurePosixPath
 import textwrap
 from collections import defaultdict
 
