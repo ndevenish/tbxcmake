@@ -83,15 +83,21 @@ if (${BUILD_PYTHON_LIBS})
   # leaving out symbols until runtime. Setting -weak_library allows the
   # symbols to be resolved at link-time, but doesn't seem to set up any
   # hard tie to the specific library version. Therefore, it's not quite
-  # so important that CMake finds the correct python library.
+  # so important that CMake finds the exact correct python library.
   if(APPLE)
     find_package(PythonLibs REQUIRED)
     set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
                   APPEND
                   PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${PYTHON_LIBRARIES}")
     message("Python lib for weak linking: ${PYTHON_LIBRARIES}")
+  elseif(WIN32)
+    # Windows, however, requires the python27.lib library linked in
+    find_package(PythonLibs REQUIRED)
+    set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
+                  APPEND
+                  PROPERTY INTERFACE_LINK_LIBRARIES "${PYTHON_LIBRARIES}")
+    message("Python library for hard linking: ${PYTHON_LIBRARIES}")
   endif()
-
   # Add python as a link property
   # set_property( TARGET Boost::python
   #               APPEND
