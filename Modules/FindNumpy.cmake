@@ -10,9 +10,10 @@ include(FindPackageHandleStandardArgs)
 if (NOT NUMPY_INCLUDE_DIR)
     execute_process(
       COMMAND "${PYTHON_EXECUTABLE}"
-        -c "import numpy; print numpy.get_include()"
+        -c "import numpy; print numpy.get_include().strip()"
       OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
       RESULT_VARIABLE NUMPY_NOT_FOUND)
+    STRING(STRIP "${NUMPY_INCLUDE_DIR}" NUMPY_INCLUDE_DIR)
 
     if(NUMPY_NOT_FOUND)
         set(NUMPY_INCLUDE_DIR NUMPY-NOTFOUND)
