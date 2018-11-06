@@ -81,6 +81,18 @@ class environment:
     # Dictionary used for looking up dist paths
     self.module_dist_paths = {name: relocatable_path(build_path, path) for name, path in modules}
 
+    # Work out the repository locations by working backwards from libtbx
+    tbx_rel_path = self.module_dist_paths["libtbx"]
+    tbx_path = os.path.normpath(os.path.join(tbx_rel_path._anchor._path, tbx_rel_path.relocatable))
+    cctbx_path = os.path.dirname(tbx_path)
+    modules_path = os.path.dirname(cctbx_path)
+
+    # So that libtbx.env_config.find_in_repositories works
+    self.repository_paths = [
+      relocatable_path(self.build_path, modules_path),
+      relocatable_path(self.build_path, cctbx_path),
+    ]
+
 # Extract the lists of modules, paths from arguments
 paths = list(sorted(zip(sys.argv[1].split(";"), sys.argv[2].split(";")), key=lambda x: x[0]))
 build_path = os.getcwd()
