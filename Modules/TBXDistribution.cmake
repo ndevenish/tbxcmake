@@ -47,10 +47,51 @@ function(find_libtbx_module name)
   message(WARNING "find_libtbx_module currently does nothing")
 endfunction()
 
+# Handle env generation - accumulate global lists of modules and paths
+define_property(GLOBAL PROPERTY TBX_MODULES
+    BRIEF_DOCS "List of all TBX modules configured"
+    FULL_DOCS "List of all TBX modules configured")
+define_property(GLOBAL PROPERTY TBX_MODULES_PATHS
+    BRIEF_DOCS "List of all TBX modules paths configured"
+    FULL_DOCS "List of all TBX modules paths configured")
+# set_property(GLOBAL PROPERTY TBX_MODULES "")
+# set_property(GLOBAL PROPERTY TBX_MODULES "")
+
+get_filename_component(LIBTBX_ENV_PY ${CMAKE_CURRENT_LIST_DIR}/../write_libtbx_env.py ABSOLUTE)
+
+function(write_libtbx_env)
+  # Set up a target to write the environment
+  # if (NOT TARGET Python::Python)
+  #     message(FATAL_ERROR "No python interpreter imported executable Python::Python")
+  # endif()
+  get_property(tbx_modules GLOBAL PROPERTY TBX_MODULES)
+  get_property(tbx_modules_paths GLOBAL PROPERTY TBX_MODULES_PATHS)
+
+  execute_process(
+    COMMAND "${PYTHON_EXECUTABLE}" ${LIBTBX_ENV_PY} "${tbx_modules}" "${tbx_modules_paths}"
+  )
+
+  # add_custom_command(
+  #   COMMAND Python::Python ${LIBTBX_ENV_PY} 
+  #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  #     OUTPUT ${CMAKE_BINARY_DIR}/libtbx_env
+
+# add_custom_command(
+#   COMMAND Python::Python ${LIBTBX_REFRESH_PY} --root=${CMAKE_SOURCE_DIR} --output=${CMAKE_BINARY_DIR} ${refresh_script}
+#   OUTPUT ${TBXR_OUTPUT} 
+#   ${TBXR_UNPARSED_ARGUMENTS})
+
+endfunction()
+
+
 function(add_tbx_module name)
   cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "" ${ARGN}) # GENERATED_FILES
   set(TBX_MODULE ${name} PARENT_SCOPE)
   message(STATUS "Registering TBX module ${name}")
+  # Record these at global scope
+  set_property(GLOBAL APPEND PROPERTY TBX_MODULES ${name})
+  set_property(GLOBAL APPEND PROPERTY TBX_MODULES_PATHS "${CMAKE_CURRENT_SOURCE_DIR}")
+
   if(TBX_INTERFACE)
     add_library( ${name} INTERFACE )
     message(STATUS "  ${name} is an INTERFACE module")

@@ -302,3 +302,6 @@ dials_array_family_flex_ext
 scitbx_stl_set_ext scitbx_stl_vector_ext scitbx_stl_map_ext scitbx_random_ext
 dials_algorithms_spot_finding_ext 
 dials_util_ext )
+
+# Write the libtbx environment file
+write_libtbx_env()
