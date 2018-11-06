@@ -67,7 +67,7 @@ class environment:
   """Replicate the pickled environment object"""
   def __init__(self, build_path, modules):
     # Used for .under_build, .under_base, relocatability
-    self.build_path = build_path
+    self.build_path = absolute_path(build_path)
     # Needed for env_config.unpickle compatibility - defaults
     # will be written but this is only(?) used during build
     self.build_options = build_options()
