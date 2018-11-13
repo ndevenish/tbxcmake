@@ -54,7 +54,7 @@ if (${BUILD_PYTHON_LIBS})
   # set_target_properties(Python::Headers PROPERTIES
   #   INTERFACE_INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIRS})
 
-  find_package(Boost REQUIRED)
+  find_package(Boost REQUIRED QUIET)
   # Boost 1.67 added version suffixes to library names for python.
   # CMake 3.11 added support for this, backported so that older boost will
   # still work (I think), but this obviously doesn't work for earlier versions
@@ -305,3 +305,4 @@ dials_util_ext )
 
 # Write the libtbx environment file
 write_libtbx_env()
+
