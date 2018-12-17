@@ -137,5 +137,5 @@ for name, path in paths:
 
 a = environment(build_path, paths)
 
-with open("libtbx_env", "w") as f:
+with open("libtbx_env", "wb") as f:
     pickle.dump(a, f)
