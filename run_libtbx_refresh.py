@@ -7,21 +7,26 @@ This wraps the required parts of libtbx so as to remove any dependency on
 preconfigured libtbx build environments.
 """
 
-from mock import Mock
 import argparse
-import imp
-import sys
-import os
+import base64
+from collections import defaultdict
 import gzip
 import math
-import base64
-from StringIO import StringIO
-
-# from docopt import docopt
-from types import ModuleType
+import os
 from pathlib import Path
+import sys
 import textwrap
-from collections import defaultdict
+from types import ModuleType
+
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
+
+try:
+    from StringIO import StringIO as BytesIO
+except ImportError:
+    from io import BytesIO
 
 
 def norm_join(*args):
@@ -33,7 +38,8 @@ def tail_levels(path, number_of_levels):
 
 
 def write_this_is_auto_generated(f, file_name_generator):
-    print >> f, """\
+    f.write(
+        """\
 /* *****************************************************
    THIS IS AN AUTOMATICALLY GENERATED FILE. DO NOT EDIT.
    *****************************************************
@@ -41,7 +47,8 @@ def write_this_is_auto_generated(f, file_name_generator):
      {}
  */
 """.format(
-        file_name_generator
+            file_name_generator
+        )
     )
 
 
@@ -69,7 +76,7 @@ libtbx.path.norm_join = norm_join
 libtbx.path.tail_levels = tail_levels
 libtbx.utils.warn_if_unexpected_md5_hexdigest = Mock()
 
-#  Fable requires a little more of the libtbx API
+# Fable requires a little more of the libtbx API
 
 
 class group_args(object):
@@ -169,7 +176,7 @@ libtbx.dict_with_default_0 = dict_with_default_0
 
 # libtbx.topological_sort: Load this explitly here
 def generate_topological_sort():
-    TOPOLOGICAL_SORT = """H4sICK82RlkCA3RvcG9sb2dpY2FsX3NvcnQucHkArVZNj+M2DL37V7AB
+    TOPOLOGICAL_SORT = b"""H4sICK82RlkCA3RvcG9sb2dpY2FsX3NvcnQucHkArVZNj+M2DL37V7AB
   FrC3rjPJAN3BoDnsoUVPbQ97CwxDseVEjS0ZktwgKPa/l5RlWWkygz3sJbBE8okfj2RarXqoqna0o+
   ZVBaIflLbQiH+EEUomDW/BWHboeForKXlt8dZkrwmAZvJsYAf/fsVDqzRI1fAcGj4YEBIiddIGYMZw
   hCYt/LGk4yCc0H3tSVYiZMdl6m4yFBJgdbhWzvDbn4vNAjBdOikBNGRHN5MBgGghbW58y2bR7GFz51
@@ -187,11 +194,10 @@ def generate_topological_sort():
   ZplCk0fTCEK0phqYPaUP5gy0+D/If1q1rByHiu2wA4MFJmRCiLc6TkR7qlqhDSYOm6E+xbT19gVrvg
   uhqEyLIRIi9jVuCKCp+NDI/7vxjsVbAwOba3dH2bDT/h/ronmzou+98A8MakgnUK/yG8OVnbyJH+oy
   43szAlvqTHso+Q9dwNduywoAAA=="""
-    fobj = StringIO(base64.b64decode(TOPOLOGICAL_SORT))
+    fobj = BytesIO(base64.b64decode(TOPOLOGICAL_SORT))
     tsF = gzip.GzipFile(mode="rb", fileobj=fobj)
-    ts = imp.new_module("libtbx.topological_sort")
+    ts = new_module("libtbx.topological_sort")
     exec(tsF.read(), ts.__dict__)
-    sys.modules["libtbx.topological_sort"] = ts
     return ts
 
 
@@ -275,7 +281,7 @@ def inject_script(module_path, globals):
   """
     path, module_filename = os.path.split(module_path)
     module_name, ext = os.path.splitext(module_filename)
-    module = imp.new_module(module_name)
+    module = ModuleType(module_name)
     module.__file__ = module_path
     vars(module).update(globals)
     with open(module_path) as f:
