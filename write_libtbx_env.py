@@ -112,6 +112,16 @@ class environment:
         ]
 
 
+if not len(sys.argv) == 3:
+    print(
+        """Usage: write_libtbx_env.py <NAMES> <PATHS>
+
+Arguments:
+    NAMES   ;-separated list of module names
+    PATHS   ;-separated list of paths to the matching modules"""
+    )
+    sys.exit(1)
+
 # Extract the lists of modules, paths from arguments
 paths = list(
     sorted(zip(sys.argv[1].split(";"), sys.argv[2].split(";")), key=lambda x: x[0])
