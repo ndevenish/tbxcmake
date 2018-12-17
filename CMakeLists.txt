@@ -1,3 +1,9 @@
+# Possibly useful parameters to pass to CMake:
+#   PYTHON_EXECUTABLE=  The Python executable to use
+#   EIGEN_ROOT=         The path to the eigen sources
+#   BOOST_ROOT=         The path to Boost
+#   HDF5_ROOT=          The path to the HDF5 install
+
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 # Boost imported target and cmake_parse_arguments were added in 3.5
 # 3.8 added interface targets to OpenGL
