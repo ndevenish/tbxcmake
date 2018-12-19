@@ -247,6 +247,13 @@ function(_generate_libtbx_dispatchers name path)
   endforeach()
 endfunction()
 
+# ::
+#   _write_program_dispatcher(<destination> <target>)
+#
+# Writes a dispatcher for a specific executable
+function(_write_program_dispatcher destination DISPATCHER_TARGET)
+  set(dispatcher_template "${__TBXDistribution_list_dir}/../dispatcher.sh.template")
+  configure_file(${dispatcher_template} ${destination})
+endfunction()
 
-
-
+_write_program_dispatcher(${CMAKE_BINARY_DIR}/bin/dials.python ${PYTHON_EXECUTABLE})
