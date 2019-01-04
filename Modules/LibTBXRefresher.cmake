@@ -22,11 +22,13 @@ function(add_libtbx_refresh_command refresh_script)
   # Add the custom command
   add_custom_command(
     COMMAND Python::Python ${LIBTBX_REFRESH_PY} --root=${CMAKE_SOURCE_DIR} --output=${CMAKE_BINARY_DIR} ${refresh_script}
-    OUTPUT ${TBXR_OUTPUT} 
-    ${TBXR_UNPARSED_ARGUMENTS})
+    COMMAND Python::Python -c "open('lib_refresh_has_run', 'wt').close()"
+    OUTPUT ${TBXR_OUTPUT} lib_refresh_has_run
+    ${TBXR_UNPARSED_ARGUMENTS}
+    VERBATIM )
   # Make a custom target and then tie the parent target to this
   add_custom_target(${PROJECT_NAME}_refresh
-    DEPENDS ${TBXR_OUTPUT} )
+    DEPENDS ${TBXR_OUTPUT} lib_refresh_has_run )
   set_target_properties (${PROJECT_NAME}_refresh PROPERTIES FOLDER refresh)
   add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_refresh)
   add_dependencies(refresh_meta ${PROJECT_NAME}_refresh)
