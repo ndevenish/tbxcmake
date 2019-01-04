@@ -10,10 +10,13 @@ preconfigured libtbx build environments.
 import argparse
 import base64
 from collections import defaultdict
+import contextlib
 import gzip
 import math
 import os
 from pathlib import Path
+import pkg_resources
+import setuptools
 import sys
 import textwrap
 from types import ModuleType
@@ -27,6 +30,23 @@ try:
     from StringIO import StringIO as BytesIO
 except ImportError:
     from io import BytesIO
+
+
+# Copy this from pkg_utils
+@contextlib.contextmanager
+def _silence():
+    """Helper context which shuts up stdout."""
+    sys.stdout.flush()
+    try:
+        oldstdout = os.dup(sys.stdout.fileno())
+        dest_file = open(os.devnull, "w")
+        os.dup2(dest_file.fileno(), sys.stdout.fileno())
+        yield
+    finally:
+        if oldstdout is not None:
+            os.dup2(oldstdout, sys.stdout.fileno())
+        if dest_file is not None:
+            dest_file.close()
 
 
 def norm_join(*args):
@@ -60,6 +80,59 @@ def new_module(name, doc=None):
     return m
 
 
+def pkg_util_define_entry_points(epdict, **kwargs):
+    """Registers entry points with setuptools"""
+    # # Temporarily change to build/ directory. This is where a directory named
+    # # libtbx.{caller}.egg-info will be created containing the entry point info.
+    caller = libtbx.env.refresh_file.parents[0].stem
+    try:
+        curdir = os.getcwd()
+        os.chdir(abs(libtbx.env.build_path))
+        # Now trick setuptools into thinking it is in control here.
+        try:
+            argv_orig = sys.argv
+            sys.argv = ["setup.py", "develop"]
+            # And make it run quietly
+            with _silence():
+                setuptools.setup(
+                    name="libtbx.{}".format(caller),
+                    description="libtbx entry point manager for {}".format(caller),
+                    entry_points=epdict,
+                    **kwargs
+                )
+        finally:
+            sys.argv = argv_orig
+    finally:
+        os.chdir(curdir)
+
+
+# Collect a list of things we need to install
+_missing_versions_requested = []
+
+
+def handle_missing_package_notice():
+    """Give a notice to the user about required packages that are missing."""
+    if _missing_versions_requested:
+        print("To install/update package conflicts:")
+        print("  pip install --upgrade " + " ".join(_missing_versions_requested))
+
+
+def pkg_util_require(pkgname, version=""):
+    # Check that this exists, otherwise warn
+    try:
+        pkg_resources.require(pkgname + version)
+        return True
+    except pkg_resources.UnknownExtra:
+        raise RuntimeError("Invalid require package feature specifier in: " + pkgname)
+    except pkg_resources.DistributionNotFound:
+        print("Missing package: " + pkgname)
+    except pkg_resources.VersionConflict:
+        print("Invalid package version: " + pkgname)
+
+    _missing_versions_requested.append(pkgname + version)
+    return True
+
+
 # Explicitly replace the libtbx functionality we need
 libtbx = new_module("libtbx")
 libtbx.utils = new_module("libtbx.utils")
@@ -75,6 +148,11 @@ libtbx.utils.write_this_is_auto_generated = write_this_is_auto_generated
 libtbx.path.norm_join = norm_join
 libtbx.path.tail_levels = tail_levels
 libtbx.utils.warn_if_unexpected_md5_hexdigest = Mock()
+# Fancy registration stuff some now use e.g. in dials
+libtbx.pkg_utils = new_module("libtbx.pkg_utils")
+libtbx.pkg_utils.define_entry_points = pkg_util_define_entry_points
+libtbx.pkg_utils.require = pkg_util_require
+
 
 # Fable requires a little more of the libtbx API
 
@@ -309,6 +387,10 @@ if __name__ == "__main__":
 
     fakeself = RefreshSelf()
     fakeself.env = FakeEnv(args.root, args.output)
+    fakeself.env.refresh_file = Path(args.file)
     libtbx.env = fakeself.env
 
     inject_script(source, {"self": fakeself})
+
+    # If there was any advisory notices about package management
+    handle_missing_package_notice()
