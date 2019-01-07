@@ -12,11 +12,13 @@ REPO_LOCATIONS=$(cat<<EOF
   ccp4io            dials/ccp4io.git
   ccp4io_adaptbx    dials/ccp4io_adaptbx.git
   cctbx_project     cctbx/cctbx_project.git
+  cmake             ndevenish/tbxcmake.git
   dials             dials/dials.git
   gui_resources     dials/gui_resources.git
   tntbx             dials/tntbx.git
   xia2              xia2/xia2.git
-EOF)
+EOF
+)
 
 ###############################################################################
 
@@ -67,10 +69,16 @@ get_longest_len() {
   echo $length
 }
 
+get_commit_id() {
+  ( cd $1
+    git rev-parse HEAD )
+}
+
 # Only enable coloured output when we aren't a terminal
 if tty -s; then
   BOLD=$(tput bold)
   DIM="\e[90m"
+  GREEN="\e[32m"
   NC=$(tput sgr0)
 fi
 
@@ -80,11 +88,22 @@ longest_mod_name=$(get_longest_len $(all_repo_names))
 echo "Fetching distribution modules:"
 for repo_name in $(all_repo_names); do
   if [[ -d $repo_name ]]; then
-    printf "$BOLD%-${longest_mod_name}s$NC already exists, skipping.\n" "$repo_name"
-    # echo "$repo_name already exists, skipping."
+    COMMIT_ID=$(get_commit_id $repo_name)
+    printf "$BOLD%-${longest_mod_name}s$NC at ${COMMIT_ID}, skipping.\n" "$repo_name"
+    # printf "$BOLD%-${longest_mod_name}s$NC already exists, skipping.\n" "$repo_name"
   else
     printf "== Cloning $BOLD$repo_name$NC ========\n$DIM"
-    git clone $GITHUB_PREFIX$(get_repo dials) $repo_name
+    git clone $GITHUB_PREFIX$(get_repo $repo_name) $repo_name
     printf "$NC"
+    COMMIT_ID=$(get_commit_id $repo_name)
+    printf "$BOLD%-${longest_mod_name}s$NC at commit ${COMMIT_ID}.\n" "$repo_name"
   fi
 done
+
+if [[ ! -e "CMakeLists.txt" ]]; then
+  # printf "== Linking ${BOLD}CMakeLists.txt$NC from ${BOLD}cmake$NC directory ==\n"
+  printf "${BOLD}CMakeLists.txt${NC}.. ${GREEN}creating${NC}\n"
+  ln -s cmake/CMakeLists.txt
+else
+  printf "${BOLD}CMakeLists.txt${NC}.. exists\n"
+fi

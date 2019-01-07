@@ -61,16 +61,16 @@ def get_commit_id(folder):
 # Map of folder names to repository locations
 # Either "URL String" or ["URL String", "and_list", "of", "arguments"]
 repositories = {
-    "dials": "https://github.com/dials/dials.git",
-    "cctbx_project": "https://github.com/cctbx/cctbx_project.git",
-    "cbflib": "https://github.com/yayahjb/cbflib.git",
-    "ccp4io": "https://github.com/dials/ccp4io.git",
-    "xia2": "https://github.com/xia2/xia2.git",
     "annlib_adaptbx": "https://github.com/dials/annlib_adaptbx.git",
     "annlib": "https://github.com/dials/annlib.git",
+    "cbflib": "https://github.com/yayahjb/cbflib.git",
     "ccp4io_adaptbx": "https://github.com/dials/ccp4io_adaptbx.git",
-    "tntbx": "https://github.com/dials/tntbx.git",
+    "ccp4io": "https://github.com/dials/ccp4io.git",
+    "cctbx_project": "https://github.com/cctbx/cctbx_project.git",
+    "dials": "https://github.com/dials/dials.git",
     "gui_resources": "https://github.com/dials/gui_resources.git",
+    "tntbx": "https://github.com/dials/tntbx.git",
+    "xia2": "https://github.com/xia2/xia2.git",
 }
 options = docopt.docopt(__doc__)
 
