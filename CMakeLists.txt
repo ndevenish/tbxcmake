@@ -1,4 +1,5 @@
 # Possibly useful parameters to pass to CMake:
+#   CMAKE_PREFIX_PATH   The root to search for libraries
 #   PYTHON_EXECUTABLE=  The Python executable to use
 #   EIGEN_ROOT=         The path to the eigen sources
 #   BOOST_ROOT=         The path to Boost
