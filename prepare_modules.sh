@@ -12,6 +12,7 @@ REPO_LOCATIONS=$(cat<<EOF
   ccp4io            dials/ccp4io.git
   ccp4io_adaptbx    dials/ccp4io_adaptbx.git
   cctbx_project     cctbx/cctbx_project.git
+  clipper 	    dials/clipper.git
   cmake             ndevenish/tbxcmake.git
   dials             dials/dials.git
   gui_resources     dials/gui_resources.git
