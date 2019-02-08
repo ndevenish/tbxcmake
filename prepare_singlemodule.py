@@ -29,6 +29,7 @@ from __future__ import print_function
 import os
 import subprocess
 import shutil
+from typing import Union, List
 
 import docopt
 
@@ -78,6 +79,7 @@ repositories = {
 options = docopt.docopt(__doc__)
 
 commit_ids = {}
+url = []  # type: Union[str, List[str]]
 for name, url in repositories.items():
     # Assume that if the path exists at all, the user knows what they are doing
     if not os.path.exists(name):
