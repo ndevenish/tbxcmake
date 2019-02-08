@@ -55,7 +55,7 @@ def get_commit_id(folder):
     newenv["GIT_DIR"] = os.path.join(folder, ".git")
     ret = subprocess.check_output(["git", "rev-parse", "HEAD"], env=newenv)
     assert len(ret.strip().splitlines()) == 1
-    return ret.strip()
+    return ret.strip().decode("latin1")
 
 
 # Map of folder names to repository locations
@@ -83,7 +83,7 @@ for name, url in repositories.items():
     if not os.path.exists(name):
         command = ["git", "clone"]
         # Convert to a list if not one already (allows multiple custom parameters)
-        if isinstance(url, basestring):
+        if isinstance(url, str):
             url = [url]
 
         if options["--shallow"]:
@@ -97,6 +97,8 @@ for name, url in repositories.items():
                 command.append("--reference-if-able={}".format(ref_path))
 
         command.extend(url)
+        command.append(name)
+
         print("Running:", " ".join(command))
         subprocess.check_call(command)
     else:
