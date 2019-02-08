@@ -67,11 +67,14 @@ repositories = {
     "ccp4io_adaptbx": "https://github.com/dials/ccp4io_adaptbx.git",
     "ccp4io": "https://github.com/dials/ccp4io.git",
     "cctbx_project": "https://github.com/cctbx/cctbx_project.git",
+    "clipper": "https://github.com/dials/clipper.git",
+    "cmake": "https://github.com/ndevenish/tbxcmake.git",
     "dials": "https://github.com/dials/dials.git",
     "gui_resources": "https://github.com/dials/gui_resources.git",
     "tntbx": "https://github.com/dials/tntbx.git",
     "xia2": "https://github.com/xia2/xia2.git",
 }
+
 options = docopt.docopt(__doc__)
 
 commit_ids = {}
