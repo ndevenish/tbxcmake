@@ -14,12 +14,17 @@ import contextlib
 import gzip
 import math
 import os
-from pathlib import Path
 import pkg_resources
 import setuptools
 import sys
 import textwrap
 from types import ModuleType
+
+# Typing is used for validation but not at runtime at the moment
+try:
+    from typing import List, Type, Any  # noqa: F401
+except ImportError:
+    pass
 
 try:
     from unittest.mock import Mock
@@ -31,6 +36,10 @@ try:
 except ImportError:
     from io import BytesIO
 
+try:
+    from pathlib import Path
+except ImportError:
+    from pathlib2 import Path  # type: ignore
 
 # Copy this from pkg_utils
 @contextlib.contextmanager
@@ -107,7 +116,7 @@ def pkg_util_define_entry_points(epdict, **kwargs):
 
 
 # Collect a list of things we need to install
-_missing_versions_requested = []
+_missing_versions_requested = []  # type: List[str]
 
 
 def handle_missing_package_notice():
@@ -285,9 +294,12 @@ libtbx.topological_sort = generate_topological_sort()
 
 # import pdb
 # pdb.set_trace()
+# reveal_type(Path)
+
+NativePathType = type(Path())  # type: Any
 
 
-class LibTBXPath(type(Path())):
+class LibTBXPath(NativePathType):
     """Slight variant to PosixPath to behave like a libtbx path"""
 
     def __abs__(self):
@@ -304,6 +316,7 @@ class FakeEnv(object):
         self.module_root = module_root
         self.output_root = output_root
         self.build_path = LibTBXPath(output_root)
+        self.refresh_file = None
 
     def is_ready_for_build(self):
         return True
@@ -351,6 +364,7 @@ class RefreshSelf(object):
     """Class to be passed into a libtbx_refresh script as 'self'"""
 
     remove_obsolete_pyc_if_possible = Mock()
+    env = None  # type: FakeEnv
 
 
 def inject_script(module_path, globals):
