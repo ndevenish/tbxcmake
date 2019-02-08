@@ -9,7 +9,7 @@ Usage:
 Options:
   -h, --help    Show this message
   --write-log   Writes the commit ID's of all repositories to commit_ids.txt
-  --no-cmake    Don't attempt to copy cmakelists out of cmake/cmakelists/
+  --no-cmake    [DEPRECATED] Don't attempt to copy cmakelists out of cmake/cmakelists/
   --shallow     Only get a shallow clone of each repository.
   --reference=<DIR> Use an existing location as a git clone reference. Each
                     repository is assumed to exist as a subdirectory of this.
@@ -108,11 +108,11 @@ if options["--write-log"]:
         for name, sha in sorted(commit_ids.items(), key=lambda x: x[0]):
             f.write(name.ljust(maxlen) + " " + sha + "\n")
 
-if not options["--no-cmake"]:
-    # Copy over tree of files from cmake
-    merge_tree("cmake/cmakelists", os.getcwd())
-    try:
-        shutil.copy2("cmake/RootCMakeLists.txt", "CMakeLists.txt")
-    except shutil.Error:
-        # Happens if both files are the same
-        pass
+# if not options["--no-cmake"]:
+#     # Copy over tree of files from cmake
+#     merge_tree("cmake/cmakelists", os.getcwd())
+#     try:
+#         shutil.copy2("cmake/RootCMakeLists.txt", "CMakeLists.txt")
+#     except shutil.Error:
+#         # Happens if both files are the same
+#         pass
