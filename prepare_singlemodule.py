@@ -105,7 +105,7 @@ for name, url in repositories.items():
 if options["--write-log"]:
     with open("commit_ids.txt", "wt") as f:
         maxlen = max(len(x) for x in commit_ids)
-        for name, sha in sorted(commit_ids.items(), key=lambda x, y: x):
+        for name, sha in sorted(commit_ids.items(), key=lambda x: x[0]):
             f.write(name.ljust(maxlen) + " " + sha + "\n")
 
 if not options["--no-cmake"]:
