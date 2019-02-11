@@ -29,7 +29,11 @@ from __future__ import print_function
 import os
 import subprocess
 import shutil
-from typing import Union, List
+
+try:
+    from typing import Union, List  # noqa: F401
+except ImportError:
+    pass
 
 import docopt
 
