@@ -87,14 +87,13 @@ endfunction()
 function(add_tbx_module name)
   cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "" ${ARGN}) # GENERATED_FILES
   set(TBX_MODULE ${name} PARENT_SCOPE)
-  message(STATUS "Registering TBX module ${name}")
   # Record these at global scope
   set_property(GLOBAL APPEND PROPERTY TBX_MODULES ${name})
   set_property(GLOBAL APPEND PROPERTY TBX_MODULES_PATHS "${CMAKE_CURRENT_SOURCE_DIR}")
 
   if(TBX_INTERFACE)
     add_library( ${name} INTERFACE )
-    message(STATUS "  ${name} is an INTERFACE module")
+    set(module_type "interface ")
   else()
     add_library( ${name} ${TBX_UNPARSED_ARGUMENTS})
   endif()
@@ -113,6 +112,8 @@ function(add_tbx_module name)
 
   # Generate dispatchers for this module
   _generate_libtbx_dispatchers(${name} ${CMAKE_CURRENT_SOURCE_DIR})
+
+  message(STATUS "Registered TBX ${module_type}module ${name} (${${name}_DISPATCHER_COUNT} dispatchers)")
 endfunction()
 
 # Read the libtbx_config file for a specific <entry> and read into a variable named <entry>.
@@ -226,7 +227,8 @@ function(_generate_libtbx_dispatchers name path)
     endforeach()
   endforeach()
   list(LENGTH dispatcher_targets dispatcher_count)
-  message(STATUS "  Found ${dispatcher_count} dispatchers")
+  # Pass this count up to the parent function
+  set(${name}_DISPATCHER_COUNT ${dispatcher_count} PARENT_SCOPE)
 
   # This is where we could filter the dispatcher list further, remove
   # previously-created dispatchers if they no longer exist, things like that.
