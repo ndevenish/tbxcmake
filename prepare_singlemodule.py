@@ -29,6 +29,7 @@ from __future__ import print_function
 import os
 import subprocess
 import shutil
+import sys
 
 try:
     from typing import Union, List  # noqa: F401
@@ -106,6 +107,7 @@ for name, url in repositories.items():
         command.append(name)
 
         print("Running:", " ".join(command))
+        sys.stdout.flush()
         subprocess.check_call(command)
     else:
         print("{} folder exists, skipping.".format(name))
