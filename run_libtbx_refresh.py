@@ -98,19 +98,40 @@ def pkg_util_define_entry_points(epdict, **kwargs):
         curdir = os.getcwd()
         os.chdir(abs(libtbx.env.build_path))
         # Now trick setuptools into thinking it is in control here.
+        messages = []
         try:
             argv_orig = sys.argv
             sys.argv = ["setup.py", "develop"]
             # And make it run quietly
             with _silence():
-                setuptools.setup(
-                    name="libtbx.{}".format(caller),
-                    description="libtbx entry point manager for {}".format(caller),
-                    entry_points=epdict,
-                    **kwargs
-                )
+                try:
+                    setuptools.setup(
+                        name="libtbx.{}".format(caller),
+                        description="libtbx entry point manager for {}".format(caller),
+                        entry_points=epdict,
+                        **kwargs
+                    )
+                except SystemExit as e:
+                    messages.append("Got SystemExit")
+                    if e.code:
+                        messages.append("Got code " + str(e.code))
+                        messages.append("Trying again with user")
+                        # Try again with a user folder
+                        sys.argv.append("--user")
+                        setuptools.setup(
+                            name="libtbx.{}".format(caller),
+                            description="libtbx entry point manager for {}".format(
+                                caller
+                            ),
+                            entry_points=epdict,
+                            **kwargs
+                        )
         finally:
             sys.argv = argv_orig
+            if messages:
+                print("Messages while silenced:")
+                for message in messages:
+                    print("  - " + message)
     finally:
         os.chdir(curdir)
 
