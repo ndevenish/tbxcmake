@@ -93,7 +93,7 @@ function(add_tbx_module name)
 
   if(TBX_INTERFACE)
     add_library( ${name} INTERFACE )
-    set(module_type "interface ")
+    set(module_type ", interface")
   else()
     add_library( ${name} ${TBX_UNPARSED_ARGUMENTS})
   endif()
@@ -113,7 +113,7 @@ function(add_tbx_module name)
   # Generate dispatchers for this module
   _generate_libtbx_dispatchers(${name} ${CMAKE_CURRENT_SOURCE_DIR})
 
-  message(STATUS "Registered TBX ${module_type}module ${name} (${${name}_DISPATCHER_COUNT} dispatchers)")
+  message(STATUS "Registered TBX module ${name} (${${name}_DISPATCHER_COUNT} dispatchers${module_type})")
 endfunction()
 
 # Read the libtbx_config file for a specific <entry> and read into a variable named <entry>.

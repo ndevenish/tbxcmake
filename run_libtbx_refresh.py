@@ -11,6 +11,7 @@ import argparse
 import base64
 from collections import defaultdict
 import contextlib
+from distutils.errors import DistutilsError
 import gzip
 import math
 import os
@@ -137,6 +138,10 @@ def pkg_util_require(pkgname, version=""):
         print("Missing package: " + pkgname)
     except pkg_resources.VersionConflict:
         print("Invalid package version: " + pkgname)
+    except DistutilsError as e:
+        print("Distutils error! " + str(e))
+    except SystemExit:
+        print("Caught systemExit while installing 🤨")
 
     _missing_versions_requested.append(pkgname + version)
     return True
