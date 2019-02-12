@@ -11,7 +11,6 @@ import argparse
 import base64
 from collections import defaultdict
 import contextlib
-from distutils.errors import DistutilsError
 import gzip
 import math
 import os
@@ -130,18 +129,15 @@ def handle_missing_package_notice():
 def pkg_util_require(pkgname, version=""):
     # Check that this exists, otherwise warn
     try:
-        pkg_resources.require(pkgname + version)
-        return True
+        if "NEVER_INSTALL_REQUIRE" not in os.environ:
+            pkg_resources.require(pkgname + version)
+            return True
     except pkg_resources.UnknownExtra:
         raise RuntimeError("Invalid require package feature specifier in: " + pkgname)
     except pkg_resources.DistributionNotFound:
         print("Missing package: " + pkgname)
     except pkg_resources.VersionConflict:
         print("Invalid package version: " + pkgname)
-    except DistutilsError as e:
-        print("Distutils error! " + str(e))
-    except SystemExit:
-        print("Caught systemExit while installing 🤨")
 
     _missing_versions_requested.append(pkgname + version)
     return True
