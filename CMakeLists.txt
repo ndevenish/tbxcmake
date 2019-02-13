@@ -128,7 +128,7 @@ message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 message("      Boost-python  at: ${Boost_PYTHON${PYTHON_BOOST_SUFFIX}_LIBRARY}")
 message("      Boost-numpy   at: ${Boost_NUMPY${PYTHON_BOOST_SUFFIX}_LIBRARY}")
 
-
+find_package(msgpack REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenGL)
