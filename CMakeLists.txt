@@ -8,6 +8,8 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 # Boost imported target and cmake_parse_arguments were added in 3.5
 # 3.8 added interface targets to OpenGL
+cmake_policy(SET CMP0074 NEW) # Searching _ROOT paths by default
+
 
 # Add the included modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
