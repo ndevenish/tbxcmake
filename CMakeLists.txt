@@ -72,7 +72,7 @@ if (${BUILD_PYTHON_LIBS})
   endif()
 
   # Find boost python libraries
-  find_package(Boost COMPONENTS python${PYTHON_BOOST_SUFFIX} numpy${PYTHON_BOOST_SUFFIX} thread REQUIRED)
+  find_package(Boost COMPONENTS python${PYTHON_BOOST_SUFFIX} numpy${PYTHON_BOOST_SUFFIX} thread filesystem REQUIRED)
   include_directories(${PYTHON_INCLUDE_DIRS})
 
   # Name targets for python without version suffixes for CMake version tolerance
