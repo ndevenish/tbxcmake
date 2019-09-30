@@ -287,30 +287,30 @@ include(TBXDistribution)
 
 include(autogen_CMakeLists.txt)
 
-add_custom_target( dials.find_spots
-  DEPENDS dials_algorithms_image_threshold_ext
-          dxtbx_imageset_ext
-          dxtbx_format_image_ext
-          dxtbx_ext
-          scitbx_array_family_flex_ext
-          dials_model_data_ext 
-dxtbx_model_ext
-cctbx_array_family_flex_ext
-scitbx_array_family_shared_ext
-cctbx_uctbx_ext
-cctbx_sgtbx_ext
-cctbx_orientation_ext
-scitbx_math_ext
-scitbx_linalg_ext
-_pycbf
-boost_rational_ext
-boost_python_meta_ext 
-boost_optional_ext std_pair_ext 
-boost_adaptbx_graph_ext
-dials_array_family_flex_ext
-scitbx_stl_set_ext scitbx_stl_vector_ext scitbx_stl_map_ext scitbx_random_ext
-dials_algorithms_spot_finding_ext 
-dials_util_ext )
+# add_custom_target( dials.find_spots
+#   DEPENDS dials_algorithms_image_threshold_ext
+#           dxtbx_imageset_ext
+#           dxtbx_format_image_ext
+#           dxtbx_ext
+#           scitbx_array_family_flex_ext
+#           dials_model_data_ext 
+# dxtbx_model_ext
+# cctbx_array_family_flex_ext
+# scitbx_array_family_shared_ext
+# cctbx_uctbx_ext
+# cctbx_sgtbx_ext
+# cctbx_orientation_ext
+# scitbx_math_ext
+# scitbx_linalg_ext
+# _pycbf
+# boost_rational_ext
+# boost_python_meta_ext 
+# boost_optional_ext std_pair_ext 
+# boost_adaptbx_graph_ext
+# dials_array_family_flex_ext
+# scitbx_stl_set_ext scitbx_stl_vector_ext scitbx_stl_map_ext scitbx_random_ext
+# dials_algorithms_spot_finding_ext 
+# dials_util_ext )
 
 # Write the libtbx environment file
 write_libtbx_env()
