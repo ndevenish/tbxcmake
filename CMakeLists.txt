@@ -5,10 +5,12 @@
 #   BOOST_ROOT=         The path to Boost
 #   HDF5_ROOT=          The path to the HDF5 install
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 # Boost imported target and cmake_parse_arguments were added in 3.5
 # 3.8 added interface targets to OpenGL
 cmake_policy(SET CMP0074 NEW) # Searching _ROOT paths by default
+
+project(Dials)
 
 
 # Add the included modules
@@ -37,26 +39,26 @@ endif()
 
 if (${BUILD_PYTHON_LIBS})
   # Add python interpreter as an imported executable
-  find_package(PythonInterp REQUIRED)
-  message("Found python interpreter ${PYTHON_EXECUTABLE}")
-  add_executable(Python::Python IMPORTED)
-  set_target_properties(Python::Python PROPERTIES
-    IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
+  find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+  message("Found python interpreter ${Python_VERSION}: ${Python_EXECUTABLE}")
+  #add_executable(Python::Python IMPORTED)
+  #set_target_properties(Python::Python PROPERTIES
+  #  IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
 
   # Get the include from python
-  exec_program(${PYTHON_EXECUTABLE}
-    ARGS -c "\"from distutils.sysconfig import get_python_inc; print(get_python_inc())\""
-    OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
-    RETURN_VALUE    RUN_RETURN)
-  if (${RUN_RETURN})
-    message(FATAL_ERROR "Could not determine python include path from python executable")
-  endif()
+  #exec_program(${PYTHON_EXECUTABLE}
+  #  ARGS -c "\"from distutils.sysconfig import get_python_inc; print(get_python_inc())\""
+  #  OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
+  #  RETURN_VALUE    RUN_RETURN)
+  #if (${RUN_RETURN})
+  #  message(FATAL_ERROR "Could not determine python include path from python executable")
+  #endif()
 
   # Add python libraries as an imported library
   #find_package(PythonLibs REQUIRED)
-  message("Python Include path: ${PYTHON_INCLUDE_DIRS}")
+  #message("Python Include path: ${PYTHON_INCLUDE_DIRS}")
 
-  find_package(Numpy REQUIRED)
+  #find_package(Numpy REQUIRED)
 
   # Create an imported interface that just lets us access the header files
   # add_library(Python::Headers SHARED IMPORTED)
@@ -73,7 +75,7 @@ if (${BUILD_PYTHON_LIBS})
 
   # Find boost python libraries
   find_package(Boost COMPONENTS python${PYTHON_BOOST_SUFFIX} numpy${PYTHON_BOOST_SUFFIX} thread filesystem REQUIRED)
-  include_directories(${PYTHON_INCLUDE_DIRS})
+  include_directories(${Python_INCLUDE_DIRS})
 
   # Name targets for python without version suffixes for CMake version tolerance
   if("${CMAKE_VERSION}" VERSION_GREATER_EQUAL "3.11.4" AND NOT TARGET Boost::python )
@@ -130,7 +132,7 @@ message("Found Boost headers at: ${Boost_INCLUDE_DIRS}")
 message("      Boost-python  at: ${Boost_PYTHON${PYTHON_BOOST_SUFFIX}_LIBRARY}")
 message("      Boost-numpy   at: ${Boost_NUMPY${PYTHON_BOOST_SUFFIX}_LIBRARY}")
 
-find_package(msgpack REQUIRED)
+#find_package(msgpack REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenGL)

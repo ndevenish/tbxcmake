@@ -68,7 +68,7 @@ function(write_libtbx_env)
   get_property(tbx_modules_paths GLOBAL PROPERTY TBX_MODULES_PATHS)
 
   execute_process(
-    COMMAND "${PYTHON_EXECUTABLE}" ${LIBTBX_ENV_PY} "${tbx_modules}" "${tbx_modules_paths}"
+    COMMAND "${Python_EXECUTABLE}" ${LIBTBX_ENV_PY} "${tbx_modules}" "${tbx_modules_paths}"
   )
 
   # add_custom_command(
@@ -258,4 +258,4 @@ function(_write_program_dispatcher destination DISPATCHER_TARGET)
   configure_file(${dispatcher_template} ${destination})
 endfunction()
 
-_write_program_dispatcher(${CMAKE_BINARY_DIR}/bin/dials.python ${PYTHON_EXECUTABLE})
+_write_program_dispatcher(${CMAKE_BINARY_DIR}/bin/dials.python ${Python_EXECUTABLE})

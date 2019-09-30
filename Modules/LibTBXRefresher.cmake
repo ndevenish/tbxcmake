@@ -3,8 +3,8 @@ get_filename_component(LIBTBX_REFRESH_PY ${CMAKE_CURRENT_LIST_DIR}/../run_libtbx
 
 function(add_libtbx_refresh_command refresh_script)
   # Check that we haven't done this for this project before
-  if (NOT TARGET Python::Python)
-    message(FATAL_ERROR "No python interpreter imported executable Python::Python")
+  if (NOT TARGET Python::Interpreter)
+    message(FATAL_ERROR "No python interpreter imported executable Python::Interpreter")
   endif()
   if (TARGET ${PROJECT_NAME}_refresh)
     message(FATAL_ERROR "Asked to create more than one libtbx refresh for the same project ${PROJECT_NAME}")
@@ -21,8 +21,8 @@ function(add_libtbx_refresh_command refresh_script)
   cmake_parse_arguments(TBXR "" "" "OUTPUT" ${ARGN})
   # Add the custom command
   add_custom_command(
-    COMMAND Python::Python ${LIBTBX_REFRESH_PY} --root=${CMAKE_SOURCE_DIR} --output=${CMAKE_BINARY_DIR} ${refresh_script}
-    COMMAND Python::Python -c "open('lib_refresh_has_run', 'wt').close()"
+    COMMAND Python::Interpreter ${LIBTBX_REFRESH_PY} --root=${CMAKE_SOURCE_DIR} --output=${CMAKE_BINARY_DIR} ${refresh_script}
+    COMMAND Python::Interpreter -c "open('lib_refresh_has_run', 'wt').close()"
     OUTPUT ${TBXR_OUTPUT} lib_refresh_has_run
     ${TBXR_UNPARSED_ARGUMENTS}
     VERBATIM )
