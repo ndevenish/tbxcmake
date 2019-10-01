@@ -259,3 +259,6 @@ function(_write_program_dispatcher destination DISPATCHER_TARGET)
 endfunction()
 
 _write_program_dispatcher(${CMAKE_BINARY_DIR}/bin/dials.python ${Python_EXECUTABLE})
+_write_program_dispatcher(${CMAKE_BINARY_DIR}/bin/libtbx.python ${Python_EXECUTABLE})
+_write_program_dispatcher(${CMAKE_BINARY_DIR}/bin/libtbx.pytest "${Python_EXECUTABLE} -mpytest")
+
