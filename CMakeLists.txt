@@ -69,13 +69,13 @@ if (${BUILD_PYTHON_LIBS})
   # Boost 1.67 added version suffixes to library names for python.
   # CMake 3.11 added support for this, backported so that older boost will
   # still work (I think), but this obviously doesn't work for earlier versions
-  if( "${CMAKE_VERSION}" VERSION_GREATER_EQUAL "3.11.4" AND "${BOOST_VERSION}" VERSION_GREATER_EQUAL "1.67")
-    set(PYTHON_BOOST_SUFFIX "${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
+  if( "${CMAKE_VERSION}" VERSION_GREATER_EQUAL "3.11.4" AND "${Boost_VERSION}" VERSION_GREATER_EQUAL "1.67")
+    set(PYTHON_BOOST_SUFFIX "${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
   endif()
 
   # Find boost python libraries
   find_package(Boost COMPONENTS python${PYTHON_BOOST_SUFFIX} numpy${PYTHON_BOOST_SUFFIX} thread filesystem REQUIRED)
-  include_directories(${Python_INCLUDE_DIRS})
+  include_directories(${Python_INCLUDE_DIRS} ${Python_NumPy_INCLUDE_DIRS})
 
   # Name targets for python without version suffixes for CMake version tolerance
   if("${CMAKE_VERSION}" VERSION_GREATER_EQUAL "3.11.4" AND NOT TARGET Boost::python )
