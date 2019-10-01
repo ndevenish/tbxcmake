@@ -184,6 +184,10 @@ libtbx.pkg_utils = new_module("libtbx.pkg_utils")
 libtbx.pkg_utils.define_entry_points = pkg_util_define_entry_points
 libtbx.pkg_utils.require = pkg_util_require
 
+dials = new_module("dials")
+dials.precommitbx = new_module("dials.precommitbx")
+dials.precommitbx.nagger = new_module("dials.precommitbx.nagger")
+dials.precommitbx.nagger.nag = lambda: None
 
 # Fable requires a little more of the libtbx API
 
