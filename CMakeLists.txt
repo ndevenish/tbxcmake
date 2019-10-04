@@ -70,7 +70,7 @@ if (${BUILD_PYTHON_LIBS})
   # CMake 3.11 added support for this, backported so that older boost will
   # still work (I think), but this obviously doesn't work for earlier versions
   if( "${CMAKE_VERSION}" VERSION_GREATER_EQUAL "3.11.4" AND "${Boost_VERSION}" VERSION_GREATER_EQUAL "1.67")
-    set(PYTHON_BOOST_SUFFIX "${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+  #  set(PYTHON_BOOST_SUFFIX "${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
   endif()
 
   # Find boost python libraries
@@ -96,19 +96,23 @@ if (${BUILD_PYTHON_LIBS})
   # symbols to be resolved at link-time, but doesn't seem to set up any
   # hard tie to the specific library version. Therefore, it's not quite
   # so important that CMake finds the exact correct python library.
+  # EXTRA NOTE: There seem to be a problem with doing this when an rpath
+  #             is set. So switching to undefined dynamic_lookup so we
+  #             can get something working
   if(APPLE)
-    find_package(PythonLibs REQUIRED)
+    # find_package(PythonLibs REQUIRED)
     set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
                   APPEND
-                  PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${PYTHON_LIBRARIES}")
-    message("Python lib for weak linking: ${PYTHON_LIBRARIES}")
+                  # PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${Python_LIBRARIES}")
+                  PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-undefined,dynamic_lookup")
+    # message("Python lib for weak linking: ${Python_LIBRARIES}")
   elseif(WIN32)
     # Windows, however, requires the python27.lib library linked in
     find_package(PythonLibs REQUIRED)
     set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
                   APPEND
-                  PROPERTY INTERFACE_LINK_LIBRARIES "${PYTHON_LIBRARIES}")
-    message("Python library for hard linking: ${PYTHON_LIBRARIES}")
+                  PROPERTY INTERFACE_LINK_LIBRARIES "${Python_LIBRARIES}")
+    message("Python library for hard linking: ${Python_LIBRARIES}")
   endif()
   # Add python as a link property
   # set_property( TARGET Boost::python
