@@ -10,6 +10,7 @@ that will correctly unpickle.
 
 from __future__ import print_function
 
+import json
 import os
 import pickle
 import sys
@@ -139,3 +140,7 @@ a = environment(build_path, paths)
 
 with open("libtbx_env", "wb") as f:
     pickle.dump(a, f)
+
+# Write an easily readable version of the important data
+with open("libtbx_env.json", "w") as fs:
+    json.dump({name: path for name, path in paths}, fs, indent=4)
