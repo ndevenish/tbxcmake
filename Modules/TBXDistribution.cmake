@@ -96,6 +96,7 @@ function(add_tbx_module name)
     set(module_type ", interface")
   else()
     add_library( ${name} ${TBX_UNPARSED_ARGUMENTS})
+    install(TARGETS ${name} LIBRARY)
   endif()
 
   # # Look for a libtbx libtbx_refresh

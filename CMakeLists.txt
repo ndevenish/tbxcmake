@@ -247,6 +247,8 @@ function(add_python_library name)
     target_link_libraries(${name} Boost::python )
     set_target_properties(${name} PROPERTIES PREFIX "")
   endif()
+
+  install(TARGETS ${name} DESTINATION ${Python_SITEARCH})
 endfunction()
 
 # Add generated sources to a target
