@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 # Boost imported target and cmake_parse_arguments were added in 3.5
 # 3.8 added interface targets to OpenGL
 cmake_policy(SET CMP0074 NEW) # Searching _ROOT paths by default
+cmake_policy(SET CMP0094 NEW) # Finds first active python version rather than highest
 
 project(Dials)
 
