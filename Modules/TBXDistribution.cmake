@@ -83,6 +83,10 @@ function(write_libtbx_env)
 
 endfunction()
 
+function(write_setup)
+  set(dispatcher_template "${__TBXDistribution_list_dir}/../setup.py.template")
+  configure_file(${dispatcher_template} ${destination})
+endfunction()
 
 function(add_tbx_module name)
   cmake_parse_arguments(TBX "INTERFACE;NO_REFRESH" "" "" ${ARGN}) # GENERATED_FILES
