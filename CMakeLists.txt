@@ -155,7 +155,7 @@ set_target_properties(PCRE::PCRE PROPERTIES
 
 # Add HDF5
 find_package(HDF5 REQUIRED COMPONENTS C)
-find_package(HDF5 COMPONENTS HL)
+#find_package(HDF5 COMPONENTS HL)
 add_library(HDF5::HDF5 INTERFACE IMPORTED)
 message("Original HDF5 defs: ${HDF5_DEFINITIONS}")
 string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_DEFINITIONS_CLEAN    "${HDF5_DEFINITIONS}")
