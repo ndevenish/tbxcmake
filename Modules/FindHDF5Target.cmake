@@ -1,0 +1,46 @@
+
+# Add HDF5
+find_package(HDF5 REQUIRED COMPONENTS C HL)
+#find_package(HDF5 COMPONENTS HL)
+add_library(HDF5::HDF5 INTERFACE IMPORTED)
+message("Original HDF5 defs: ${HDF5_DEFINITIONS}")
+string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_DEFINITIONS_CLEAN    "${HDF5_DEFINITIONS}")
+string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_C_DEFINITIONS_CLEAN  "${HDF5_C_DEFINITIONS}")
+string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_C_HL_DEFINITIONS_CLEAN  "${HDF5_C_HL_DEFINITIONS}")
+
+set_target_properties(HDF5::HDF5 PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_INCLUDE_DIRS}"
+  INTERFACE_COMPILE_DEFINITIONS "${HDF5_DEFINITIONS_CLEAN}"
+  INTERFACE_LINK_LIBRARIES      "${HDF5_LIBRARIES}" )
+add_library(HDF5::C INTERFACE IMPORTED)
+set_target_properties(HDF5::C PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_INCLUDE_DIRS}"
+  INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS_CLEAN}"
+  INTERFACE_LINK_LIBRARIES      "${HDF5_C_LIBRARIES};HDF5::HDF5")
+add_dependencies(HDF5::C HDF5::HDF5)
+# HDF5::HL is a very optional dependency, used in (disabled) nexus and cppxfel
+# if (TARGET HDF5::HL)
+  add_library(HDF5::HL INTERFACE IMPORTED)
+  set_target_properties(HDF5::HL PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_HL_INCLUDE_DIRS}"
+    INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_HL_DEFINITIONS_CLEAN}"
+    INTERFACE_LINK_LIBRARIES      "${HDF5_C_HL_LIBRARIES};HDF5::HDF5")
+  add_dependencies(HDF5::HL HDF5::C)
+# endif()
+
+message("HDF5:")
+message("      i: ${HDF5_INCLUDE_DIRS}")
+message("      D: ${HDF5_DEFINITIONS_CLEAN}")
+message("      l: ${HDF5_LIBRARIES}")
+message(" CXX: i: ${HDF5_CXX_INCLUDE_DIRS}")
+message("      D: ${HDF5_CXX_DEFINITIONS}")
+message("      l: ${HDF5_CXX_LIBRARIES}")
+message("   C: i: ${HDF5_C_INCLUDE_DIRS}")
+message("      D: ${HDF5_C_DEFINITIONS_CLEAN}")
+message("      l: ${HDF5_C_LIBRARIES}")
+message("C_HL: i: ${HDF5_C_HL_INCLUDE_DIRS}")
+message("      D: ${HDF5_C_HL_DEFINITIONS}")
+message("      l: ${HDF5_C_HL_LIBRARIES}")
+message("CXXHL:i: ${HDF5_CXX_HL_INCLUDE_DIRS}")
+message("      D: ${HDF5_CXX_HL_DEFINITIONS_CLEAN}")
+message("      l: ${HDF5_CXX_HL_LIBRARIES}")
