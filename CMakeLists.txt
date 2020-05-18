@@ -211,6 +211,15 @@ if(MULTICHAR_FLAG)
   add_compile_options("-Wno-multichar")
 endif()
 
+# Always do diagnostic colouring e.g. inside ninja. Makes prettier.
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  add_compile_options (-fdiagnostics-color=always)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  add_compile_options (-fcolor-diagnostics)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+  add_compile_options (-fcolor-diagnostics)
+endif ()
+
 enable_testing()
 
 function(set_project_relative_folder target)
