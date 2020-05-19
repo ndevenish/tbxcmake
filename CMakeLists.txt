@@ -100,21 +100,21 @@ if (${BUILD_PYTHON_LIBS})
   # EXTRA NOTE: There seem to be a problem with doing this when an rpath
   #             is set. So switching to undefined dynamic_lookup so we
   #             can get something working
-  if(APPLE)
-    # find_package(PythonLibs REQUIRED)
-    set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
-                  APPEND
-                  # PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${Python_LIBRARIES}")
-                  PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-undefined,dynamic_lookup")
-    # message("Python lib for weak linking: ${Python_LIBRARIES}")
-  elseif(WIN32)
-    # Windows, however, requires the python27.lib library linked in
-    find_package(PythonLibs REQUIRED)
-    set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
-                  APPEND
-                  PROPERTY INTERFACE_LINK_LIBRARIES "${Python_LIBRARIES}")
-    message("Python library for hard linking: ${Python_LIBRARIES}")
-  endif()
+  # if(APPLE)
+  #   # find_package(PythonLibs REQUIRED)
+  #   set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
+  #                 APPEND
+  #                 # PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-weak_library,${Python_LIBRARIES}")
+  #                 PROPERTY INTERFACE_LINK_LIBRARIES "-Wl,-undefined,dynamic_lookup")
+  #   # message("Python lib for weak linking: ${Python_LIBRARIES}")
+  # elseif(WIN32)
+  #   # Windows, however, requires the python27.lib library linked in
+  #   find_package(PythonLibs REQUIRED)
+  #   set_property( TARGET Boost::python${PYTHON_BOOST_SUFFIX}
+  #                 APPEND
+  #                 PROPERTY INTERFACE_LINK_LIBRARIES "${Python_LIBRARIES}")
+  #   message("Python library for hard linking: ${Python_LIBRARIES}")
+  # endif()
   # Add python as a link property
   # set_property( TARGET Boost::python
   #               APPEND
@@ -235,28 +235,28 @@ endfunction()
 # Usage: add_python_library( <name> SOURCES <file> [<file>]... )
 function(add_python_library name)
 
-  if (BUILD_PYTHON_LIBS)
-    add_library(${name} MODULE ${ARGN})
-    # Tie to current project if we've set one
-    if (NOT ${PROJECT_NAME} MATCHES "^Project$")
-      # Add to a project meta-target
-      if(NOT TARGET ${PROJECT_NAME}_meta)
-        add_custom_target(${PROJECT_NAME}_meta)
-        set_target_properties (${PROJECT_NAME}_meta PROPERTIES FOLDER meta)
-      endif()
-      add_dependencies(${PROJECT_NAME}_meta ${name})
+  # add_library(${name} MODULE ${ARGN})
+  Python_add_library(${name} ${ARGN})
 
-      # If the project name is also a target, then add it as a dependency
-      if (TARGET ${PROJECT_NAME})
-        target_link_libraries(${name} ${PROJECT_NAME})
-      endif()
+  # Tie to current project if we've set one
+  if (NOT ${PROJECT_NAME} MATCHES "^Project$")
+    # Add to a project meta-target
+    if(NOT TARGET ${PROJECT_NAME}_meta)
+      add_custom_target(${PROJECT_NAME}_meta)
+      set_target_properties (${PROJECT_NAME}_meta PROPERTIES FOLDER meta)
+    endif()
+    add_dependencies(${PROJECT_NAME}_meta ${name})
 
-      set_project_relative_folder(${name})
+    # If the project name is also a target, then add it as a dependency
+    if (TARGET ${PROJECT_NAME})
+      target_link_libraries(${name} PRIVATE ${PROJECT_NAME})
     endif()
 
-    target_link_libraries(${name} Boost::python )
-    set_target_properties(${name} PROPERTIES PREFIX "")
+    set_project_relative_folder(${name})
   endif()
+
+  target_link_libraries(${name} PUBLIC Boost::python )
+  # set_target_properties(${name} PROPERTIES PREFIX "")
 
   install(TARGETS ${name} DESTINATION ${Python_SITEARCH})
 endfunction()
