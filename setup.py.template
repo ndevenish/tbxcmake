@@ -8,8 +8,8 @@ import json
 dials_tag = subprocess.check_output(["git", "describe", "--abbrev=0"], cwd="dials").decode("utf-8").strip()
 dials_count = subprocess.check_output(["git", "rev-list", f"{dials_tag}..", "--count"], cwd="dials").decode("utf-8").strip()
 
-assert dials_tag == "v2.dev"
-DIALS_VERSION = f"2.0.dev{dials_count}"
+assert dials_tag == "v3.dev"
+DIALS_VERSION = f"3.0.dev{dials_count}"
 
 assert "LIBTBX_BUILD" in os.environ, "Need build to find modules list"
 with open(os.path.join(os.environ["LIBTBX_BUILD"], "libtbx_env.json")) as f:
