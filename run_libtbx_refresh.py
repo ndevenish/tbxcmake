@@ -331,6 +331,10 @@ class LibTBXPath(NativePathType):
     def __abs__(self):
         return str(self)
 
+    def dirname(self):
+        return self.parent
+
+
 
 class FakeEnv(object):
     """Replaces Libtbx.env. Create at runtime to allow build lookups"""
@@ -366,6 +370,10 @@ class FakeEnv(object):
         path = os.path.join(self.output_root, path)
         # print "Returning build path", path
         return path
+
+    def under_base(self, path):
+        """Use in e.g. dxtbx init at this time"""
+        path = os.path.join("TEMPORARY_FAKE_BASE_DIR", path)
 
     def find_in_repositories(
         self,

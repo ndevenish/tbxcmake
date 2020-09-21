@@ -37,6 +37,7 @@ setup(
     author_email="dials-support@lists.sourceforge.net",
     url="https://github.com/dials/dials",
     packages=find_packages(),
+    package_data={"dxtbx.data": ["detectors.lib"]},
     # data_files=[
     #     (
     #         "dui/resources",
