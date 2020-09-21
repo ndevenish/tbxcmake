@@ -244,7 +244,7 @@ if (EIGEN_FOUND)
 endif (EIGEN_FOUND)
 # Handle REQUIRED / QUIET optional arguments and version.
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Eigen
+find_package_handle_standard_args(Eigen3
   REQUIRED_VARS EIGEN_INCLUDE_DIRS
   VERSION_VAR EIGEN_VERSION)
 # Only mark internal variables as advanced if we found Eigen, otherwise
