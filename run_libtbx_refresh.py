@@ -373,7 +373,7 @@ class FakeEnv(object):
 
     def under_base(self, path):
         """Use in e.g. dxtbx init at this time"""
-        path = os.path.join("TEMPORARY_FAKE_BASE_DIR", path)
+        return os.path.join("TEMPORARY_FAKE_BASE_DIR", path)
 
     def find_in_repositories(
         self,
