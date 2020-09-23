@@ -51,6 +51,7 @@ setup(
     packages=find_packages(),
     package_data={
         "dxtbx.data": ["detectors.lib"],
+        "ccp4io.libccp4.data": ["*"],
     },
     # data_files=[
     #     (
