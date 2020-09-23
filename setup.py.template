@@ -27,7 +27,39 @@ with open(os.path.join(os.environ["LIBTBX_BUILD"], "libtbx_env.json")) as f:
 assert env
 
 modules_entry_points = {
-    "libtbx.module": [f"{module} = {module}" for module in env.keys()]
+    "libtbx.module": [f"{module} = {module}" for module in env.keys()],
+    "dxtbx.profile_model": [
+        "gaussian_rs = dials.extensions.gaussian_rs_profile_model_ext:GaussianRSProfileModelExt"
+    ],
+    "dxtbx.scaling_model_ext": [
+        "physical = dials.algorithms.scaling.model.model:PhysicalScalingModel",
+        "KB = dials.algorithms.scaling.model.model:KBScalingModel",
+        "array = dials.algorithms.scaling.model.model:ArrayScalingModel",
+        "dose_decay = dials.algorithms.scaling.model.model:DoseDecay",
+    ],
+    "dials.index.basis_vector_search": [
+        "fft1d = dials.algorithms.indexing.basis_vector_search:FFT1D",
+        "fft3d = dials.algorithms.indexing.basis_vector_search:FFT3D",
+        "real_space_grid_search = dials.algorithms.indexing.basis_vector_search:RealSpaceGridSearch",
+    ],
+    "dials.index.lattice_search": [
+        "low_res_spot_match = dials.algorithms.indexing.lattice_search:LowResSpotMatch"
+    ],
+    "dials.integration.background": [
+        "Auto = dials.extensions.auto_background_ext:AutoBackgroundExt",
+        "glm = dials.extensions.glm_background_ext:GLMBackgroundExt",
+        "gmodel = dials.extensions.gmodel_background_ext:GModelBackgroundExt",
+        "simple = dials.extensions.simple_background_ext:SimpleBackgroundExt",
+        "null = dials.extensions.null_background_ext:NullBackgroundExt",
+        "median = dials.extensions.median_background_ext:MedianBackgroundExt",
+    ],
+    "dials.integration.centroid": [
+        "simple = dials.extensions.simple_centroid_ext:SimpleCentroidExt"
+    ],
+    "dials.spotfinder.threshold": [
+        "dispersion = dials.extensions.dispersion_spotfinder_threshold_ext:DispersionSpotFinderThresholdExt",
+        "dispersion_extended = dials.extensions.dispersion_extended_spotfinder_threshold_ext:DispersionExtendedSpotFinderThresholdExt",
+    ],
 }
 
 print("Entry points: ", modules_entry_points)
