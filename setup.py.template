@@ -1,11 +1,12 @@
 import ast
+import itertools
 import json
 import os
 import re
 import subprocess
 from pathlib import Path
 from pprint import pprint
-from typing import Optional
+from typing import List
 
 from setuptools import find_packages, setup
 
@@ -35,18 +36,18 @@ assert env
 # Generate a list of console scripts
 
 
-def get_entry_point(filename: Path, prefix: str, import_path: str) -> Optional[str]:
+def get_entry_point(filename: Path, prefix: str, import_path: str) -> List[str]:
     """Returns the entry point string for a given path.
 
     Args:
         filename:
             The python file to parse. Will look for a run() function
-            and a LIBTBX_SET_DISPATCHER_NAME.
+            and any number of LIBTBX_SET_DISPATCHER_NAME.
         prefix: The prefix to output the entry point console script with
         import_path: The import path to get to the package the file is in
 
     Returns:
-        A string suitable for passing to entry_points, or None
+        A list of entry_point specifications
     """
     contents = filename.read_text()
     tree = ast.parse(contents)
@@ -57,25 +58,27 @@ def get_entry_point(filename: Path, prefix: str, import_path: str) -> Optional[s
     if not has_run:
         return None
     # Find if we need an alternate name via LIBTBX_SET_DISPATCHER_NAME
-    alternate_name = re.search(
+    alternate_names = re.search(
         r"^#\s*LIBTBX_SET_DISPATCHER_NAME\s+(.*)$", contents, re.M
-    )
-    if alternate_name:
-        return f"{prefix}.{alternate_name.group(1)}={import_path}.{filename.stem}:run"
+    ).findall()
+    if alternate_names:
+        return [
+            f"{prefix}.{name}={import_path}.{filename.stem}:run"
+            for name in alternate_names
+        ]
 
-    return f"{prefix}.{filename.stem}={import_path}.{filename.stem}:run"
+    return [f"{prefix}.{filename.stem}={import_path}.{filename.stem}:run"]
 
 
 command_line_path = Path(__file__).parent / "dials" / "command_line"
-console_scripts = [
-    x
-    for x in [
-        get_entry_point(f, "dials", "dials.command_line")
-        for f in command_line_path.glob("*.py")
-    ]
-    if x
-]
-
+console_scripts = sorted(
+    itertools.chain(
+        *[
+            get_entry_point(f, "dials", "dials.command_line")
+            for f in command_line_path.glob("*.py")
+        ]
+    )
+)
 
 modules_entry_points = {
     "libtbx.module": [f"{module} = {module}" for module in env.keys()],
@@ -137,6 +140,7 @@ setup(
     package_data={
         "dxtbx.data": ["detectors.lib"],
         "ccp4io.libccp4.data": ["*"],
+        "dials.templates": ["*.html"],
     },
     # data_files=[
     #     (
