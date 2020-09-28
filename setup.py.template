@@ -2,6 +2,8 @@ from setuptools import setup, find_packages
 import subprocess
 import os
 import json
+from pathlib import Path
+from pprint import pprint
 
 # Get the version from git, for now
 # DIALS_VERSION = subprocess.check_output(["git", "describe"], cwd="dials").decode("utf-8").strip()
@@ -25,6 +27,51 @@ assert "LIBTBX_BUILD" in os.environ, "Need build to find modules list"
 with open(os.path.join(os.environ["LIBTBX_BUILD"], "libtbx_env.json")) as f:
     env = json.load(f)
 assert env
+
+# Generate a list of console scripts
+
+
+def get_entry_point(filename: Path, prefix: str, import_path: str) -> Optional[str]:
+    """Returns the entry point string for a given path.
+
+    Args:
+        filename:
+            The python file to parse. Will look for a run() function
+            and a LIBTBX_SET_DISPATCHER_NAME.
+        prefix: The prefix to output the entry point console script with
+        import_path: The import path to get to the package the file is in
+
+    Returns:
+        A string suitable for passing to entry_points, or None
+    """
+    contents = filename.read_text()
+    tree = ast.parse(contents)
+    # Find root functions named "run"
+    has_run = any(
+        x for x in tree.body if isinstance(x, ast.FunctionDef) and x.name == "run"
+    )
+    if not has_run:
+        return None
+    # Find if we need an alternate name via LIBTBX_SET_DISPATCHER_NAME
+    alternate_name = re.search(
+        r"^#\s*LIBTBX_SET_DISPATCHER_NAME\s+(.*)$", contents, re.M
+    )
+    if alternate_name:
+        return f"{prefix}.{alternate_name.group(1)}={import_path}.{filename.stem}:run"
+
+    return f"{prefix}.{filename.stem}={import_path}.{filename.stem}:run"
+
+
+command_line_path = Path(__file__).parent / "dials" / "command_line"
+console_scripts = [
+    x
+    for x in [
+        get_entry_point(f, "dials", "dials.command_line")
+        for f in command_line_path.glob("*.py")
+    ]
+    if x
+]
+
 
 modules_entry_points = {
     "libtbx.module": [f"{module} = {module}" for module in env.keys()],
@@ -60,9 +107,11 @@ modules_entry_points = {
         "dispersion = dials.extensions.dispersion_spotfinder_threshold_ext:DispersionSpotFinderThresholdExt",
         "dispersion_extended = dials.extensions.dispersion_extended_spotfinder_threshold_ext:DispersionExtendedSpotFinderThresholdExt",
     ],
+    "console_scripts": [console_scripts],
 }
 
-print("Entry points: ", modules_entry_points)
+print("Entry points:")
+pprint(modules_entry_points)
 
 setup(
     name="dials",
