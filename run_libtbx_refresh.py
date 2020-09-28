@@ -41,6 +41,7 @@ try:
 except ImportError:
     from pathlib2 import Path  # type: ignore
 
+
 # Copy this from pkg_utils
 @contextlib.contextmanager
 def _silence():
@@ -335,7 +336,6 @@ class LibTBXPath(NativePathType):
         return self.parent
 
 
-
 class FakeEnv(object):
     """Replaces Libtbx.env. Create at runtime to allow build lookups"""
 
@@ -403,8 +403,8 @@ class RefreshSelf(object):
 
 def inject_script(module_path, globals):
     """Load and run a python script with an injected globals dictionary.
-  This is to emulate what it appears libtbx/scons does to run refresh scripts
-  """
+    This is to emulate what it appears libtbx/scons does to run refresh scripts
+    """
     path, module_filename = os.path.split(module_path)
     module_name, ext = os.path.splitext(module_filename)
     module = ModuleType(module_name)
