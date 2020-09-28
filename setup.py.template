@@ -1,9 +1,13 @@
-from setuptools import setup, find_packages
-import subprocess
-import os
+import ast
 import json
+import os
+import re
+import subprocess
 from pathlib import Path
 from pprint import pprint
+from typing import Optional
+
+from setuptools import find_packages, setup
 
 # Get the version from git, for now
 # DIALS_VERSION = subprocess.check_output(["git", "describe"], cwd="dials").decode("utf-8").strip()
