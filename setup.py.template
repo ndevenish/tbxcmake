@@ -56,7 +56,7 @@ def get_entry_point(filename: Path, prefix: str, import_path: str) -> List[str]:
         x for x in tree.body if isinstance(x, ast.FunctionDef) and x.name == "run"
     )
     if not has_run:
-        return None
+        return []
     # Find if we need an alternate name via LIBTBX_SET_DISPATCHER_NAME
     alternate_names = re.findall(
         r"^#\s*LIBTBX_SET_DISPATCHER_NAME\s+(.*)$", contents, re.M
