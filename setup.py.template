@@ -58,9 +58,9 @@ def get_entry_point(filename: Path, prefix: str, import_path: str) -> List[str]:
     if not has_run:
         return None
     # Find if we need an alternate name via LIBTBX_SET_DISPATCHER_NAME
-    alternate_names = re.search(
+    alternate_names = re.findall(
         r"^#\s*LIBTBX_SET_DISPATCHER_NAME\s+(.*)$", contents, re.M
-    ).findall()
+    )
     if alternate_names:
         return [f"{name}={import_path}.{filename.stem}:run" for name in alternate_names]
 
