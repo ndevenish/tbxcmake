@@ -27,7 +27,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Deliberately constrain to C++98 - but allow user to override
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 98)
+  set(CMAKE_CXX_STANDARD 14)
 endif()
 
 # Generate compile_commands.json
@@ -42,22 +42,6 @@ if (${BUILD_PYTHON_LIBS})
   # Add python interpreter as an imported executable
   find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
   message("Found python interpreter ${Python_VERSION}: ${Python_EXECUTABLE}")
-  #add_executable(Python::Python IMPORTED)
-  #set_target_properties(Python::Python PROPERTIES
-  #  IMPORTED_LOCATION ${PYTHON_EXECUTABLE})
-
-  # Get the include from python
-  #exec_program(${PYTHON_EXECUTABLE}
-  #  ARGS -c "\"from distutils.sysconfig import get_python_inc; print(get_python_inc())\""
-  #  OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
-  #  RETURN_VALUE    RUN_RETURN)
-  #if (${RUN_RETURN})
-  #  message(FATAL_ERROR "Could not determine python include path from python executable")
-  #endif()
-
-  # Add python libraries as an imported library
-  #find_package(PythonLibs REQUIRED)
-  #message("Python Include path: ${PYTHON_INCLUDE_DIRS}")
 
   #find_package(Numpy REQUIRED)
 
@@ -144,6 +128,8 @@ find_package(OpenGL)
 find_package(PNG)
 find_package(GTest)
 
+find_package(msgpack REQUIRED)
+
 # Used by CBFlib, if present
 #find_package(PCRE)
 # As a hack: Define the no-regex flag here
@@ -151,53 +137,8 @@ add_library(PCRE::PCRE INTERFACE IMPORTED)
 add_library(PCRE::POSIX INTERFACE IMPORTED)
 set_target_properties(PCRE::PCRE PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "CBF_NO_REGEX")
-#CBF_NO_REGEX
 
-# Add HDF5
 find_package(HDF5 REQUIRED COMPONENTS C)
-#find_package(HDF5 COMPONENTS HL)
-add_library(HDF5::HDF5 INTERFACE IMPORTED)
-message("Original HDF5 defs: ${HDF5_DEFINITIONS}")
-string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_DEFINITIONS_CLEAN    "${HDF5_DEFINITIONS}")
-string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_C_DEFINITIONS_CLEAN  "${HDF5_C_DEFINITIONS}")
-string(REGEX REPLACE "(^|\\s|;)-D" ";" HDF5_C_HL_DEFINITIONS_CLEAN  "${HDF5_C_HL_DEFINITIONS}")
-
-set_target_properties(HDF5::HDF5 PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_INCLUDE_DIRS}"
-  INTERFACE_COMPILE_DEFINITIONS "${HDF5_DEFINITIONS_CLEAN}"
-  INTERFACE_LINK_LIBRARIES      "${HDF5_LIBRARIES}" )
-add_library(HDF5::C INTERFACE IMPORTED)
-set_target_properties(HDF5::C PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_INCLUDE_DIRS}"
-  INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_DEFINITIONS_CLEAN}"
-  INTERFACE_LINK_LIBRARIES      "${HDF5_C_LIBRARIES};HDF5::HDF5")
-add_dependencies(HDF5::C HDF5::HDF5)
-# HDF5::HL is a very optional dependency, used in (disabled) nexus and cppxfel
-if (TARGET HDF5::HL)
-  add_library(HDF5::HL INTERFACE IMPORTED)
-  set_target_properties(HDF5::HL PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${HDF5_C_HL_INCLUDE_DIRS}"
-    INTERFACE_COMPILE_DEFINITIONS "${HDF5_C_HL_DEFINITIONS_CLEAN}"
-    INTERFACE_LINK_LIBRARIES      "${HDF5_C_HL_LIBRARIES};HDF5::HDF5")
-  add_dependencies(HDF5::HL HDF5::C)
-endif()
-
-message("HDF5:")
-message("      i: ${HDF5_INCLUDE_DIRS}")
-message("      D: ${HDF5_DEFINITIONS_CLEAN}")
-message("      l: ${HDF5_LIBRARIES}")
-message(" CXX: i: ${HDF5_CXX_INCLUDE_DIRS}")
-message("      D: ${HDF5_CXX_DEFINITIONS}")
-message("      l: ${HDF5_CXX_LIBRARIES}")
-message("   C: i: ${HDF5_C_INCLUDE_DIRS}")
-message("      D: ${HDF5_C_DEFINITIONS_CLEAN}")
-message("      l: ${HDF5_C_LIBRARIES}")
-message("C_HL: i: ${HDF5_C_HL_INCLUDE_DIRS}")
-message("      D: ${HDF5_C_HL_DEFINITIONS}")
-message("      l: ${HDF5_C_HL_LIBRARIES}")
-message("CXXHL:i: ${HDF5_CXX_HL_INCLUDE_DIRS}")
-message("      D: ${HDF5_CXX_HL_DEFINITIONS_CLEAN}")
-message("      l: ${HDF5_CXX_HL_LIBRARIES}")
 
 if (${USE_OPENMP})
   # If we asked for OpenMP, then we'd better have it
